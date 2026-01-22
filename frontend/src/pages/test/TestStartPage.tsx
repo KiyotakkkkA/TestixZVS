@@ -37,7 +37,7 @@ export const TestStartPage: React.FC = () => {
     }
 
     return (
-        <div className="w-full max-w-2xl space-y-8">
+        <div className="w-full max-w-2xl space-y-8 m-auto">
             <div className="bg-white rounded-lg shadow-xl p-8 md:p-12 text-center space-y-6">
                 <div className='flex justify-between'>
                     <Button

@@ -37,7 +37,7 @@ export const TestResultsPage = () => {
   const passThreshold = result.passThreshold;
 
   return (
-    <div className="w-full max-w-2xl space-y-8">
+    <div className="w-full max-w-2xl space-y-8 mx-auto">
       <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
         <h1 className="text-4xl font-bold text-gray-800 mb-2">Тест завершён!</h1>
         <p className="text-gray-600 mb-8">Вот ваши результаты</p>

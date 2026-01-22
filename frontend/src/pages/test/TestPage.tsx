@@ -48,7 +48,7 @@ export const TestPage = () => {
     });
 
     return (
-        <div className="w-full max-w-6xl">
+        <div className="w-full max-w-6xl m-auto">
             <div className="mb-6 flex justify-end">
                 <button
                     onClick={() => {
