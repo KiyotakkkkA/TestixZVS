@@ -9,10 +9,15 @@ import { TestsListPage } from "./components/pages/test/TestsListPage";
 import { TestStartPage } from "./components/pages/test/TestStartPage";
 import { TestPage } from "./components/pages/test/TestPage";
 import { TestResultsPage } from "./components/pages/test/TestResultsPage";
+import { TestCreatingPage } from "./components/pages/test/TestCreatingPage";
 
 import { AdminLayout } from "./components/pages/admin/AdminLayout";
 import { AdminUsersPage } from "./components/pages/admin/AdminUsersPage";
 import { AdminAuditPage } from "./components/pages/admin/AdminAuditPage";
+
+import { E403 } from "./components/pages/errors/E403";
+import { E404 } from "./components/pages/errors/E404";
+import { RouteGuard } from "./providers/RouteGuard";
 
 import { StorageService } from "./services/storage";
 import { authStore } from "./stores/authStore";
@@ -65,11 +70,29 @@ function App() {
             <Route path="/tests/:testId/start" element={<TestStartPage />} />
             <Route path="/tests/:testId/results" element={<TestResultsPage />} />
             <Route path="/tests/:testId" element={<TestPage />} />
-            <Route path="/admin" element={<AdminLayout />}>
+            <Route
+              path="/workbench/test"
+              element={
+                <RouteGuard requiredPermissions={["create tests"]}>
+                  <TestCreatingPage />
+                </RouteGuard>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <RouteGuard requiredPermissions={["view admin panel"]}>
+                  <AdminLayout />
+                </RouteGuard>
+              }
+            >
               <Route index element={<AdminUsersPage />} />
               <Route path="users" element={<AdminUsersPage />} />
               <Route path="audit" element={<AdminAuditPage />} />
             </Route>
+            <Route path="/errors/403" element={<E403 />} />
+            <Route path="/errors/404" element={<E404 />} />
+            <Route path="*" element={<E404 />} />
           </Routes>
         </main>
       </div>

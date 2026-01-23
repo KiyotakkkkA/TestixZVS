@@ -10,3 +10,4 @@ export { Spinner } from './Spinner';
 export { Toast } from './Toast';
 export { Selector } from './Selector';
 export { InputDate } from './InputDate';
+export { InputMedia } from './InputMedia';

@@ -93,7 +93,7 @@ export const TestResultsPage = () => {
         </p>
 
         {typeof passed === 'boolean' && typeof passThreshold === 'number' ? (
-          <div className="mt-4 inline-flex items-center justify-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+          <div className="mt-4 inline-flex items-center justify-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
             <span
               className={
                 `px-3 py-1 rounded-lg font-semibold ` +
@@ -134,7 +134,7 @@ export const TestResultsPage = () => {
 
             <div className="mt-4 space-y-4">
               {result.incorrectReview.map((item) => (
-                <div key={item.questionNumber} className="rounded-xl border border-gray-200 bg-white p-4">
+                <div key={item.questionNumber} className="rounded-lg border border-gray-200 bg-white p-4">
                   <div className="text-sm font-semibold text-gray-500">Вопрос {item.questionNumber}</div>
                   <div className="mt-1 font-semibold text-gray-800">{item.questionText}</div>
                   <div className="mt-2 text-sm text-gray-700">
@@ -160,7 +160,7 @@ export const TestResultsPage = () => {
 
             <div className="mt-4 space-y-4">
               {result.fullAnswerReview.map((item) => (
-                <div key={item.questionNumber} className="rounded-xl border border-indigo-200 bg-white p-4">
+                <div key={item.questionNumber} className="rounded-lg border border-indigo-200 bg-white p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <div className="text-sm font-semibold text-gray-500">Вопрос {item.questionNumber}</div>
@@ -194,7 +194,7 @@ export const TestResultsPage = () => {
           resetTest();
           navigate(`/tests/${testId}/start`);
         }}
-        className="w-full py-4 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white font-semibold rounded-xl hover:from-indigo-600 hover:to-indigo-700 transition-all shadow-lg"
+        className="w-full py-4 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white font-semibold rounded-lg hover:from-indigo-600 hover:to-indigo-700 transition-all shadow-lg"
       >
         Пройти тест снова
       </button>

@@ -169,7 +169,7 @@ export const TestStartPage: React.FC = () => {
                                     type="button"
                                     onClick={() => updateSettings({ fullAnswerCheckMode: mode.value })}
                                     className={
-                                        `rounded-xl border px-4 py-3 text-left transition-colors ` +
+                                        `rounded-lg border px-4 py-3 text-left transition-colors ` +
                                         (settings.fullAnswerCheckMode === mode.value
                                             ? 'border-indigo-200 bg-indigo-50'
                                             : 'border-gray-200 bg-white hover:bg-gray-50')

@@ -97,14 +97,14 @@ export const ExpressTestModal = ({
       </p>
 
       <div className="px-2 py-5 space-y-6">
-        <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
           <div className="font-semibold text-gray-800">Ограничение по времени</div>
           <div className="mt-3 grid grid-cols-2 gap-3">
             <button
               type="button"
               onClick={() => setTimeLimitEnabled(false)}
               className={
-                `rounded-xl border px-4 py-3 text-left transition-colors items-start ` +
+                `rounded-lg border px-4 py-3 text-left transition-colors items-start ` +
                 (!timeLimitEnabled
                   ? 'border-indigo-200 bg-indigo-50'
                   : 'border-gray-200 bg-white hover:bg-gray-50')
@@ -118,7 +118,7 @@ export const ExpressTestModal = ({
               type="button"
               onClick={() => setTimeLimitEnabled(true)}
               className={
-                `rounded-xl border px-4 py-3 text-left transition-colors ` +
+                `rounded-lg border px-4 py-3 text-left transition-colors ` +
                 (timeLimitEnabled
                   ? 'border-indigo-200 bg-indigo-50'
                   : 'border-gray-200 bg-white hover:bg-gray-50')
@@ -204,7 +204,7 @@ export const ExpressTestModal = ({
                 type="button"
                 onClick={() => setFullAnswerCheckMode(mode.value)}
                 className={
-                  `rounded-xl border px-4 py-3 text-left transition-colors ` +
+                  `rounded-lg border px-4 py-3 text-left transition-colors ` +
                   (fullAnswerCheckMode === mode.value
                     ? 'border-indigo-200 bg-indigo-50'
                     : 'border-gray-200 bg-white hover:bg-gray-50')

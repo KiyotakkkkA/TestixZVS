@@ -157,7 +157,7 @@ export const Question: React.FC<QuestionProps> = ({
         {isChecked ? (
           <div
             className={
-              `mb-6 rounded-xl border px-4 py-3 font-semibold ` +
+              `mb-6 rounded-lg border px-4 py-3 font-semibold ` +
               (checkedState === 'correct'
                 ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
                 : 'bg-rose-50 border-rose-200 text-rose-800')

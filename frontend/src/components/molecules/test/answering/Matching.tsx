@@ -148,7 +148,7 @@ export const Matching = ({
       </div>
 
       {revealCorrect ? (
-        <div className="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-4">
+        <div className="mt-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-4">
           <div className="font-semibold text-emerald-900">Правильное соответствие</div>
           <div className="mt-2 space-y-1 text-sm text-emerald-900">
             {question.correctAnswers.map((pair) => {
