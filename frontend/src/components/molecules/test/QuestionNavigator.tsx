@@ -16,7 +16,7 @@ export const QuestionNavigator = ({
   const total = Math.max(1, totalQuestions);
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl p-4 md:p-5">
+    <div className="bg-white rounded-lg shadow-xl p-4 md:p-5">
       <div className="flex items-center justify-between mb-3">
         <div className="font-bold text-gray-800">Вопросы</div>
         <div className="text-sm text-gray-600">{currentIndex + 1}/{total}</div>

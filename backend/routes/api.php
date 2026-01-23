@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuditController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,4 +24,5 @@ Route::middleware(['auth:sanctum', 'permission:view admin panel'])->prefix('admi
     Route::patch('/users/{user}/roles', [AdminController::class, 'updateRoles'])->name('admin.users.roles');
     Route::patch('/users/{user}/permissions', [AdminController::class, 'updatePermissions'])->name('admin.users.permissions');
     Route::delete('/users/{user}', [AdminController::class, 'destroy'])->name('admin.users.delete');
+    Route::get('/audit', [AuditController::class, 'index'])->name('admin.audit')->middleware('permission:view audit logs');
 });

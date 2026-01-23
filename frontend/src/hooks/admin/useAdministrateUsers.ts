@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { AdminService } from '../../services/admin';
 
 import type { User } from '../../types/User';
-import type { AdminPermissionsResponse, RoleOption } from '../../types/Admin';
+import type { AdminPermissionsResponse, RoleOption } from '../../types/admin/AdminUsers';
 
 export type AdminCreateUserPayload = {
   name: string;

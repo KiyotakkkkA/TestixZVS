@@ -1,10 +1,11 @@
 import { useState } from 'react';
+import { Icon } from '@iconify/react';
 
 import { UserRolesForm } from '../forms';
 import { Button, Spinner } from '../../atoms';
 
 import type { User } from '../../../types/User';
-import type { AdminPermissionsResponse, RoleOption } from '../../../types/Admin';
+import type { AdminPermissionsResponse, RoleOption } from '../../../types/admin/AdminUsers';
 
 export type UserCardProps = {
   user: User;
@@ -82,22 +83,19 @@ export const UserCard = ({
                       setIsOpen((prev) => !prev);
                     }}
                   >
-                    {isOpen ? 'Скрыть' : 'Редактировать'}
+                    {isOpen ? <Icon icon='mdi:eye-off' className="h-6 w-6" /> : <Icon icon='mdi:pen' className="h-6 w-6" />}
                   </Button>
                 )}
                 {canDelete && (
                   <Button
-                    danger
-                    className="py-1 px-3 text-sm whitespace-nowrap"
+                    dangerNoBackground
+                    className="p-1"
                     disabled={isDeleting}
                     onClick={async () => {
                       onRequestDelete(user);
                     }}
                   >
-                    <span className="inline-flex items-center gap-2">
-                      {isDeleting && <Spinner className="h-4 w-4" />}
-                      Удалить
-                    </span>
+                    {isDeleting ? <Spinner className="h-4 w-4" /> : <Icon icon='mdi:trash' className="h-6 w-6" />}
                   </Button>
                 )}
             </div>

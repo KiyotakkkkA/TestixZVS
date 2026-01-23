@@ -108,7 +108,7 @@ export const AdminUsersPage = () => {
 
   if (isLoading) {
     return (
-      <div className="w-full rounded-2xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">
+      <div className="w-full rounded-lg border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">
         <div className="flex items-center justify-center gap-2">
           <Spinner className="h-4 w-4" />
           Загружаем пользователей...
@@ -119,7 +119,7 @@ export const AdminUsersPage = () => {
 
   if (error) {
     return (
-      <div className="w-full rounded-2xl border border-rose-200 bg-rose-50 p-6 text-sm text-rose-700">
+      <div className="w-full rounded-lg border border-rose-200 bg-rose-50 p-6 text-sm text-rose-700">
         {error}
       </div>
     );
@@ -127,7 +127,7 @@ export const AdminUsersPage = () => {
 
   return (
     <div className="w-full space-y-6">
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
         <h1 className="text-2xl font-bold text-slate-800">Пользователи</h1>
         <p className="mt-2 text-sm text-slate-500">
           Управляйте ролями и правами пользователей.

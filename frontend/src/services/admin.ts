@@ -1,7 +1,8 @@
 import { api } from './api';
 
 import type { User } from '../types/User';
-import type { AdminCreateUserPayload, AdminPermissionsResponse, AdminRolesResponse, AdminUsersResponse } from '../types/Admin';
+import type { AdminAuditFilters, AdminAuditResponse } from '../types/admin/AdminAudit';
+import type { AdminCreateUserPayload, AdminPermissionsResponse, AdminRolesResponse, AdminUsersResponse } from '../types/admin/AdminUsers';
 
 export const AdminService = {
   getUsers: async (): Promise<AdminUsersResponse> => {
@@ -36,5 +37,12 @@ export const AdminService = {
 
   deleteUser: async (userId: number): Promise<void> => {
     await api.delete(`/admin/users/${userId}`);
+  },
+
+  getAudit: async (filters: AdminAuditFilters = {}): Promise<AdminAuditResponse> => {
+    const { data } = await api.get<AdminAuditResponse>('/admin/audit', {
+      params: filters,
+    });
+    return data;
   },
 };

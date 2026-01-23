@@ -78,7 +78,7 @@ export const TestPage = () => {
                 <div className="flex-1">
                 <div
                     className={
-                    `bg-white rounded-2xl shadow-xl p-6 md:p-8 transition-shadow ` +
+                    `bg-white rounded-lg shadow-xl p-6 md:p-8 transition-shadow ` +
                     (checkGlow === 'correct'
                         ? 'shadow-emerald-200/60 ring-2 ring-emerald-300'
                         : checkGlow === 'wrong'

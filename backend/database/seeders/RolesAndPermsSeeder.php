@@ -51,6 +51,10 @@ class RolesAndPermsSeeder extends Seeder
                 'name' => 'view admin panel',
                 'description' => 'просмотр админ-панели',
             ],
+            [
+                'name' => 'view audit logs',
+                'description' => 'просмотр журнала аудита',
+            ]
         ];
 
         foreach ($permissions as $permission) {

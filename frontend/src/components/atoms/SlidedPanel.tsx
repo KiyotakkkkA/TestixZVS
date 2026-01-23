@@ -1,6 +1,7 @@
-import type React from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "@iconify/react";
+
+import type React from "react";
 
 interface SlidedPanelProps {
     open: boolean;

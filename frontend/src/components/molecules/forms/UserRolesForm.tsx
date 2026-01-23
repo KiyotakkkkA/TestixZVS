@@ -5,7 +5,7 @@ import { ROLE_RANKS } from '../../../data/admin';
 import { authStore } from '../../../stores/authStore';
 
 import type { User } from '../../../types/User';
-import type { AdminPermissionsResponse, RoleOption } from '../../../types/Admin';
+import type { AdminPermissionsResponse, RoleOption } from '../../../types/admin/AdminUsers';
 
 export type UserRolesFormProps = {
   user: User;

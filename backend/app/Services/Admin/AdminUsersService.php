@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 
 use App\Models\User;
 use App\Models\Permission;
+use App\Services\AuditService;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
@@ -15,6 +16,13 @@ class AdminUsersService
         'admin' => 2,
         'root' => 3,
     ];
+
+    protected AuditService $auditService;
+
+    public function __construct(AuditService $auditService)
+    {
+        $this->auditService = $auditService;
+    }
 
     public function listUsers(): array
     {
@@ -59,6 +67,8 @@ class AdminUsersService
     {
         $this->ensureCanManageTarget($actor, $target);
 
+        $oldRoles = $target->getRoleNames()->values()->all();
+
         $roles = array_values(array_unique($roles));
         if (count($roles) > 1) {
             abort(422, 'Нельзя назначать более одной роли');
@@ -86,6 +96,9 @@ class AdminUsersService
         $rolePerms = $roleName ? $this->getRolePermissions($roleName) : [];
         $target->syncPermissions($rolePerms);
 
+        $newRoles = $target->getRoleNames()->values()->all();
+        $this->auditService->auditAdminRolesChange($actor, $target, $oldRoles, $newRoles);
+
         return $this->mapUser($target);
     }
 
@@ -104,7 +117,12 @@ class AdminUsersService
             abort(403, 'Нельзя назначать права, которых нет у вас');
         }
 
+        $oldPerms = $target->getAllPermissions()->pluck('name')->values()->all();
+
         $target->syncPermissions($perms);
+
+        $newPerms = $target->getAllPermissions()->pluck('name')->values()->all();
+        $this->auditService->auditAdminPermissionsChange($actor, $target, $oldPerms, $newPerms);
 
         return $this->mapUser($target);
     }
@@ -144,6 +162,13 @@ class AdminUsersService
         $rolePerms = $roleName ? $this->getRolePermissions($roleName) : [];
         $user->syncPermissions($rolePerms);
 
+        $this->auditService->auditAdminUserAdd(
+            $actor,
+            $user,
+            $user->getRoleNames()->values()->all(),
+            $user->getAllPermissions()->pluck('name')->values()->all()
+        );
+
         return $this->mapUser($user);
     }
 
@@ -166,6 +191,10 @@ class AdminUsersService
         if ($target->hasRole('editor') && !$actor->can('assign editor role')) {
             abort(403, 'Недостаточно прав для удаления редактора');
         }
+
+        $roles = $target->getRoleNames()->values()->all();
+        $perms = $target->getAllPermissions()->pluck('name')->values()->all();
+        $this->auditService->auditAdminUserRemove($actor, $target, $roles, $perms);
 
         $target->delete();
     }

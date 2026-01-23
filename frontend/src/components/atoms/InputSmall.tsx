@@ -1,7 +1,7 @@
-import type React from "react";
 import { useId, useMemo, useState } from "react";
-
 import { Icon } from "@iconify/react";
+
+import type React from "react";
 
 export interface InputSmallProps extends React.InputHTMLAttributes<HTMLInputElement> {
     leftIcon?: string;
