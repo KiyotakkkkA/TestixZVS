@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { AuthStorage } from './authStorage';
 
-const baseURL = process.env.REACT_APP_BACKEND_API_HOST || 'http://localhost:8080/api';
+let baseURL = '';
+if (process.env.ENV_TYPE === 'prod') baseURL = '/api';
+if (process.env.ENV_TYPE === 'dev') baseURL = 'http://localhost:8000/api';
 
 export const api = axios.create({
   baseURL,

@@ -61,7 +61,6 @@ services:
       dockerfile: docker/frontend/Dockerfile.frontend
       args:
         NODE_VERSION: ${NODE_VERSION:-23.1-alpine}
-        REACT_APP_BACKEND_API_HOST: ${REACT_APP_BACKEND_API_HOST}
         REACT_APP_OLLAMA_BASE_URL: ${REACT_APP_OLLAMA_BASE_URL}
         REACT_APP_OLLAMA_MODEL: ${REACT_APP_OLLAMA_MODEL}
         REACT_APP_OLLAMA_TOKEN: ${REACT_APP_OLLAMA_TOKEN}
