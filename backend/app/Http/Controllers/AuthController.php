@@ -56,6 +56,7 @@ class AuthController extends Controller
             $validated = $request->validate([
                 'email' => 'required|email',
                 'password' => 'required|string',
+                'rememberMe' => 'required|boolean',
             ]);
 
             $result = $this->authService->login($validated);

@@ -47,7 +47,9 @@ class AuthService
             ]);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $expiresAt = $credentials['rememberMe'] ? null : now()->addHours(12);
+
+        $token = $user->createToken('auth_token', [], $expiresAt)->plainTextToken;
 
         return [
             'user' => $this->formatUser($user),

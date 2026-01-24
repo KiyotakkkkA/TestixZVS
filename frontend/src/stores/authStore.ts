@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 
 import { AuthStorage } from '../services/authStorage';
-import { AuthService } from '../services/auth';
+import { AuthService, LoginPayload, RegisterPayload } from '../services/auth';
 
 import type { User } from '../types/User';
 
@@ -61,11 +61,11 @@ export class AuthStore {
     }
   }
 
-  async login(email: string, password: string): Promise<boolean> {
+  async login(creds: LoginPayload): Promise<boolean> {
     try {
       this.isLoading = true;
       this.error = null;
-      const data = await AuthService.login({ email, password });
+      const data = await AuthService.login(creds);
       runInAction(() => {
         this.setSession(data.user, data.token);
       });
@@ -82,16 +82,11 @@ export class AuthStore {
     }
   }
 
-  async register(name: string, email: string, password: string, password_confirmation: string): Promise<boolean> {
+  async register(creds: RegisterPayload): Promise<boolean> {
     try {
       this.isLoading = true;
       this.error = null;
-      const data = await AuthService.register({
-        name,
-        email,
-        password,
-        password_confirmation,
-      });
+      const data = await AuthService.register(creds);
       runInAction(() => {
         this.setSession(data.user, data.token);
       });

@@ -93,7 +93,12 @@ export const RegisterForm = observer(({
             return;
         }
 
-        const ok = await authStore.register(name, email, password, confirmPassword);
+        const ok = await authStore.register({
+            name,
+            email,
+            password,
+            password_confirmation: confirmPassword,
+        });
         if (ok) {
             toast.success('Регистрация успешна');
             navigate('/', { replace: true });

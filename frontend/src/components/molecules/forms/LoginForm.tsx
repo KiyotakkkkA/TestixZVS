@@ -4,13 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { observer } from "mobx-react-lite";
 
-import { Button, InputSmall, Spinner } from "../../atoms";
+import { Button, InputCheckbox, InputSmall, Spinner } from "../../atoms";
 import { useToasts } from "../../../hooks/useToasts";
 import { authStore } from "../../../stores/authStore";
 
 const loginSchema = z.object({
     email: z.string().email('Введите корректный email'),
     password: z.string().min(8, 'Пароль должен быть минимум 8 символов'),
+    rememberMe: z.boolean().optional(),
 });
 
 export const LoginForm = observer(() => {
@@ -18,6 +19,7 @@ export const LoginForm = observer(() => {
     const { toast } = useToasts();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [rememberMe, setRememberMe] = useState(false);
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
     const [formError, setFormError] = useState<string | null>(null);
 
@@ -25,7 +27,7 @@ export const LoginForm = observer(() => {
         event.preventDefault();
         setFormError(null);
 
-        const parsed = loginSchema.safeParse({ email, password });
+        const parsed = loginSchema.safeParse({ email, password, rememberMe });
         if (!parsed.success) {
             const nextErrors: { email?: string; password?: string } = {};
             parsed.error.issues.forEach((issue) => {
@@ -37,7 +39,11 @@ export const LoginForm = observer(() => {
         }
 
         setErrors({});
-        const ok = await authStore.login(email, password);
+        const ok = await authStore.login({
+            email,
+            password,
+            rememberMe,
+        });
         if (ok) {
             toast.success('Вы вошли в систему');
             navigate('/', { replace: true });
@@ -84,6 +90,13 @@ export const LoginForm = observer(() => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
+                </div>
+                <div className="flex items-center">
+                    <InputCheckbox
+                        checked={rememberMe}
+                        onChange={() => setRememberMe(!rememberMe)}
+                    />
+                    <label className="ml-2 text-sm text-slate-500">Запомнить меня</label>
                 </div>
             </div>
             {formError && (

@@ -7,9 +7,9 @@ const clampPercent = (n: number): number => {
 };
 
 const getEnv = () => {
-  const baseUrl = (process.env.REACT_APP_OLLAMA_BASE_URL || 'http://localhost:11434').replace(/\/$/, '');
-  const model = process.env.REACT_APP_OLLAMA_MODEL || '';
-  const token = process.env.REACT_APP_OLLAMA_TOKEN || '';
+  const baseUrl = process.env.REACT_APP_OLLAMA_BASE_URL;
+  const model = process.env.REACT_APP_OLLAMA_MODEL;
+  const token = process.env.REACT_APP_OLLAMA_TOKEN;
   return { baseUrl, model, token };
 };
 
@@ -95,10 +95,7 @@ export const OllamaService = {
       tools,
     };
 
-    const isBrowser = typeof window !== 'undefined';
-    const url = isBrowser ? '/ollama/api/chat' : `${baseUrl}/api/chat`;
-
-    const res = await fetch(url, {
+    const res = await fetch(`${baseUrl}/api/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

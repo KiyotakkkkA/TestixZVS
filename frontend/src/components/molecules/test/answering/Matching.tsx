@@ -1,5 +1,6 @@
-import {useMemo} from 'react';
+import { useMemo } from 'react';
 
+import { Selector } from '../../../atoms';
 import type { MatchingQuestion } from '../../../../types/Test';
 
 interface MatchingProps {
@@ -19,18 +20,6 @@ export const Matching = ({
   checkedState = 'none',
   disabled = false,
 }: MatchingProps) => {
-  const usedMeaningByTerm = useMemo(() => {
-    const map = new Map<string, number>();
-    userAnswer.forEach((pair) => {
-      const termKey = pair.substring(0, 1);
-      const meaningIndex = Number(pair.substring(1));
-      if (!Number.isNaN(meaningIndex) && termKey) {
-        map.set(termKey, meaningIndex);
-      }
-    });
-    return map;
-  }, [userAnswer]);
-
   const getSelectedTermForMeaning = (meaningIndex: number): string => {
     const match = userAnswer.find((pair) => Number(pair.substring(1)) === meaningIndex);
     return match ? match.substring(0, 1) : '';
@@ -39,9 +28,7 @@ export const Matching = ({
   const handleMatchChange = (meaningIndex: number, nextTerm: string) => {
     if (disabled) return;
 
-    const next = userAnswer
-      .filter((pair) => Number(pair.substring(1)) !== meaningIndex)
-      .filter((pair) => (nextTerm ? pair.substring(0, 1) !== nextTerm : true));
+    const next = userAnswer.filter((pair) => Number(pair.substring(1)) !== meaningIndex);
 
     if (nextTerm) {
       next.push(`${nextTerm}${meaningIndex}`);
@@ -107,33 +94,17 @@ export const Matching = ({
                   }
                 >
                   <p className="text-sm text-green-700 mb-2">{meaning}</p>
-                  <select
+                  <Selector
                     value={selectedTerm}
-                    onChange={(e) => handleMatchChange(idx, e.target.value)}
+                    placeholder="Выберите термин..."
+                    onChange={(value) => handleMatchChange(idx, value)}
                     disabled={disabled}
-                    className={
-                      `w-full px-3 py-2 rounded bg-white text-sm focus:outline-none ` +
-                      (checkedState === 'wrong'
-                        ? showWrong
-                          ? 'border border-rose-300 focus:border-rose-400'
-                          : isRowCorrect
-                          ? 'border border-emerald-300 focus:border-emerald-400'
-                          : 'border border-green-300 focus:border-indigo-500'
-                        : 'border border-green-300 focus:border-indigo-500') +
-                      (disabled ? ' opacity-80 cursor-not-allowed' : '')
-                    }
-                  >
-                    <option value="">Выберите термин...</option>
-                    {Object.keys(question.terms).map((term) => (
-                      <option
-                        key={term}
-                        value={term}
-                        disabled={usedMeaningByTerm.has(term) && usedMeaningByTerm.get(term) !== idx}
-                      >
-                        {term}
-                      </option>
-                    ))}
-                  </select>
+                    className="w-full"
+                    options={Object.keys(question.terms).map((term) => ({
+                      value: term,
+                      label: term,
+                    }))}
+                  />
 
                   {revealCorrect && correctTerm ? (
                     <div className="mt-2 text-sm text-gray-700">
