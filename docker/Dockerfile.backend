@@ -1,3 +1,4 @@
+# docker/Dockerfile.backend.prod
 FROM php:8.3-fpm
 
 RUN apt-get update \
@@ -8,6 +9,7 @@ RUN apt-get update \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
+    supervisor \
   && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
@@ -17,13 +19,22 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/backend
 
 COPY backend/composer.json backend/composer.lock ./
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+RUN composer install --no-dev --optimize-autoloader --classmap-authoritative --no-scripts
 
 COPY backend/ ./
 
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-RUN chown -R www-data:www-data /var/www/backend/storage /var/www/backend/bootstrap/cache
+RUN php artisan config:cache \
+  && php artisan route:cache \
+  && php artisan view:cache \
+  && php artisan storage:link
+
+RUN mkdir -p storage/logs storage/framework/{cache,sessions,views} bootstrap/cache \
+  && chown -R www-data storage bootstrap/cache \
+  && chmod -R 775 storage bootstrap/cache
+
+USER www-data
 
 EXPOSE 9000
 CMD ["php-fpm"]
