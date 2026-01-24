@@ -7,10 +7,9 @@ const clampPercent = (n: number): number => {
 };
 
 const getEnv = () => {
-  const baseUrl = process.env.REACT_APP_OLLAMA_BASE_URL;
   const model = process.env.REACT_APP_OLLAMA_MODEL;
   const token = process.env.REACT_APP_OLLAMA_TOKEN;
-  return { baseUrl, model, token };
+  return { model, token };
 };
 
 export const OllamaService = {
@@ -20,7 +19,7 @@ export const OllamaService = {
     userAnswer: string;
     checkMode?: FullAnswerCheckMode;
   }): Promise<FullAnswerModelEvaluation> => {
-    const { baseUrl, model, token } = getEnv();
+    const { model, token } = getEnv();
     if (!model) {
       throw new Error('Ollama model is not configured (REACT_APP_OLLAMA_MODEL)');
     }
@@ -95,7 +94,7 @@ export const OllamaService = {
       tools,
     };
 
-    const res = await fetch(`${baseUrl}/api/chat`, {
+    const res = await fetch(`/ollama/api/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
