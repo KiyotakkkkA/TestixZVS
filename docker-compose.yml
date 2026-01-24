@@ -27,6 +27,8 @@ services:
     working_dir: /var/www/backend
     volumes:
       - ./backend:/var/www/backend
+      - backend-storage:/var/www/backend/storage
+      - backend-cache:/var/www/backend/bootstrap/cache
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
@@ -74,3 +76,5 @@ services:
 
 volumes:
   mysql-data:
+  backend-storage:
+  backend-cache:
