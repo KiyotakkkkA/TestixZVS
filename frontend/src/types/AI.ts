@@ -21,3 +21,28 @@ export type FullAnswerModelEvaluation = {
   scorePercent: number;
   comment: string;
 };
+
+export type AIToolObjectParamProps = {
+  type: 'string' | 'number' | 'boolean' | 'object' | 'array';
+  description?: string;
+  items?: AIToolObjectParams;
+  enum?: Array<string | number>;
+}
+
+export type AIToolObjectParams = {
+  type: 'string' | 'number' | 'boolean' | 'object' | 'array';
+  description?: string;
+  required?: string[];
+  properties?: Record<string, AIToolObjectParamProps>;
+}
+
+export type AIToolFunction = {
+  name: string;
+  description: string;
+  parameters: AIToolObjectParams;
+}
+
+export type AITool = {
+  type: 'function';
+  function: AIToolFunction;
+}

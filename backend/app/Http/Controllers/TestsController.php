@@ -173,6 +173,7 @@ class TestsController extends Controller
             'selectedIndexes' => 'nullable|array',
             'selectedIndexes.*' => 'integer|min:1',
             'questions' => 'required|array|min:1',
+            'replace' => 'nullable|boolean',
             'questions.*.type' => ['required', 'string', Rule::in(['single', 'multiple', 'matching', 'full_answer'])],
             'questions.*.question' => 'nullable|string',
             'questions.*.title' => 'nullable|string',

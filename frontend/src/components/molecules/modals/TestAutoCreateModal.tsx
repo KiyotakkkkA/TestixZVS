@@ -1,11 +1,11 @@
 import { Modal } from '../../atoms';
-import { TestFromJsonFillForm } from '../forms';
+import { TestFromAIFillForm, TestFromJsonFillForm } from '../forms';
 
 interface TestAutoCreateModalProps {
   open: boolean;
   onClose: () => void;
   testId: string;
-  fillBy?: 'json';
+  fillBy?: 'json' | 'ai';
   onCompleted?: () => void;
 }
 
@@ -22,7 +22,7 @@ export const TestAutoCreateModal = ({
       onClose={onClose}
       title={
         <h3 className="text-lg font-semibold text-slate-800">
-          Импорт вопросов
+          {fillBy === 'ai' ? 'Заполнить с помощью ИИ' : 'Импорт вопросов'}
         </h3>
       }
       outsideClickClosing
@@ -30,6 +30,15 @@ export const TestAutoCreateModal = ({
       <div className="space-y-4">
         {fillBy === 'json' ? (
           <TestFromJsonFillForm
+            testId={testId}
+            onSuccess={() => {
+              onCompleted?.();
+              onClose();
+            }}
+          />
+        ) : null}
+        {fillBy === 'ai' ? (
+          <TestFromAIFillForm
             testId={testId}
             onSuccess={() => {
               onCompleted?.();

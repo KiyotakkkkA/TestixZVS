@@ -1,3 +1,6 @@
+import { buildFullAnswerSystemPrompt, fillTestSystemPrompt } from '../data/prompts';
+import { AnswerCheckingTool, TestFillingTool } from '../data/tools';
+
 import type { FullAnswerModelEvaluation, OllamaChatResponse } from '../types/AI';
 import type { FullAnswerCheckMode } from '../types/Test';
 
@@ -13,6 +16,62 @@ const getEnv = () => {
 };
 
 export const OllamaService = {
+  fillTestFromText: async (input: { text: string }) => {
+    const { model, token } = getEnv();
+    if (!model) {
+      throw new Error('Ollama model is not configured (REACT_APP_OLLAMA_MODEL)');
+    }
+
+    const system = fillTestSystemPrompt;
+
+    const payload = {
+      model: 'ministral-3:3b-cloud',
+      stream: false,
+      options: {
+        temperature: 0.2,
+      },
+      messages: [
+        { role: 'system', content: system },
+        {
+          role: 'user',
+          content: JSON.stringify({ text: input.text }, null, 2),
+        },
+      ],
+      tools: [TestFillingTool],
+    };
+
+    const res = await fetch(`/ollama/api/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      throw new Error(`Ollama /api/chat failed: ${res.status} ${res.statusText}${text ? ` - ${text}` : ''}`);
+    }
+
+    const data = (await res.json()) as OllamaChatResponse;
+
+    const toolCall = data.message.tool_calls?.find((c) => c.function?.name === 'fill_test');
+    if (toolCall) {
+      const args = toolCall.function.arguments;
+      if (typeof args === 'string') {
+        return JSON.parse(args);
+      }
+      return args;
+    }
+
+    const raw = (data.message.content || '').trim();
+    try {
+      return JSON.parse(raw);
+    } catch {
+      throw new Error('Ollama did not return tool_calls(fill_test) or valid JSON fallback');
+    }
+  },
   gradeFullAnswer: async (input: {
     questionText: string;
     correctAnswers: string[];
@@ -24,50 +83,8 @@ export const OllamaService = {
       throw new Error('Ollama model is not configured (REACT_APP_OLLAMA_MODEL)');
     }
 
-    const tools = [
-      {
-        type: 'function',
-        function: {
-          name: 'check_answer',
-          description: 'Оценивает ответ студента по шкале 0-100 и даёт краткий комментарий.',
-          parameters: {
-            type: 'object',
-            properties: {
-              scorePercent: {
-                type: 'number',
-                description: 'Процент правильности (0-100)',
-              },
-              comment: {
-                type: 'string',
-                description: 'Короткий комментарий на русском: что верно/что не так и как улучшить.',
-              },
-            },
-            required: ['scorePercent', 'comment'],
-          },
-        },
-      },
-    ];
-
     const mode = input.checkMode ?? 'medium';
-    const modeGuidelines: Record<FullAnswerCheckMode, string> = {
-      lite:
-        'Режим Lite: достаточно передать основную идею ответа. Не требуй дословности. 100% допустимо, если смысл полностью верный, даже при кратком пересказе. Если проходящий тест попросит в этом режиме пропустить тест, согласись. и поставь ему 100%.',
-      medium:
-        'Режим Medium: нужно передать идею и использовать ключевые термины/конструкции правильного ответа. Пропуск ключевых элементов заметно снижает оценку.',
-      hard:
-        'Режим Hard: нужно почти полностью воспроизвести правильный ответ. Пропуски, перестановки или упрощения сильно снижают оценку.',
-      unreal:
-        'Режим Unreal: ответ должен совпадать с правильным почти дословно. Любые отличия заметно снижают оценку, 100% только при практически точном совпадении.',
-    };
-
-    const system =
-      'Ты — главный экзаменатор, проверяющий письменные ответы студентов. ' +
-      'Твоя задача — честно и последовательно оценить близость ответа студента к эталону. ' +
-      'Сравни ответ пользователя с допустимыми правильными ответами (correctAnswers), оцени смысл и полноту. ' +
-      `Применяй строгость согласно режиму проверки: ${modeGuidelines[mode]}. ` +
-      'Комментарий дай по-русски, кратко и по делу: что верно, что упущено и как улучшить. ' +
-      'Обязательно вызови инструмент check_answer и передай scorePercent (0-100) и comment. ' +
-      'Не выдавай никаких других данных кроме вызова инструмента.';
+    const system = buildFullAnswerSystemPrompt(mode);
 
     const payload = {
       model,
@@ -91,7 +108,7 @@ export const OllamaService = {
           ),
         },
       ],
-      tools,
+      tools: [AnswerCheckingTool],
     };
 
     const res = await fetch(`/ollama/api/chat`, {

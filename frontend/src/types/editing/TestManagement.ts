@@ -78,6 +78,7 @@ export type TestAutoFillPayload = {
   questions: JsonQuestionInput[];
   selection?: string;
   selectedIndexes?: number[];
+  replace?: boolean;
 };
 
 export type TestAutoFillResponse = {

@@ -61,7 +61,7 @@ export const TestsListPage = () => {
     );
 
     return (
-        <div className="w-full my-auto">
+        <div className="w-full">
             <div className="mx-auto flex w-full max-w-3xl flex-col space-y-4">
                 <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">

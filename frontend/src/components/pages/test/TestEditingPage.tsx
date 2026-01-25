@@ -19,6 +19,7 @@ export const TestEditingPage = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [deleteTargetIndex, setDeleteTargetIndex] = useState<number | null>(null);
     const [isAutoFillOpen, setIsAutoFillOpen] = useState(false);
+    const [autoFillType, setAutoFillType] = useState<'json' | 'ai'>('json');
 
     const current = questions[currentIndex];
 
@@ -239,7 +240,10 @@ export const TestEditingPage = () => {
                         <Button
                             primary
                             className="w-full px-4 py-2 text-sm"
-                            onClick={() => setIsAutoFillOpen(true)}
+                            onClick={() => {
+                                setAutoFillType('json');
+                                setIsAutoFillOpen(true);
+                            }}
                             disabled={isFetching || isSaving}
                         >
                             Импортировать вопросы
@@ -256,7 +260,10 @@ export const TestEditingPage = () => {
                         <Button
                             successInverted
                             className="w-full px-4 py-2 text-sm"
-                            onClick={() => {}}
+                            onClick={() => {
+                                setAutoFillType('ai');
+                                setIsAutoFillOpen(true);
+                            }}
                             disabled={isFetching || isSaving}
                         >
                             Заполнить с помощью ИИ
@@ -343,7 +350,7 @@ export const TestEditingPage = () => {
                     open={isAutoFillOpen}
                     onClose={() => setIsAutoFillOpen(false)}
                     testId={testId}
-                    fillBy="json"
+                    fillBy={autoFillType}
                     onCompleted={async () => {
                         const refreshed = await getTestById(testId);
                         if (refreshed) {

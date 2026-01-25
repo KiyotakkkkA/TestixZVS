@@ -143,6 +143,46 @@ class TestsRepository
         });
     }
 
+    public function replaceQuestions(string $testId, array $questions): array
+    {
+        return DB::transaction(function () use ($testId, $questions) {
+            $test = Test::with('questions')->findOrFail($testId);
+
+            $changedQuestions = [];
+            foreach ($test->questions as $existing) {
+                $changedQuestions[] = [
+                    'id' => $existing->id,
+                    'title' => $existing->title,
+                    'type' => $existing->type,
+                    'action' => 'removed',
+                ];
+                $existing->delete();
+            }
+
+            foreach ($questions as $item) {
+                $normalizedOptions = $this->normalizeOptions($item['options'] ?? []);
+                $question = $test->questions()->create([
+                    'title' => $item['title'],
+                    'type' => $item['type'],
+                    'options' => $normalizedOptions,
+                ]);
+
+                $changedQuestions[] = [
+                    'id' => $question->id,
+                    'title' => $question->title,
+                    'type' => $question->type,
+                    'action' => 'added',
+                ];
+            }
+
+            $test->total_questions = $test->questions()->count();
+            $test->save();
+            $test->load('questions.files');
+
+            return [$test, $changedQuestions];
+        });
+    }
+
     private function normalizeOptions(?array $options): array
     {
         return [

@@ -147,6 +147,7 @@ class TestsService
     {
         $questions = $payload['questions'] ?? [];
         $selectedIndexes = $payload['selectedIndexes'] ?? [];
+        $replace = (bool) ($payload['replace'] ?? false);
 
         $selected = $this->selectQuestions($questions, $selectedIndexes);
         if (count($selected) === 0) {
@@ -158,7 +159,11 @@ class TestsService
             $normalized[] = $this->mapJsonQuestionToPayload($item);
         }
 
-        [$test, $changedQuestions] = $this->testsRepository->appendQuestions($testId, $normalized);
+        if ($replace) {
+            [$test, $changedQuestions] = $this->testsRepository->replaceQuestions($testId, $normalized);
+        } else {
+            [$test, $changedQuestions] = $this->testsRepository->appendQuestions($testId, $normalized);
+        }
 
         if (count($changedQuestions) > 0) {
             $this->auditService->auditTestUpdated(auth()->user(), $this->mapTestSnapshot($test), $changedQuestions);
