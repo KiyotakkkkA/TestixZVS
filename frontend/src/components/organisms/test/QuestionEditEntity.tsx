@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Icon } from '@iconify/react';
 
 import { Button, InputBig, InputMedia, Selector } from '../../atoms';
 import {
@@ -7,12 +8,14 @@ import {
   MultipleChoiceForm,
   SingleChoiceForm,
 } from '../../molecules/forms/test/editing';
-import { Icon } from '@iconify/react';
+
+import type { TestQuestionPayload } from '../../../types/editing/TestManagement';
 
 export type QuestionDraftType = 'single' | 'multiple' | 'matching' | 'full_answer';
 
 export type QuestionDraft = {
   id?: number;
+  clientId: string;
   type: QuestionDraftType;
   disabled?: boolean;
   question: string;
@@ -31,6 +34,7 @@ export type QuestionDraft = {
   meanings: string[];
   matches: string[];
   answers: string[];
+  lastSavedPayload?: TestQuestionPayload | null;
 };
 
 export type QuestionEditEntityProps = {

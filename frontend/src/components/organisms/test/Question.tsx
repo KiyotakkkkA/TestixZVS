@@ -202,12 +202,12 @@ export const Question: React.FC<QuestionProps> = ({
         })()}
       </div>
 
-      <div className="flex gap-3 pt-6 border-t border-gray-200">
+      <div className="flex flex-col gap-3 pt-6 border-t border-gray-200 md:flex-row">
         <Button
           secondary
           onClick={onPrev}
           disabled={currentQuestionIndex === 0}
-          className="flex-1 px-4 py-3 text-lg font-medium"
+          className="w-full px-4 py-3 text-lg font-medium md:flex-1"
         >
           Назад
         </Button>
@@ -218,7 +218,7 @@ export const Question: React.FC<QuestionProps> = ({
             onClick={() => setHintActive((v) => !v)}
             disabled={!isAnswered}
             className={
-              `flex-1 px-4 py-3 rounded-lg font-semibold transition-all border ` +
+              `w-full px-4 py-3 rounded-lg font-semibold transition-all border md:flex-1 md:order-2 order-3 ` +
               (hintActive
                 ? 'bg-amber-50 border-amber-200 text-amber-800'
                 : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50') +
@@ -238,7 +238,7 @@ export const Question: React.FC<QuestionProps> = ({
             success
             onClick={() => void handleFinish()}
             disabled={!isAnswered || checking}
-            className="flex-1 px-4 py-3 text-lg font-medium"
+            className="w-full px-4 py-3 text-lg font-medium md:flex-1 md:order-3 order-2"
           >
             {checking ? 'Проверяем…' : isCheckAfterAnswer && !isChecked ? 'Проверить' : 'Завершить тест'}
           </Button>
@@ -247,7 +247,7 @@ export const Question: React.FC<QuestionProps> = ({
             primary
             onClick={() => void handleNext()}
             disabled={!isAnswered || checking}
-            className="flex-1 px-4 py-3 text-lg font-medium"
+            className="w-full px-4 py-3 text-lg font-medium md:flex-1 md:order-3 order-2"
           >
             {checking
               ? 'Проверяем…'

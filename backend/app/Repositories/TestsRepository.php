@@ -47,7 +47,7 @@ class TestsRepository
 
             $incoming = collect($payload['questions'] ?? []);
             $existing = $test->questions->keyBy('id');
-            $incomingIds = $incoming->pluck('id')->filter()->map(fn ($id) => (int) $id)->values();
+            $removedIds = collect($payload['removed_question_ids'] ?? [])->map(fn ($id) => (int) $id)->values();
 
             $changedQuestions = [];
 
@@ -72,6 +72,7 @@ class TestsRepository
                             'title' => $question->title,
                             'type' => $question->type,
                             'action' => 'updated',
+                            'client_id' => $item['client_id'] ?? null,
                         ];
                     }
                 } else {
@@ -86,11 +87,12 @@ class TestsRepository
                         'title' => $question->title,
                         'type' => $question->type,
                         'action' => 'added',
+                        'client_id' => $item['client_id'] ?? null,
                     ];
                 }
             }
 
-            $removedIds = $existing->keys()->diff($incomingIds);
+            $deletedCount = 0;
             foreach ($removedIds as $removedId) {
                 $question = $existing->get((int) $removedId);
                 if ($question) {
@@ -101,15 +103,16 @@ class TestsRepository
                         'action' => 'removed',
                     ];
                     $question->delete();
+                    $deletedCount++;
                 }
             }
 
-            $test->total_questions = count($payload['questions'] ?? []);
+            $test->total_questions = $test->questions()->count();
             $test->save();
 
             $test->load('questions.files');
 
-            $hasChanges = $titleChanged || count($changedQuestions) > 0 || count($removedIds) > 0;
+            $hasChanges = $titleChanged || count($changedQuestions) > 0 || $deletedCount > 0;
 
             return [$test, $changedQuestions, $hasChanges];
         });

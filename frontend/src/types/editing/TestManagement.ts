@@ -10,6 +10,7 @@ export interface TestCreationResult {
 
 export type TestQuestionPayload = {
   id?: number;
+  client_id?: string;
   title: string;
   disabled?: boolean;
   type: 'single' | 'multiple' | 'matching' | 'full_answer';
@@ -57,11 +58,21 @@ export type TestDetails = {
 
 export type TestDetailsResponse = {
   test: TestDetails;
+  changedQuestions?: ChangedQuestion[];
 };
 
 export type TestUpdatePayload = {
   title?: string;
-  questions: TestQuestionPayload[];
+  questions?: TestQuestionPayload[];
+  removed_question_ids?: number[];
+};
+
+export type ChangedQuestion = {
+  id: number;
+  title: string;
+  type: string;
+  action: 'added' | 'updated' | 'removed';
+  client_id?: string;
 };
 
 export type JsonQuestionInput = {

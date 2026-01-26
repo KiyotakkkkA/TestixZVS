@@ -123,19 +123,23 @@ class TestsController extends Controller
     {
         $data = $request->validate([
             'title' => 'sometimes|string|max:255',
-            'questions' => 'required|array',
+            'questions' => 'sometimes|array',
             'questions.*.id' => 'nullable|integer',
-            'questions.*.title' => 'required|string',
+            'questions.*.client_id' => 'nullable|string',
+            'questions.*.title' => 'required_with:questions|string',
             'questions.*.disabled' => 'boolean',
-            'questions.*.type' => ['required', 'string', Rule::in(['single', 'multiple', 'matching', 'full_answer'])],
+            'questions.*.type' => ['required_with:questions', 'string', Rule::in(['single', 'multiple', 'matching', 'full_answer'])],
             'questions.*.options' => 'nullable|array',
+            'removed_question_ids' => 'sometimes|array',
+            'removed_question_ids.*' => 'integer',
         ]);
 
         try {
-            [$test] = $this->testsService->updateTest($testId, $data);
+            [$test, $changedQuestions] = $this->testsService->updateTest($testId, $data);
 
             return response()->json([
                 'message' => 'Тест успешно обновлён',
+                'changedQuestions' => $changedQuestions,
                 'test' => [
                     'id' => $test->id,
                     'title' => $test->title,

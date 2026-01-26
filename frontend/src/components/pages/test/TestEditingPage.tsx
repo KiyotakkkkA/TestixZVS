@@ -7,7 +7,7 @@ import { TestAutoCreateModal } from "../../molecules/modals";
 import { QuestionEditEntity } from "../../organisms/test";
 import { useTestManage } from "../../../hooks/editing/useTestManage";
 import { useToasts } from "../../../hooks/useToasts";
-import { createQuestionDraft, mapApiQuestionToDraft, mapDraftToPayload } from "../../../utils/testEditing";
+import { createQuestionDraft, isDraftChanged, isDraftEmpty, mapApiQuestionToDraft, mapDraftToPayload } from "../../../utils/testEditing";
 import { QuestionFilesService } from "../../../services/questionFiles";
 import { TestService } from "../../../services/test";
 
@@ -17,11 +17,13 @@ export const TestEditingPage = () => {
     const [questions, setQuestions] = useState<QuestionDraft[]>([createQuestionDraft()]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [testTitle, setTestTitle] = useState('');
+    const [savedTitle, setSavedTitle] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
     const [deleteTargetIndex, setDeleteTargetIndex] = useState<number | null>(null);
     const [isAutoFillOpen, setIsAutoFillOpen] = useState(false);
     const [autoFillType, setAutoFillType] = useState<'json' | 'ai'>('json');
     const [isDownloadingJson, setIsDownloadingJson] = useState(false);
+    const [removedQuestionIds, setRemovedQuestionIds] = useState<number[]>([]);
 
     const current = questions[currentIndex];
 
@@ -48,10 +50,12 @@ export const TestEditingPage = () => {
             }
 
             setTestTitle(test.title);
+            setSavedTitle(test.title);
             const mapped = test.questions.map(mapApiQuestionToDraft);
             const prepared = mapped.length ? mapped : [createQuestionDraft()];
             setQuestions(prepared);
             setCurrentIndex(0);
+            setRemovedQuestionIds([]);
         };
 
         load();
@@ -87,9 +91,25 @@ export const TestEditingPage = () => {
     const handleSave = async () => {
         if (!testId) return;
 
+        const changedQuestions = questions.filter((draft) => {
+            if (!draft.id) {
+                return !isDraftEmpty(draft);
+            }
+            return isDraftChanged(draft);
+        });
+
+        const hasTitleChange = testTitle.trim() !== savedTitle.trim();
+        const hasRemoved = removedQuestionIds.length > 0;
+
+        if (!hasTitleChange && changedQuestions.length === 0 && !hasRemoved) {
+            toast.info('Нет изменений для сохранения');
+            return;
+        }
+
         const payload = {
-            title: testTitle,
-            questions: questions.map(mapDraftToPayload),
+            title: hasTitleChange ? testTitle : undefined,
+            questions: changedQuestions.map(mapDraftToPayload),
+            removed_question_ids: removedQuestionIds,
         };
 
         const updated = await updateTest(testId, payload);
@@ -99,17 +119,23 @@ export const TestEditingPage = () => {
         }
 
         try {
+            const draftsById = new Map(questions.filter((d) => d.id).map((d) => [d.id as number, d]));
+            const draftsByClientId = new Map(questions.map((d) => [d.clientId, d]));
+
+            const changed = (updated as any)?.changedQuestions ?? [];
+
             await Promise.all(
-                updated.questions.map(async (question, index) => {
-                    const draft = questions[index];
+                changed.map(async (item: any) => {
+                    if (item.action === 'removed') return;
+                    const draft = draftsById.get(item.id) || (item.client_id ? draftsByClientId.get(item.client_id) : undefined);
                     if (!draft) return;
 
                     const deleteIds = draft.removedFileIds ?? [];
                     const newFiles = draft.media ?? [];
 
                     await Promise.all([
-                        ...deleteIds.map((fileId) => QuestionFilesService.delete(question.id, fileId)),
-                        ...(newFiles.length ? [QuestionFilesService.upload(question.id, newFiles)] : []),
+                        ...deleteIds.map((fileId) => QuestionFilesService.delete(item.id, fileId)),
+                        ...(newFiles.length ? [QuestionFilesService.upload(item.id, newFiles)] : []),
                     ]);
                 })
             );
@@ -124,6 +150,8 @@ export const TestEditingPage = () => {
             setQuestions(mapped.length ? mapped : [createQuestionDraft()]);
             setCurrentIndex(0);
             setTestTitle(refreshed.title);
+            setSavedTitle(refreshed.title);
+            setRemovedQuestionIds([]);
         }
 
         toast.success('Изменения сохранены');
@@ -135,6 +163,11 @@ export const TestEditingPage = () => {
 
     const handleConfirmDelete = () => {
         if (deleteTargetIndex === null) return;
+
+        const deleting = questions[deleteTargetIndex];
+        if (deleting?.id) {
+            setRemovedQuestionIds((prev) => Array.from(new Set([...prev, deleting.id as number])));
+        }
 
         setQuestions((prev) => {
             const next = prev.filter((_, idx) => idx !== deleteTargetIndex);
@@ -373,6 +406,8 @@ export const TestEditingPage = () => {
                             setQuestions(mapped.length ? mapped : [createQuestionDraft()]);
                             setCurrentIndex(0);
                             setTestTitle(refreshed.title);
+                            setSavedTitle(refreshed.title);
+                            setRemovedQuestionIds([]);
                         }
                     }}
                 />
