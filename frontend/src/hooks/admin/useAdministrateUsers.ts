@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { AdminService } from '../../services/admin';
 
 import type { User } from '../../types/User';
-import type { AdminPermissionsResponse, RoleOption } from '../../types/admin/AdminUsers';
+import type { AdminPermissionsResponse, AdminUsersFilters, AdminUsersPagination, RoleOption } from '../../types/admin/AdminUsers';
 
 export type AdminCreateUserPayload = {
   name: string;
@@ -20,21 +20,43 @@ export const useAdministrateUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [roles, setRoles] = useState<RoleOption[]>([]);
   const [permissions, setPermissions] = useState<AdminPermissionsResponse['permissions']>({});
+  const [pagination, setPagination] = useState<AdminUsersPagination>({
+    page: 1,
+    per_page: 10,
+    total: 0,
+    last_page: 1,
+  });
+  const [filters, setFilters] = useState<AdminUsersFilters>({
+    search: '',
+    role: '',
+    permissions: [],
+    page: 1,
+    per_page: 10,
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deletingIds, setDeletingIds] = useState<Record<number, boolean>>({});
+
+  const appliedFilters = useMemo(() => ({
+    search: filters.search || undefined,
+    role: filters.role || undefined,
+    permissions: filters.permissions && filters.permissions.length ? filters.permissions : undefined,
+    page: filters.page,
+    per_page: filters.per_page,
+  }), [filters]);
 
   const load = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
       const [usersResp, rolesResp, permsResp] = await Promise.all([
-        AdminService.getUsers(),
+        AdminService.getUsers(appliedFilters),
         AdminService.getRoles(),
         AdminService.getPermissions(),
       ]);
-      setUsers(usersResp.users);
+      setUsers(usersResp.data);
+      setPagination(usersResp.pagination);
       setRoles(rolesResp.roles);
       setPermissions(permsResp.permissions);
     } catch (e: any) {
@@ -42,11 +64,22 @@ export const useAdministrateUsers = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [appliedFilters]);
 
   useEffect(() => {
     load();
   }, [load]);
+
+  const updateFilters = useCallback((next: Partial<AdminUsersFilters>) => {
+    setFilters((prev) => {
+      const updated = { ...prev, ...next };
+      const shouldResetPage = Object.keys(next).some((key) => key !== 'page' && key !== 'per_page');
+      if (shouldResetPage) {
+        updated.page = 1;
+      }
+      return updated;
+    });
+  }, []);
 
   const updateUserRoles = useCallback(async (userId: number, nextRoles: string[]) => {
     try {
@@ -105,6 +138,9 @@ export const useAdministrateUsers = () => {
     users,
     roles,
     permissions,
+    pagination,
+    filters,
+    updateFilters,
     isLoading,
     isAdding,
     error,

@@ -3,11 +3,13 @@ import { api } from './api';
 import type { User } from '../types/User';
 import type { AdminAuditFilters, AdminAuditResponse } from '../types/admin/AdminAudit';
 import type { AdminStatisticsFilters, AdminStatisticsResponse } from '../types/admin/AdminStatistics';
-import type { AdminCreateUserPayload, AdminPermissionsResponse, AdminRolesResponse, AdminUsersResponse } from '../types/admin/AdminUsers';
+import type { AdminCreateUserPayload, AdminPermissionsResponse, AdminRolesResponse, AdminUsersFilters, AdminUsersResponse } from '../types/admin/AdminUsers';
 
 export const AdminService = {
-  getUsers: async (): Promise<AdminUsersResponse> => {
-    const { data } = await api.get<AdminUsersResponse>('/admin/users');
+  getUsers: async (filters: AdminUsersFilters = {}): Promise<AdminUsersResponse> => {
+    const { data } = await api.get<AdminUsersResponse>('/admin/users', {
+      params: filters,
+    });
     return data;
   },
 

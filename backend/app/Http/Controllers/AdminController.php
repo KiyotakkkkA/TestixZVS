@@ -20,11 +20,26 @@ class AdminController extends Controller
         $this->adminStatisticsService = $adminStatisticsService;
     }
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        return response([
-            'users' => $this->adminUsersService->listUsers(),
-        ], 200);
+        $validated = $request->validate([
+            'search' => ['nullable', 'string', 'max:255'],
+            'role' => ['nullable', 'string', Rule::exists('roles', 'name')],
+            'permissions' => ['nullable', 'array'],
+            'permissions.*' => ['string', Rule::exists('permissions', 'name')],
+            'page' => ['nullable', 'integer', 'min:1'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
+
+        $data = $this->adminUsersService->listUsers([
+            'search' => $validated['search'] ?? null,
+            'role' => $validated['role'] ?? null,
+            'permissions' => $validated['permissions'] ?? [],
+            'page' => $validated['page'] ?? 1,
+            'per_page' => $validated['per_page'] ?? 10,
+        ]);
+
+        return response($data, 200);
     }
 
     public function roles(): Response

@@ -154,8 +154,8 @@ export const TestPage = () => {
                         onEvaluateAnswer={evaluateAnswer}
                         onNext={nextQuestion}
                         onPrev={prevQuestion}
-                        onFinish={() => {
-                            finishTest();
+                        onFinish={async () => {
+                            await finishTest();
                             navigate(`/tests/${testId}/results`);
                         }}
                         onCheckGlowChange={setCheckGlow}

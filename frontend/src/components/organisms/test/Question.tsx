@@ -16,7 +16,7 @@ interface QuestionProps {
   onEvaluateAnswer?: (question: TestQuestion, userAnswer: number[] | string[]) => Promise<AnswerEvaluation>;
   onNext: () => void;
   onPrev: () => void;
-  onFinish: () => void;
+  onFinish: () => void | Promise<void>;
   settings: TestSettings | null;
   onCheckGlowChange?: (state: 'none' | 'correct' | 'wrong') => void;
   timeLeftSeconds?: number | null;
@@ -130,7 +130,7 @@ export const Question: React.FC<QuestionProps> = ({
       return;
     }
 
-    onFinish();
+    await onFinish();
   };
 
   return (

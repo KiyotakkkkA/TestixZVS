@@ -24,14 +24,60 @@ class AdminUsersService
         $this->auditService = $auditService;
     }
 
-    public function listUsers(): array
+    public function listUsers(array $filters = []): array
     {
-        return User::query()
-            ->orderBy('id')
-            ->get()
+        $search = $filters['search'] ?? null;
+        $role = $filters['role'] ?? null;
+        $permissions = $filters['permissions'] ?? [];
+        $page = $filters['page'] ?? 1;
+        $perPage = $filters['per_page'] ?? 10;
+
+        $query = User::query()->with(['roles.permissions', 'permissions']);
+
+        if ($search) {
+            $query->where(function ($builder) use ($search) {
+                $builder
+                    ->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        if ($role) {
+            $query->whereHas('roles', function ($builder) use ($role) {
+                $builder->where('name', $role);
+            });
+        }
+
+        if (!empty($permissions)) {
+            foreach ($permissions as $permission) {
+                $query->where(function ($builder) use ($permission) {
+                    $builder
+                        ->whereHas('permissions', function ($permQuery) use ($permission) {
+                            $permQuery->where('name', $permission);
+                        })
+                        ->orWhereHas('roles.permissions', function ($rolePermQuery) use ($permission) {
+                            $rolePermQuery->where('name', $permission);
+                        });
+                });
+            }
+        }
+
+        $paginator = $query->orderBy('id')->paginate($perPage, ['*'], 'page', $page);
+
+        $users = $paginator->getCollection()
             ->map(fn (User $user) => $this->mapUser($user))
             ->values()
             ->all();
+
+        return [
+            'data' => $users,
+            'pagination' => [
+                'page' => $paginator->currentPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+                'last_page' => $paginator->lastPage(),
+            ],
+        ];
     }
 
     public function listRoles(): array

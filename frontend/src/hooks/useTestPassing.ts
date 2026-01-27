@@ -227,7 +227,7 @@ export const useTestPassing = (testId: string | null, questions: TestQuestion[])
     StorageService.saveSession(updatedSession);
   }, [session, activeQuestions.length]);
 
-  const finishTest = useCallback(() => {
+  const finishTest = useCallback(async () => {
     if (!session) return;
 
     const now = Date.now();
@@ -339,13 +339,17 @@ export const useTestPassing = (testId: string | null, questions: TestQuestion[])
     };
 
     if (finalResult) {
-      TestService.saveTestCompletionStatistics({
-        test_id: session.testId,
-        right_answers: finalResult.correctAnswers,
-        wrong_answers: finalResult.totalQuestions - finalResult.correctAnswers,
-        percentage: finalResult.percentage,
-        time_taken: finalResult.timeSpent,
-      })
+      try {
+        await TestService.saveTestCompletionStatistics({
+          test_id: session.testId,
+          right_answers: finalResult.correctAnswers,
+          wrong_answers: finalResult.totalQuestions - finalResult.correctAnswers,
+          percentage: finalResult.percentage,
+          time_taken: finalResult.timeSpent,
+        });
+      } catch (e) {
+        console.error("Failed to save test completion statistics:", e);
+      }
     }
 
     setResult(finalResult);

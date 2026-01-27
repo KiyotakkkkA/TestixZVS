@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { UserCard } from '../../molecules/cards';
 import { authStore } from '../../../stores/authStore';
 import { ROLE_RANKS } from '../../../data/admin';
-import { Modal, Button, Spinner } from '../../atoms';
+import { ArrayAutoFillSelector, Button, InputSmall, Modal, Selector, Spinner } from '../../atoms';
 import { RegisterForm } from '../../molecules/forms';
 import { useAdministrateUsers } from '../../../hooks/admin/useAdministrateUsers';
 import { useToasts } from '../../../hooks/useToasts';
@@ -16,6 +16,9 @@ export const AdminUsersPage = () => {
     users,
     roles,
     permissions,
+    pagination,
+    filters,
+    updateFilters,
     isLoading,
     isAdding,
     error,
@@ -25,6 +28,8 @@ export const AdminUsersPage = () => {
     updateUserRoles,
     updateUserPermissions,
   } = useAdministrateUsers();
+
+  const [searchValue, setSearchValue] = useState(filters.search ?? '');
 
   const canAssignPermissions = authStore.hasPermission('assign permissions');
   const canAddUsers = authStore.hasPermission('add users');
@@ -44,6 +49,30 @@ export const AdminUsersPage = () => {
     });
     return map;
   }, [roles]);
+
+  const roleOptions = useMemo(
+    () => [
+      { value: '', label: 'Все роли' },
+      ...roles.map((role) => ({ value: role.name, label: role.name })),
+    ],
+    [roles]
+  );
+
+  const permissionOptions = useMemo(
+    () => Object.values(permissions).map((perm) => ({
+      value: perm.name,
+      label: perm.name,
+      description: perm.description,
+    })),
+    [permissions]
+  );
+
+  useEffect(() => {
+    const handle = window.setTimeout(() => {
+      updateFilters({ search: searchValue });
+    }, 300);
+    return () => window.clearTimeout(handle);
+  }, [searchValue, updateFilters]);
 
   const handleSaveRoles = async (userId: number, nextRoles: string[]) => {
     try {
@@ -82,6 +111,11 @@ export const AdminUsersPage = () => {
     setDeleteTarget(null);
   };
 
+  const handleResetFilters = () => {
+    setSearchValue('');
+    updateFilters({ search: '', role: '', permissions: [], page: 1 });
+  };
+
   const handleCreateUser = async (payload: {
     name: string;
     email: string;
@@ -106,25 +140,6 @@ export const AdminUsersPage = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="w-full rounded-lg border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">
-        <div className="flex items-center justify-center gap-2">
-          <Spinner className="h-4 w-4" />
-          Загружаем пользователей...
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="w-full rounded-lg border border-rose-200 bg-rose-50 p-6 text-sm text-rose-700">
-        {error}
-      </div>
-    );
-  }
-
   return (
     <div className="w-full space-y-6">
       <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
@@ -141,8 +156,94 @@ export const AdminUsersPage = () => {
         )}
       </div>
 
-      <div className="grid gap-4">
-        {users.map((user) => {
+      <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div>
+              <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Поиск</div>
+              <InputSmall
+                value={searchValue}
+                onChange={(event) => setSearchValue(event.target.value)}
+                placeholder="Имя или email"
+                className="p-2"
+              />
+            </div>
+            <div>
+              <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Роль</div>
+              <Selector
+                value={filters.role ?? ''}
+                options={roleOptions}
+                onChange={(value) => updateFilters({ role: value })}
+              />
+            </div>
+            <div>
+              <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Права</div>
+              <ArrayAutoFillSelector
+                options={permissionOptions}
+                value={filters.permissions ?? []}
+                onChange={(value) => updateFilters({ permissions: value })}
+                placeholder="Выберите права"
+              />
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+            <Button
+              secondary
+              className="w-full px-4 py-2 text-sm sm:w-auto"
+              disabled={pagination.page <= 1 || isLoading}
+              onClick={() => updateFilters({ page: pagination.page - 1 })}
+            >
+              Назад
+            </Button>
+            <div className="text-center text-sm text-slate-500 sm:text-left">
+              Страница <span className="font-semibold text-slate-700">{pagination.page}</span> из{' '}
+              <span className="font-semibold text-slate-700">{pagination.last_page}</span>
+            </div>
+            <Button
+              primary
+              className="w-full px-4 py-2 text-sm sm:w-auto"
+              disabled={pagination.page >= pagination.last_page || isLoading}
+              onClick={() => updateFilters({ page: pagination.page + 1 })}
+            >
+              Вперёд
+            </Button>
+          </div>
+          <Button
+            dangerInverted
+            className="w-full px-4 py-2 text-sm sm:w-auto"
+            onClick={handleResetFilters}
+          >
+            Сбросить фильтры
+          </Button>
+        </div>
+      </div>
+
+      {isLoading && (
+        <div className="w-full rounded-lg border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">
+          <div className="flex items-center justify-center gap-2">
+            <Spinner className="h-4 w-4" />
+            Загружаем пользователей...
+          </div>
+        </div>
+      )}
+
+      {!isLoading && error && (
+        <div className="w-full rounded-lg border border-rose-200 bg-rose-50 p-6 text-sm text-rose-700">
+          {error}
+        </div>
+      )}
+
+      {!isLoading && !error && users.length === 0 && (
+        <div className="w-full rounded-lg border border-slate-200 bg-white p-6 text-center text-sm text-slate-500">
+          Пользователи не найдены.
+        </div>
+      )}
+
+      {!isLoading && !error && users.length > 0 && (
+        <div className="grid gap-4">
+          {users.map((user) => {
           const isSelf = authStore.user?.id === user.id;
           const targetRank = Math.max(
             -1,
@@ -176,8 +277,9 @@ export const AdminUsersPage = () => {
             canAssignPermissions={canAssignPermissions}
           />
           );
-        })}
-      </div>
+          })}
+        </div>
+      )}
       <Modal
         open={Boolean(deleteTarget)}
         onClose={() => setDeleteTarget(null)}

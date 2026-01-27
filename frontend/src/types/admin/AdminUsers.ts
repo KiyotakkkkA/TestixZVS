@@ -6,7 +6,23 @@ export type RoleOption = {
 };
 
 export type AdminUsersResponse = {
-  users: User[];
+  data: User[];
+  pagination: AdminUsersPagination;
+};
+
+export type AdminUsersPagination = {
+  page: number;
+  per_page: number;
+  total: number;
+  last_page: number;
+};
+
+export type AdminUsersFilters = {
+  search?: string;
+  role?: string;
+  permissions?: string[];
+  page?: number;
+  per_page?: number;
 };
 
 export type AdminRolesResponse = {

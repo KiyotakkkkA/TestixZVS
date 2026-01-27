@@ -9,6 +9,7 @@ export { InputCheckbox } from './InputCheckbox';
 export { Spinner } from './Spinner';
 export { Toast } from './Toast';
 export { Selector } from './Selector';
+export { ArrayAutoFillSelector } from './ArrayAutoFillSelector';
 export { InputDate } from './InputDate';
 export { InputMedia } from './InputMedia';
 export { ProgressBar } from './ProgressBar';
