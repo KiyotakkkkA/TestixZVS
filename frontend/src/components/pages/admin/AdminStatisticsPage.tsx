@@ -13,6 +13,9 @@ export const AdminStatisticsPage = () => {
   const [viewMode, setViewMode] = useState<StatisticsViewMode>('general');
   const { data, isLoading, error, filters, updateFilters } = useAdminStatistics();
 
+  const finished = data?.finished ?? { summary: { total_completions: 0, average_percentage: 0, unique_tests: 0 }, series: [] };
+  const started = data?.started ?? { summary: { total_completions: 0, average_percentage: 0, unique_tests: 0 }, series: [] };
+
   const percentOptions = useMemo(
     () => [
       { value: '', label: 'Любой процент' },
@@ -24,9 +27,6 @@ export const AdminStatisticsPage = () => {
     ],
     []
   );
-
-  const summary = data?.summary ?? { total_completions: 0, average_percentage: 0, unique_tests: 0 };
-  const series = data?.series ?? [];
 
   const canShiftRange = Boolean(filters.date_from && filters.date_to);
 
@@ -167,7 +167,22 @@ export const AdminStatisticsPage = () => {
       )}
 
       {!isLoading && !error && viewMode === 'general' && (
-        <TestsStatisticsGeneral series={series} summary={summary} />
+        <div className="space-y-6">
+          <TestsStatisticsGeneral
+            series={finished.series}
+            summary={finished.summary}
+            title="Тестов завершено"
+            totalLabel="Всего завершений"
+            tooltipTotalLabel="Всего завершений"
+          />
+          <TestsStatisticsGeneral
+            series={started.series}
+            summary={started.summary}
+            title="Тестов начато"
+            totalLabel="Всего начато"
+            tooltipTotalLabel="Всего начато"
+          />
+        </div>
       )}
 
       {!isLoading && !error && viewMode === 'target' && (

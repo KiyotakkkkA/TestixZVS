@@ -129,6 +129,7 @@ export type PublicTestResponse = {
 
 export type TestCompletitionStatisticsPayload = {
   test_id: string;
+  type: 'started' | 'finished';
   right_answers: number;
   wrong_answers: number;
   percentage: number;

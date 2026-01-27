@@ -12,6 +12,7 @@ class TestStatistic extends Model
     protected $fillable = [
         'test_id',
         'user_id',
+        'type',
         'right_answers',
         'wrong_answers',
         'percentage',

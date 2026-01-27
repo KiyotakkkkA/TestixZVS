@@ -23,7 +23,12 @@ export type AdminStatisticsSummary = {
   unique_tests: number;
 };
 
-export type AdminStatisticsResponse = {
+export type AdminStatisticsBlock = {
   summary: AdminStatisticsSummary;
   series: AdminStatisticsDay[];
+};
+
+export type AdminStatisticsResponse = {
+  finished: AdminStatisticsBlock;
+  started: AdminStatisticsBlock;
 };

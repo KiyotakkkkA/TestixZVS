@@ -5,6 +5,10 @@ import type { AdminStatisticsDay, AdminStatisticsSummary } from '../../../types/
 export type TestsStatisticsGeneralProps = {
   series: AdminStatisticsDay[];
   summary: AdminStatisticsSummary;
+  title?: string;
+  subtitle?: string;
+  totalLabel?: string;
+  tooltipTotalLabel?: string;
 };
 
 const formatShortDate = (value: string) =>
@@ -13,22 +17,29 @@ const formatShortDate = (value: string) =>
 const formatFullDate = (value: string) =>
   new Date(value).toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric' });
 
-export const TestsStatisticsGeneral = ({ series, summary }: TestsStatisticsGeneralProps) => {
+export const TestsStatisticsGeneral = ({
+  series,
+  summary,
+  title = 'Прохождения тестов',
+  subtitle = 'Динамика прохождений и популярные тесты по дням.',
+  totalLabel = 'Всего прохождений',
+  tooltipTotalLabel = 'Всего прохождений',
+}: TestsStatisticsGeneralProps) => {
   const maxTotal = useMemo(() => Math.max(1, ...series.map((item) => item.total)), [series]);
 
   return (
     <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <div className="text-lg font-semibold text-slate-800">Прохождения тестов</div>
-          <div className="text-sm text-slate-500">Динамика прохождений и популярные тесты по дням.</div>
+          <div className="text-lg font-semibold text-slate-800">{title}</div>
+          <div className="text-sm text-slate-500">{subtitle}</div>
         </div>
         <div className="text-xs text-slate-400">Наведи на столбец, чтобы увидеть детали</div>
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         <div className="rounded-lg border border-slate-100 bg-slate-50 p-4">
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">Всего прохождений</div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">{totalLabel}</div>
           <div className="mt-2 text-2xl font-semibold text-slate-800">{summary.total_completions}</div>
         </div>
         <div className="rounded-lg border border-slate-100 bg-slate-50 p-4">
@@ -55,7 +66,7 @@ export const TestsStatisticsGeneral = ({ series, summary }: TestsStatisticsGener
                 <div key={day.date} className="group relative flex h-full flex-1 flex-col justify-end">
                   <div className="absolute -top-2 left-1/2 z-10 hidden w-64 -translate-x-1/2 rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-600 shadow-lg group-hover:block">
                     <div className="text-sm font-semibold text-slate-800">{formatFullDate(day.date)}</div>
-                    <div className="mt-1">Всего прохождений: <span className="font-semibold text-slate-800">{day.total}</span></div>
+                    <div className="mt-1">{tooltipTotalLabel}: <span className="font-semibold text-slate-800">{day.total}</span></div>
                     <div className="mt-1">Средний процент: <span className="font-semibold text-slate-800">{day.avg_percentage}%</span></div>
                     <div className="mt-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Тесты</div>
                     <div className="mt-1 max-h-28 space-y-1 overflow-auto">

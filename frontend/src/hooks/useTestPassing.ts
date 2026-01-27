@@ -149,6 +149,16 @@ export const useTestPassing = (testId: string | null, questions: TestQuestion[])
     );
     setSession(newSession);
     StorageService.saveSession(newSession);
+
+    TestService.saveTestCompletionStatistics({
+      test_id: testId,
+      type: 'started',
+      right_answers: 0,
+      wrong_answers: 0,
+      percentage: 0,
+    }).catch((e) => {
+      console.error('Failed to save test start statistics:', e);
+    });
   }, [testId, getDefaultSettings, settingsDraft]);
 
   const updateSettings = useCallback((partial: Partial<TestSettings>) => {
@@ -342,6 +352,7 @@ export const useTestPassing = (testId: string | null, questions: TestQuestion[])
       try {
         await TestService.saveTestCompletionStatistics({
           test_id: session.testId,
+          type: 'finished',
           right_answers: finalResult.correctAnswers,
           wrong_answers: finalResult.totalQuestions - finalResult.correctAnswers,
           percentage: finalResult.percentage,

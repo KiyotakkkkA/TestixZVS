@@ -18,6 +18,7 @@ class StatisticsController extends Controller
     {
         $data = $request->validate([
             'test_id' => 'required|uuid|exists:tests,id',
+            'type' => 'required|string|in:started,finished',
             'right_answers' => 'required|integer|min:0',
             'wrong_answers' => 'required|integer|min:0',
             'percentage' => 'required|numeric|min:0|max:100',

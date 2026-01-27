@@ -13,6 +13,7 @@ class AdminStatisticsService
         TestStatistic::create([
             'test_id' => $payload['test_id'],
             'user_id' => auth('sanctum')->user()?->id ?? null,
+            'type' => $payload['type'] ?? 'finished',
             'right_answers' => $payload['right_answers'],
             'wrong_answers' => $payload['wrong_answers'],
             'percentage' => $payload['percentage'],
@@ -22,7 +23,18 @@ class AdminStatisticsService
 
     public function getGeneralStatistics(array $filters): array
     {
-        $applyFilters = function (Builder $query) use ($filters): Builder {
+        $finished = $this->buildStatistics($filters, 'finished', true);
+        $started = $this->buildStatistics($filters, 'started', false);
+
+        return [
+            'finished' => $finished,
+            'started' => $started,
+        ];
+    }
+
+    private function buildStatistics(array $filters, string $type, bool $applyMinPercentage): array
+    {
+        $applyFilters = function (Builder $query) use ($filters, $applyMinPercentage): Builder {
             if (!empty($filters['date_from'])) {
                 $from = Carbon::parse($filters['date_from'])->startOfDay();
                 $query->where('created_at', '>=', $from);
@@ -33,19 +45,19 @@ class AdminStatisticsService
                 $query->where('created_at', '<=', $to);
             }
 
-            if (isset($filters['min_percentage']) && $filters['min_percentage'] !== '') {
+            if ($applyMinPercentage && isset($filters['min_percentage']) && $filters['min_percentage'] !== '') {
                 $query->where('percentage', '>=', $filters['min_percentage']);
             }
 
             return $query;
         };
 
-        $summaryQuery = $applyFilters(TestStatistic::query());
+        $summaryQuery = $applyFilters(TestStatistic::query()->where('type', $type));
         $totalCompletions = (int) $summaryQuery->count();
         $averagePercentage = (float) ($summaryQuery->avg('percentage') ?? 0);
         $uniqueTests = (int) $summaryQuery->distinct('test_id')->count('test_id');
 
-        $totalsQuery = $applyFilters(TestStatistic::query());
+        $totalsQuery = $applyFilters(TestStatistic::query()->where('type', $type));
         $dailyTotals = $totalsQuery
             ->selectRaw('DATE(created_at) as date')
             ->selectRaw('COUNT(*) as total')
@@ -54,7 +66,7 @@ class AdminStatisticsService
             ->orderBy('date')
             ->get();
 
-        $breakdownQuery = $applyFilters(TestStatistic::query())->with('test:id,title');
+        $breakdownQuery = $applyFilters(TestStatistic::query()->where('type', $type))->with('test:id,title');
         $dailyTests = $breakdownQuery
             ->selectRaw('DATE(created_at) as date')
             ->addSelect('test_id')
