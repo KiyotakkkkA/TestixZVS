@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AuthLoginRequest;
+use App\Http\Requests\AuthRegisterRequest;
 use App\Services\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -15,17 +17,9 @@ class AuthController extends Controller
         $this->authService = $authService;
     }
 
-    public function register(Request $request): Response
+    public function register(AuthRegisterRequest $request): Response
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-        ], [
-            'email.unique' => 'Email уже зарегистрирован',
-            'password.confirmed' => 'Пароли не совпадают',
-            'password.min' => 'Пароль должен быть минимум 8 символов',
-        ]);
+        $validated = $request->validated();
 
         $result = $this->authService->register($validated);
 
@@ -37,13 +31,9 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function login(Request $request): Response
+    public function login(AuthLoginRequest $request): Response
     {
-        $validated = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
-            'rememberMe' => 'required|boolean',
-        ]);
+        $validated = $request->validated();
 
         $result = $this->authService->login($validated);
 

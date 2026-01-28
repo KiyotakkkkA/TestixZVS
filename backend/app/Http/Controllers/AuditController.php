@@ -2,32 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AuditIndexRequest;
 use App\Models\Audit;
-use App\Services\Admin\AdminAuditService;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Validation\Rule;
 
 class AuditController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(AuditIndexRequest $request): Response
     {
-        $validated = $request->validate([
-            'action_type' => ['nullable', 'string', Rule::in([
-                AdminAuditService::ACTION_ADMIN_ROLES_CHANGE,
-                AdminAuditService::ACTION_ADMIN_PERMISSIONS_CHANGE,
-                AdminAuditService::ACTION_ADMIN_USER_ADD,
-                AdminAuditService::ACTION_ADMIN_USER_REMOVE,
-                AdminAuditService::ACTION_TEST_CREATED,
-                AdminAuditService::ACTION_TEST_UPDATED,
-                AdminAuditService::ACTION_TEST_DELETED,
-            ])],
-            'date_from' => ['nullable', 'date'],
-            'date_to' => ['nullable', 'date'],
-            'page' => ['nullable', 'integer', 'min:1'],
-            'per_page' => ['nullable', 'integer', 'min:1', 'max:50'],
-        ]);
+        $validated = $request->validated();
 
         $query = Audit::query()
             ->with('user')

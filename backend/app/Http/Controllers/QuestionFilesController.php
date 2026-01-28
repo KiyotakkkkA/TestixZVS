@@ -2,22 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\QuestionFilesStoreRequest;
 use App\Models\Test\Question;
 use App\Models\Test\QuestionFile;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\UploadedFile;
 
 class QuestionFilesController extends Controller
 {
-    public function store(Request $request, int $questionId)
+    public function store(QuestionFilesStoreRequest $request, int $questionId)
     {
         $question = Question::findOrFail($questionId);
 
-        $request->validate([
-            'files' => ['required'],
-            'files.*' => ['file', 'max:10240', 'mimes:jpg,jpeg,png,svg,webp,gif'],
-        ]);
+        $request->validated();
 
         $uploaded = $request->file('files', []);
         if ($uploaded instanceof UploadedFile) {

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\StatisticsSaveTestCompletionRequest;
 use App\Services\Admin\AdminStatisticsService;
 
 class StatisticsController extends Controller
@@ -14,16 +14,9 @@ class StatisticsController extends Controller
         $this->adminStatisticsService = $adminStatisticsService;
     }
 
-    public function saveTetsCompletionStatistics(Request $request)
+    public function saveTetsCompletionStatistics(StatisticsSaveTestCompletionRequest $request)
     {
-        $data = $request->validate([
-            'test_id' => 'required|uuid|exists:tests,id',
-            'type' => 'required|string|in:started,finished',
-            'right_answers' => 'required|integer|min:0',
-            'wrong_answers' => 'required|integer|min:0',
-            'percentage' => 'required|numeric|min:0|max:100',
-            'time_taken' => 'nullable',
-        ]);
+        $data = $request->validated();
 
         $this->adminStatisticsService->testStatistics($data);
 

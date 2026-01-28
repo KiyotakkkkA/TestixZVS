@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Admin\AdminStatisticsRequest;
+use App\Http\Requests\Admin\AdminStoreUserRequest;
+use App\Http\Requests\Admin\AdminUpdatePermissionsRequest;
+use App\Http\Requests\Admin\AdminUpdateRolesRequest;
+use App\Http\Requests\Admin\AdminUsersIndexRequest;
 use App\Models\User;
 use App\Services\Admin\AdminUsersService;
 use App\Services\Admin\AdminStatisticsService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
@@ -20,16 +24,9 @@ class AdminController extends Controller
         $this->adminStatisticsService = $adminStatisticsService;
     }
 
-    public function index(Request $request): Response
+    public function index(AdminUsersIndexRequest $request): Response
     {
-        $validated = $request->validate([
-            'search' => ['nullable', 'string', 'max:255'],
-            'role' => ['nullable', 'string', Rule::exists('roles', 'name')],
-            'permissions' => ['nullable', 'array'],
-            'permissions.*' => ['string', Rule::exists('permissions', 'name')],
-            'page' => ['nullable', 'integer', 'min:1'],
-            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
-        ]);
+        $validated = $request->validated();
 
         $data = $this->adminUsersService->listUsers([
             'search' => $validated['search'] ?? null,
@@ -56,12 +53,9 @@ class AdminController extends Controller
         ], 200);
     }
 
-    public function updateRoles(Request $request, User $user): Response
+    public function updateRoles(AdminUpdateRolesRequest $request, User $user): Response
     {
-        $validated = $request->validate([
-            'roles' => ['required', 'array'],
-            'roles.*' => ['string', Rule::exists('roles', 'name')],
-        ]);
+        $validated = $request->validated();
 
         $updated = $this->adminUsersService->updateRoles($request->user(), $user, $validated['roles']);
 
@@ -70,12 +64,9 @@ class AdminController extends Controller
         ], 200);
     }
 
-    public function updatePermissions(Request $request, User $user): Response
+    public function updatePermissions(AdminUpdatePermissionsRequest $request, User $user): Response
     {
-        $validated = $request->validate([
-            'perms' => ['required', 'array'],
-            'perms.*' => ['string', Rule::exists('permissions', 'name')],
-        ]);
+        $validated = $request->validated();
 
         $updated = $this->adminUsersService->updatePermissions($request->user(), $user, $validated['perms']);
 
@@ -84,18 +75,9 @@ class AdminController extends Controller
         ], 200);
     }
 
-    public function store(Request $request): Response
+    public function store(AdminStoreUserRequest $request): Response
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['nullable', 'string', Rule::exists('roles', 'name')],
-        ], [
-            'email.unique' => 'Email уже зарегистрирован',
-            'password.confirmed' => 'Пароли не совпадают',
-            'password.min' => 'Пароль должен быть минимум 8 символов',
-        ]);
+        $validated = $request->validated();
 
         $user = $this->adminUsersService->createUser($request->user(), $validated);
 
@@ -113,13 +95,9 @@ class AdminController extends Controller
         ], 200);
     }
 
-    public function statistics(Request $request): Response
+    public function statistics(AdminStatisticsRequest $request): Response
     {
-        $validated = $request->validate([
-            'date_from' => ['nullable', 'date'],
-            'date_to' => ['nullable', 'date'],
-            'min_percentage' => ['nullable', 'numeric', 'min:0', 'max:100'],
-        ]);
+        $validated = $request->validated();
 
         $data = $this->adminStatisticsService->getGeneralStatistics($validated);
 

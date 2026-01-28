@@ -4,22 +4,15 @@ namespace App\Services\Admin;
 
 use App\Models\Audit;
 use App\Models\User;
+use App\Enum\AuditStatuses;
 
 class AdminAuditService
 {
-    public const ACTION_ADMIN_ROLES_CHANGE = 'admin_roles_change';
-    public const ACTION_ADMIN_PERMISSIONS_CHANGE = 'admin_permissions_change';
-    public const ACTION_ADMIN_USER_ADD = 'admin_user_add';
-    public const ACTION_ADMIN_USER_REMOVE = 'admin_user_remove';
-    public const ACTION_TEST_CREATED = 'test_created';
-    public const ACTION_TEST_UPDATED = 'test_updated';
-    public const ACTION_TEST_DELETED = 'test_deleted';
-
     public function auditAdminRolesChange(User $actor, User $target, array $oldRoles, array $newRoles): void
     {
         $this->storeAudit(
             $actor,
-            self::ACTION_ADMIN_ROLES_CHANGE,
+            AuditStatuses::ACTION_ADMIN_ROLES_CHANGE->value,
             [
                 'user' => $this->mapUserSnapshot($target),
                 'roles' => array_values($oldRoles),
@@ -36,7 +29,7 @@ class AdminAuditService
     {
         $this->storeAudit(
             $actor,
-            self::ACTION_ADMIN_PERMISSIONS_CHANGE,
+            AuditStatuses::ACTION_ADMIN_PERMISSIONS_CHANGE->value,
             [
                 'user' => $this->mapUserSnapshot($target),
                 'permissions' => array_values($oldPerms),
@@ -53,7 +46,7 @@ class AdminAuditService
     {
         $this->storeAudit(
             $actor,
-            self::ACTION_ADMIN_USER_ADD,
+            AuditStatuses::ACTION_ADMIN_USER_ADD->value,
             null,
             [
                 'user' => $this->mapUserSnapshot($createdUser),
@@ -68,7 +61,7 @@ class AdminAuditService
     {
         $this->storeAudit(
             $actor,
-            self::ACTION_ADMIN_USER_REMOVE,
+            AuditStatuses::ACTION_ADMIN_USER_REMOVE->value,
             [
                 'user' => $this->mapUserSnapshot($removedUser),
                 'roles' => array_values($roles),
@@ -83,7 +76,7 @@ class AdminAuditService
     {
         $this->storeAudit(
             $actor,
-            self::ACTION_TEST_CREATED,
+            AuditStatuses::ACTION_TEST_CREATED->value,
             null,
             [
                 'test' => $testSnapshot,
@@ -96,7 +89,7 @@ class AdminAuditService
     {
         $this->storeAudit(
             $actor,
-            self::ACTION_TEST_UPDATED,
+            AuditStatuses::ACTION_TEST_UPDATED->value,
             null,
             [
                 'test' => $testSnapshot,
@@ -110,7 +103,7 @@ class AdminAuditService
     {
         $this->storeAudit(
             $actor,
-            self::ACTION_TEST_DELETED,
+            AuditStatuses::ACTION_TEST_DELETED->value,
             [
                 'test' => $testSnapshot,
             ],

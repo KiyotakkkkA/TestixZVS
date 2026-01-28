@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\Tests\TestsAutoFillRequest;
+use App\Http\Requests\Tests\TestsCreateRequest;
+use App\Http\Requests\Tests\TestsIndexRequest;
+use App\Http\Requests\Tests\TestsUpdateRequest;
 use App\Services\TestsService;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 
 class TestsController extends Controller
@@ -16,11 +18,9 @@ class TestsController extends Controller
         $this->testsService = $testsService;
     }
 
-    public function createBlankTest(Request $request)
+    public function createBlankTest(TestsCreateRequest $request)
     {
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-        ]);
+        $data = $request->validated();
 
         $test = $this->testsService->createBlankTest($data);
 
@@ -30,14 +30,9 @@ class TestsController extends Controller
         ], 201);
     }
 
-    public function index(Request $request)
+    public function index(TestsIndexRequest $request)
     {
-        $data = $request->validate([
-            'sort_by' => ['nullable', 'string', Rule::in(['title'])],
-            'sort_dir' => ['nullable', 'string', Rule::in(['asc', 'desc'])],
-            'page' => ['nullable', 'integer', 'min:1'],
-            'per_page' => ['nullable', 'integer', 'min:1', 'max:50'],
-        ]);
+        $data = $request->validated();
 
         $sortBy = $data['sort_by'] ?? 'title';
         $sortDir = $data['sort_dir'] ?? 'asc';
@@ -112,20 +107,9 @@ class TestsController extends Controller
         ], 200);
     }
 
-    public function update(Request $request, string $testId)
+    public function update(TestsUpdateRequest $request, string $testId)
     {
-        $data = $request->validate([
-            'title' => 'sometimes|string|max:255',
-            'questions' => 'sometimes|array',
-            'questions.*.id' => 'nullable|integer',
-            'questions.*.client_id' => 'nullable|string',
-            'questions.*.title' => 'required_with:questions|string',
-            'questions.*.disabled' => 'boolean',
-            'questions.*.type' => ['required_with:questions', 'string', Rule::in(['single', 'multiple', 'matching', 'full_answer'])],
-            'questions.*.options' => 'nullable|array',
-            'removed_question_ids' => 'sometimes|array',
-            'removed_question_ids.*' => 'integer',
-        ]);
+        $data = $request->validated();
 
         [$test, $changedQuestions] = $this->testsService->updateTest($testId, $data);
 
@@ -155,23 +139,9 @@ class TestsController extends Controller
         ], 200);
     }
 
-    public function autoFill(Request $request, string $testId)
+    public function autoFill(TestsAutoFillRequest $request, string $testId)
     {
-        $data = $request->validate([
-            'total' => 'required|integer|min:1',
-            'selection' => 'nullable|string',
-            'selectedIndexes' => 'nullable|array',
-            'selectedIndexes.*' => 'integer|min:1',
-            'questions' => 'required|array|min:1',
-            'replace' => 'nullable|boolean',
-            'questions.*.type' => ['required', 'string', Rule::in(['single', 'multiple', 'matching', 'full_answer'])],
-            'questions.*.question' => 'nullable|string',
-            'questions.*.title' => 'nullable|string',
-            'questions.*.options' => 'nullable|array',
-            'questions.*.correctAnswers' => 'nullable|array',
-            'questions.*.terms' => 'nullable|array',
-            'questions.*.meanings' => 'nullable|array',
-        ]);
+        $data = $request->validated();
 
         [$test, $added] = $this->testsService->autoFillFromJson($testId, $data);
 
