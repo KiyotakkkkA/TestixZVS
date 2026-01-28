@@ -1,9 +1,10 @@
 import { BrowserRouter, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
-import { Header } from "./components/layouts";
+import { Footer, Header } from "./components/layouts";
 import { LoginPage } from "./components/pages/LoginPage";
 import { RegisterPage } from "./components/pages/RegisterPage";
+import { OurTeamPage } from "./components/pages/general/OurTeamPage";
 
 import { TestsListPage } from "./components/pages/test/TestsListPage";
 import { TestStartPage } from "./components/pages/test/TestStartPage";
@@ -12,6 +13,7 @@ import { TestResultsPage } from "./components/pages/test/TestResultsPage";
 import { TestEditingPage } from "./components/pages/test/TestEditingPage";
 
 import { AdminLayout } from "./components/pages/admin/AdminLayout";
+import { AdminCabinetPage } from "./components/pages/admin/AdminCabinetPage";
 import { AdminUsersPage } from "./components/pages/admin/AdminUsersPage";
 import { AdminAuditPage } from "./components/pages/admin/AdminAuditPage";
 import { AdminStatisticsPage } from "./components/pages/admin/AdminStatisticsPage";
@@ -53,6 +55,7 @@ function App() {
         <main className="flex flex-1 w-full p-6">
           <Routes>
             <Route path="/" element={<TestsListPage />} />
+            <Route path="/team" element={<OurTeamPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/tests/:testId/start" element={<TestStartPage />} />
@@ -74,7 +77,7 @@ function App() {
                 </RouteGuard>
               }
             >
-              <Route index element={<AdminUsersPage />} />
+              <Route index element={<AdminCabinetPage />} />
               <Route path="users" element={<AdminUsersPage />} />
               <Route path="audit" element={<AdminAuditPage />} />
               <Route path="statistics" element={<AdminStatisticsPage />} />
@@ -84,6 +87,7 @@ function App() {
             <Route path="*" element={<E404 />} />
           </Routes>
         </main>
+        <Footer />
       </div>
     </BrowserRouter>
   );

@@ -33,6 +33,9 @@ export const AdminLayout = () => {
         <aside className="hidden rounded-lg shadow-md w-64 border-r border-slate-200 bg-white/90 px-4 py-6 md:block self-start">
           <div className="text-xs uppercase tracking-wide text-slate-400">Навигация</div>
           <nav className="mt-4 flex flex-col gap-2">
+            <NavLink to="/admin" end className={navItemClass}>
+              Кабинет
+            </NavLink>
             <NavLink to="/admin/users" className={navItemClass}>
               Пользователи
             </NavLink>
@@ -50,6 +53,9 @@ export const AdminLayout = () => {
             <div className="w-full max-w-5xl p-4 md:p-6">
               <div className="mb-4 rounded-lg border border-slate-200 bg-white p-3 shadow-md md:hidden">
                 <div className="text-xs uppercase tracking-wide text-slate-400 mb-4">Навигация</div>
+                  <NavLink to="/admin" end className={navItemClass}>
+                    Кабинет
+                  </NavLink>
                 <NavLink to="/admin/users" className={navItemClass}>
                   Пользователи
                 </NavLink>

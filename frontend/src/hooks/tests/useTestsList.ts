@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { TestService } from '../services/test';
+import { TestService } from '../../services/test';
 
-import type { TestListDbItem, TestListResponse, TestListSort } from '../types/TestList';
+import type { TestListDbItem, TestListResponse, TestListSort } from '../../types/TestList';
 
 export type UseTestsListResult = {
   tests: TestListDbItem[];

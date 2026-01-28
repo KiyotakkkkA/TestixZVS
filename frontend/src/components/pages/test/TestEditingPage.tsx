@@ -5,7 +5,7 @@ import { Icon } from "@iconify/react";
 import { Button, InputSmall, Modal, Spinner } from "../../atoms";
 import { TestAutoCreateModal } from "../../molecules/modals";
 import { QuestionEditEntity } from "../../organisms/test";
-import { useTestManage } from "../../../hooks/editing/useTestManage";
+import { useTestManage } from "../../../hooks/tests/useTestManage";
 import { useToasts } from "../../../hooks/useToasts";
 import { createQuestionDraft, isDraftChanged, isDraftEmpty, mapApiQuestionToDraft, mapDraftToPayload } from "../../../utils/testEditing";
 import { QuestionFilesService } from "../../../services/questionFiles";

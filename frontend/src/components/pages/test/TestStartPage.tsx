@@ -4,8 +4,8 @@ import { Icon } from '@iconify/react';
 
 import { Button, InputSlider, Modal, SlidedPanel, SwitchRow } from '../../atoms';
 import { ExpressTestModal } from '../../molecules/modals';
-import { useTestPassing } from '../../../hooks/useTestPassing';
-import { useTestManage } from '../../../hooks/editing/useTestManage';
+import { useTestPassing } from '../../../hooks/tests/useTestPassing';
+import { useTestManage } from '../../../hooks/tests/useTestManage';
 import { TestService } from '../../../services/test';
 import { Spinner } from '../../atoms';
 import { authStore } from '../../../stores/authStore';

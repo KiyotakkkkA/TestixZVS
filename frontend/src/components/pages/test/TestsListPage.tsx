@@ -5,9 +5,9 @@ import { useNavigate } from "react-router-dom"
 import { Button, InputSmall, Modal, Selector, Spinner } from "../../atoms"
 import { TestListElementCard } from "../../molecules/cards"
 import { authStore } from "../../../stores/authStore"
-import { useTestManage } from "../../../hooks/editing/useTestManage"
+import { useTestManage } from "../../../hooks/tests/useTestManage"
 import { useToasts } from "../../../hooks/useToasts"
-import { useTestsList } from "../../../hooks/useTestsList"
+import { useTestsList } from "../../../hooks/tests/useTestsList"
 
 import type { TestListItem, TestListSort } from "../../../types/TestList"
 

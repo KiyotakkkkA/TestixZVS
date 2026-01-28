@@ -76,7 +76,7 @@ export const AdminAuditTestUpdatedCard = ({ record }: AdminAuditTestUpdatedCardP
 
       <div
         className={`overflow-hidden transition-all duration-300 ease-out ${
-          isOpen ? 'max-h-[700px] opacity-100' : 'max-h-0 opacity-0'
+          isOpen ? 'max-h-[700px] opacity-100 overflow-y-scroll' : 'max-h-0 opacity-0'
         }`}
         aria-hidden={!isOpen}
       >
@@ -85,13 +85,16 @@ export const AdminAuditTestUpdatedCard = ({ record }: AdminAuditTestUpdatedCardP
           <div className="mt-3 space-y-2">
             {changed.length ? (
               changed.map((item, index) => (
-                <div key={`${item.title}-${index}`} className="flex flex-wrap items-center gap-2 text-sm text-slate-600">
-                  <span className={`rounded-full border px-2 py-0.5 text-xs font-medium ${actionBadge(item.action)}`}>
-                    {actionLabel(item.action)}
-                  </span>
-                  <span className="font-semibold text-slate-800">{item.title}</span>
-                  <span className="text-xs text-slate-400">{item.type}</span>
-                </div>
+                <>
+                  <div key={`${item.title}-${index}`} className="flex flex-wrap items-center gap-2 text-sm text-slate-600">
+                    <span className={`rounded-full border px-2 py-0.5 text-xs font-medium ${actionBadge(item.action)}`}>
+                      {actionLabel(item.action)}
+                    </span>
+                    <span className="font-semibold text-slate-800">{item.title}</span>
+                    <span className="text-xs text-slate-400">{item.type}</span>
+                  </div>
+                  <div className='border-b border-slate-200' />
+                </>
               ))
             ) : (
               <div className="text-sm text-slate-400">Нет данных.</div>

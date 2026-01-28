@@ -20,7 +20,7 @@ const RightPart = observer(() => {
                     {authStore.user?.name ?? 'Пользователь'}
                 </span>
                 { authStore.hasPermission('view admin panel') && (
-                    <Button to="/admin/users" secondary className="py-2 px-3">Админ-панель</Button>
+                    <Button to="/admin" secondary className="py-2 px-3">Админ-панель</Button>
                 )}
                 <Button danger onClick={async () => {
                     await authStore.logout();
@@ -66,7 +66,7 @@ const MobileNav = observer(({ onClose }: { onClose: () => void }) => {
             {authStore.isAuthorized ? (
                 <div className="flex flex-col gap-4">
                     { authStore.hasPermission('view admin panel') && (
-                        <Button secondary to="/admin/users" className="py-2 px-3 text-center" onClick={onClose}>Админ-панель</Button>
+                        <Button secondary to="/admin" className="py-2 px-3 text-center" onClick={onClose}>Админ-панель</Button>
                     )}
                     <Button
                         onClick={async () => {

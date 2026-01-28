@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 
-import { useTestPassing } from "../../../hooks/useTestPassing";
+import { useTestPassing } from "../../../hooks/tests/useTestPassing";
 import { TestService } from "../../../services/test";
 import { StorageService } from "../../../services/storage";
 import { QuestionNavigator } from "../../molecules/test";

@@ -6,11 +6,11 @@ import {
   TestSettings,
   TestQuestion,
   FullAnswerReviewItem,
-} from "../types/Test";
-import { StorageService } from "../services/storage";
-import { TestService } from "../services/test";
+} from "../../types/Test";
+import { StorageService } from "../../services/storage";
+import { TestService } from "../../services/test";
 
-import { evaluateAnswer, type AnswerEvaluation } from "../utils/QuestionTypeRegistry";
+import { evaluateAnswer, type AnswerEvaluation } from "../../utils/QuestionTypeRegistry";
 
 export const useTestPassing = (testId: string | null, questions: TestQuestion[]) => {
   const [session, setSession] = useState<TestSession | null>(null);
