@@ -99,13 +99,17 @@ class TestsController extends Controller
 
     public function publicShow(string $testId)
     {
-        $payload = $this->testsService->getPublicTestPayload($testId);
+        $test = $this->testsService->getTestById($testId);
 
-        if (!$payload) {
+        if (!$test) {
             return response()->json([
                 'message' => 'Тест не найден',
             ], 404);
         }
+
+        $this->authorize('access', $test);
+
+        $payload = $this->testsService->getPublicTestPayload($testId);
 
         return response()->json([
             'test' => $payload,

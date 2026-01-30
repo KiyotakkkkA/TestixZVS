@@ -112,6 +112,23 @@ class AdminAuditService
         );
     }
 
+    public function auditTestAccessUpdated(User $actor, array $testSnapshot, array $oldState, array $newState): void
+    {
+        $this->storeAudit(
+            $actor,
+            AuditStatuses::ACTION_TEST_ACCESS_UPDATED->value,
+            [
+                'test' => $testSnapshot,
+                'access' => $oldState,
+            ],
+            [
+                'test' => $testSnapshot,
+                'access' => $newState,
+            ],
+            'Изменение доступа к тесту'
+        );
+    }
+
     private function storeAudit(User $actor, string $actionType, ?array $oldState, ?array $newState, ?string $comment = null): void
     {
         Audit::create([

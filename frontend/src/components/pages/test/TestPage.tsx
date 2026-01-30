@@ -19,6 +19,7 @@ export const TestPage = () => {
     const location = useLocation();
     const [dbTest, setDbTest] = useState<Test | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [accessError, setAccessError] = useState<string | null>(null);
 
     const navigate = useNavigate();
 
@@ -36,6 +37,7 @@ export const TestPage = () => {
             if (source === "local") return;
             try {
                 setIsLoading(true);
+                setAccessError(null);
                 const response = await TestService.getPublicTestById(testId);
                 if (!mounted) return;
                 setDbTest({
@@ -47,6 +49,7 @@ export const TestPage = () => {
                 });
             } catch (e) {
                 if (!mounted) return;
+                setAccessError("Не удалось загрузить тест");
                 setDbTest(null);
             } finally {
                 if (mounted) setIsLoading(false);
@@ -93,6 +96,16 @@ export const TestPage = () => {
                         <Spinner className="h-4 w-4" />
                         Загружаем тест...
                     </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (accessError) {
+        return (
+            <div className="w-full max-w-6xl m-auto">
+                <div className="rounded-lg border border-slate-200 bg-white p-6 text-center text-sm text-slate-600">
+                    {accessError}
                 </div>
             </div>
         );

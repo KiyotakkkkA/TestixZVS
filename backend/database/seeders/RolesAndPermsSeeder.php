@@ -24,6 +24,10 @@ class RolesAndPermsSeeder extends Seeder
                 'description' => 'редактирование тестов',
             ],
             [
+                'name' => 'edit tests access',
+                'description' => 'редактирование доступа к тестам',
+            ],
+            [
                 'name' => 'delete tests',
                 'description' => 'удаление тестов',
             ],

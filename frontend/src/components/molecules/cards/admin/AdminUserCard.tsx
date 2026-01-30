@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 
-import { UserRolesForm } from "../forms";
-import { Button, Spinner } from "../../atoms";
+import { UserRolesForm } from "../../forms";
+import { Button, Spinner } from "../../../atoms";
 
-import type { User } from "../../../types/User";
+import type { User } from "../../../../types/User";
 import type {
     AdminPermissionsResponse,
     RoleOption,
-} from "../../../types/admin/AdminUsers";
+} from "../../../../types/admin/AdminUsers";
 
 export type UserCardProps = {
     user: User;
@@ -26,7 +26,7 @@ export type UserCardProps = {
     canAssignPermissions: boolean;
 };
 
-export const UserCard = ({
+export const AdminUserCard = ({
     user,
     roles,
     permissions,

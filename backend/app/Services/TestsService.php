@@ -7,16 +7,23 @@ use App\Repositories\TestsRepository;
 use App\Models\Test\Test;
 use App\Services\Admin\AdminAuditService;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class TestsService
 {
     protected TestsRepository $testsRepository;
     protected AdminAuditService $auditService;
+    protected TestsAccessService $testsAccessService;
 
-    public function __construct(TestsRepository $testsRepository, AdminAuditService $auditService)
+    public function __construct(
+        TestsRepository $testsRepository,
+        AdminAuditService $auditService,
+        TestsAccessService $testsAccessService
+    )
     {
         $this->testsRepository = $testsRepository;
         $this->auditService = $auditService;
+        $this->testsAccessService = $testsAccessService;
     }
 
     public function createBlankTest(array $data)
@@ -34,7 +41,10 @@ class TestsService
 
     public function listTests(string $sortBy = 'title', string $sortDir = 'asc', int $perPage = 10, int $page = 1)
     {
-        return $this->testsRepository->listTests($sortBy, $sortDir, $perPage, $page);
+        $query = Test::query();
+        $this->testsAccessService->applyAccessFilter($query, auth('sanctum')->user());
+
+        return $this->testsRepository->listTests($sortBy, $sortDir, $perPage, $page, $query);
     }
 
     public function updateTest(string $testId, array $payload): array

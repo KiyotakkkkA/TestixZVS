@@ -23,6 +23,7 @@ import { AdminCabinetPage } from "./components/pages/admin/AdminCabinetPage";
 import { AdminUsersPage } from "./components/pages/admin/AdminUsersPage";
 import { AdminAuditPage } from "./components/pages/admin/AdminAuditPage";
 import { AdminStatisticsPage } from "./components/pages/admin/AdminStatisticsPage";
+import { AdminTestsAccessPage } from "./components/pages/admin/AdminTestsAccessPage";
 
 import { E403 } from "./components/pages/errors/E403";
 import { E404 } from "./components/pages/errors/E404";
@@ -99,6 +100,10 @@ function App() {
                         >
                             <Route index element={<AdminCabinetPage />} />
                             <Route path="users" element={<AdminUsersPage />} />
+                            <Route
+                                path="tests-access"
+                                element={<AdminTestsAccessPage />}
+                            />
                             <Route path="audit" element={<AdminAuditPage />} />
                             <Route
                                 path="statistics"

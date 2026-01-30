@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\Admin\AdminStatisticsRequest;
 use App\Http\Requests\Admin\AdminStoreUserRequest;
@@ -12,8 +12,9 @@ use App\Services\Admin\AdminUsersService;
 use App\Services\Admin\AdminStatisticsService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Http\Controllers\Controller;
 
-class AdminController extends Controller
+class AdminUsersController extends Controller
 {
     protected AdminUsersService $adminUsersService;
     protected AdminStatisticsService $adminStatisticsService;

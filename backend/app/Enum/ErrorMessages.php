@@ -23,4 +23,5 @@ enum ErrorMessages: string
     case NOT_ALLOWED_TEST_UPDATE = 'Недостаточно прав для редактирования теста.';
     case NOT_ALLOWED_TEST_EXPORT = 'Недостаточно прав для экспорта теста.';
     case NOT_ALLOWED_TEST_AUTOFILL = 'Недостаточно прав для автозаполнения теста.';
+    case NOT_ALLOWED_TEST_ACCESS = 'Недостаточно прав для доступа к тесту.';
 }

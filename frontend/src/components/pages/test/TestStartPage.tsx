@@ -25,6 +25,7 @@ export const TestStartPage: React.FC = () => {
     const [dbTest, setDbTest] = useState<Test | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+    const [accessError, setAccessError] = useState<string | null>(null);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -42,6 +43,7 @@ export const TestStartPage: React.FC = () => {
             if (source === "local") return;
             try {
                 setIsLoading(true);
+                setAccessError(null);
                 const response = await TestService.getPublicTestById(testId);
                 if (!mounted) return;
                 setDbTest({
@@ -55,6 +57,7 @@ export const TestStartPage: React.FC = () => {
                 });
             } catch (e) {
                 if (!mounted) return;
+                setAccessError("Не удалось загрузить тест");
                 setDbTest(null);
             } finally {
                 if (mounted) setIsLoading(false);
@@ -114,6 +117,27 @@ export const TestStartPage: React.FC = () => {
                         <Spinner className="h-4 w-4" />
                         Загружаем тест...
                     </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (accessError) {
+        return (
+            <div className="w-full max-w-2xl m-auto">
+                <div className="bg-white rounded-lg shadow-xl p-8 md:p-12 text-center space-y-4">
+                    <div className="text-lg font-semibold text-slate-800">
+                        {accessError}
+                    </div>
+                    {!authStore.isAuthorized && (
+                        <Button
+                            primary
+                            className="px-4 py-2 text-sm"
+                            onClick={() => navigate("/login")}
+                        >
+                            Войти
+                        </Button>
+                    )}
                 </div>
             </div>
         );

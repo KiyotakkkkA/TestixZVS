@@ -1,7 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminTestsAccessController;
+use App\Http\Controllers\Admin\AdminUsersController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\TestsController;
 use App\Http\Controllers\ReportsController;
@@ -22,21 +23,33 @@ Route::prefix('auth')->group(function () {
 
 // Admin routes
 Route::middleware(['auth:sanctum', 'permission:view admin panel'])->prefix('admin')->group(function () {
-    Route::get('/roles', [AdminController::class, 'roles'])->name('admin.roles');
-    Route::get('/permissions', [AdminController::class, 'permissions'])->name('admin.permissions');
+    Route::get('/roles', [AdminUsersController::class, 'roles'])->name('admin.roles');
+    Route::get('/permissions', [AdminUsersController::class, 'permissions'])->name('admin.permissions');
 
     Route::get('/audit', [AuditController::class, 'index'])->name('admin.audit')->middleware('permission:view audit logs');
 
     Route::group(['prefix' => 'users'], function () {
-        Route::get('/', [AdminController::class, 'index'])->name('admin.users');
-        Route::post('/', [AdminController::class, 'store'])->name('admin.users.store');
-        Route::patch('/{user}/roles', [AdminController::class, 'updateRoles'])->name('admin.users.roles');
-        Route::patch('/{user}/permissions', [AdminController::class, 'updatePermissions'])->name('admin.users.permissions');
-        Route::delete('/{user}', [AdminController::class, 'destroy'])->name('admin.users.delete');
+        Route::get('/', [AdminUsersController::class, 'index'])->name('admin.users');
+        Route::post('/', [AdminUsersController::class, 'store'])->name('admin.users.store');
+        Route::patch('/{user}/roles', [AdminUsersController::class, 'updateRoles'])->name('admin.users.roles');
+        Route::patch('/{user}/permissions', [AdminUsersController::class, 'updatePermissions'])->name('admin.users.permissions');
+        Route::delete('/{user}', [AdminUsersController::class, 'destroy'])->name('admin.users.delete');
     });
 
     Route::group(['prefix' => 'statistics'], function () {
-        Route::get('/', [AdminController::class, 'statistics'])->name('admin.statistics')->middleware('permission:view statistics');
+        Route::get('/', [AdminUsersController::class, 'statistics'])->name('admin.statistics')->middleware('permission:view statistics');
+    });
+
+    Route::group(['prefix' => 'tests'], function () {
+        Route::get('/access', [AdminTestsAccessController::class, 'index'])
+            ->middleware('permission:edit tests access')
+            ->name('admin.tests.access');
+        Route::get('/access/users', [AdminTestsAccessController::class, 'users'])
+            ->middleware('permission:edit tests access')
+            ->name('admin.tests.access.users');
+        Route::patch('/{testId}/access', [AdminTestsAccessController::class, 'update'])
+            ->middleware('permission:edit tests access')
+            ->name('admin.tests.access.update');
     });
 });
 

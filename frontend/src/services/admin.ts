@@ -16,6 +16,12 @@ import type {
     AdminUsersFilters,
     AdminUsersResponse,
 } from "../types/admin/AdminUsers";
+import type {
+    AdminTestsAccessFilters,
+    AdminTestsAccessResponse,
+    AdminTestsAccessUpdatePayload,
+    AdminTestsAccessUsersResponse,
+} from "../types/admin/AdminTestsAccess";
 
 export const AdminService = {
     getUsers: async (
@@ -86,6 +92,38 @@ export const AdminService = {
             {
                 params: filters,
             },
+        );
+        return data;
+    },
+
+    getTestsAccessList: async (
+        filters: AdminTestsAccessFilters = {},
+    ): Promise<AdminTestsAccessResponse> => {
+        const { data } = await api.get<AdminTestsAccessResponse>(
+            "/admin/tests/access",
+            { params: filters },
+        );
+        return data;
+    },
+
+    updateTestAccess: async (
+        testId: string,
+        payload: AdminTestsAccessUpdatePayload,
+    ): Promise<{ test: AdminTestsAccessResponse["data"][number] }> => {
+        const { data } = await api.patch(
+            `/admin/tests/${testId}/access`,
+            payload,
+        );
+        return data;
+    },
+
+    getTestsAccessUsers: async (params?: {
+        search?: string;
+        limit?: number;
+    }): Promise<AdminTestsAccessUsersResponse> => {
+        const { data } = await api.get<AdminTestsAccessUsersResponse>(
+            "/admin/tests/access/users",
+            { params },
         );
         return data;
     },

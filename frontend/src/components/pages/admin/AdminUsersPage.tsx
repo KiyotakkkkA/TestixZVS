@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 
-import { UserCard } from "../../molecules/cards";
+import { AdminUserCard } from "../../molecules/cards/admin";
 import { authStore } from "../../../stores/authStore";
 import { ROLE_RANKS } from "../../../data/admin";
 import {
@@ -324,7 +324,7 @@ export const AdminUsersPage = observer(() => {
                         );
 
                         return (
-                            <UserCard
+                            <AdminUserCard
                                 key={user.id}
                                 user={user}
                                 roles={roles}

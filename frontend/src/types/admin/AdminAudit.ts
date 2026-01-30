@@ -5,7 +5,8 @@ export type AdminAuditActionType =
     | "admin_user_remove"
     | "test_created"
     | "test_updated"
-    | "test_deleted";
+    | "test_deleted"
+    | "test_access_updated";
 
 export type AdminAuditActor = {
     id: number;
@@ -27,6 +28,10 @@ export type AdminAuditObjectState = {
         id: string;
         title: string;
         link?: string;
+    };
+    access?: {
+        status?: string;
+        users?: AdminAuditUserSnapshot[];
     };
     changed_questions?: {
         id?: number;

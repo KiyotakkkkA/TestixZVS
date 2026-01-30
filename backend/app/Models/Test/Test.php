@@ -5,6 +5,7 @@ namespace App\Models\Test;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\User;
+use App\Enum\TestAccessStatus;
 
 class Test extends Model
 {
@@ -18,6 +19,7 @@ class Test extends Model
         'id',
         'creator_id',
         'title',
+        'access_status',
         'total_questions',
         'total_disabled',
     ];
@@ -26,6 +28,10 @@ class Test extends Model
 
     public $incrementing = false;
     public $timestamps = true;
+
+    protected $casts = [
+        'access_status' => TestAccessStatus::class,
+    ];
 
     public function getIsCurrentUserCreatorAttribute(): bool
     {
@@ -45,5 +51,16 @@ class Test extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    public function accessUsers()
+    {
+        return $this->belongsToMany(User::class, 'tests_access', 'test_id', 'user_id')
+            ->withTimestamps();
+    }
+
+    public function accessEntries()
+    {
+        return $this->hasMany(TestAccess::class, 'test_id', 'id');
     }
 }

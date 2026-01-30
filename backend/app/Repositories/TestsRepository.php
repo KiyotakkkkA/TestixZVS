@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Test\Test;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
 
 class TestsRepository
 {
@@ -22,9 +23,15 @@ class TestsRepository
         return Test::with('questions.files')->find($testId);
     }
 
-    public function listTests(string $sortBy = 'title', string $sortDir = 'asc', int $perPage = 10, int $page = 1)
+    public function listTests(
+        string $sortBy = 'title',
+        string $sortDir = 'asc',
+        int $perPage = 10,
+        int $page = 1,
+        ?Builder $query = null
+    )
     {
-        $query = Test::query();
+        $query = $query ?? Test::query();
 
         if ($sortBy === 'title') {
             $query->orderBy('title', $sortDir);

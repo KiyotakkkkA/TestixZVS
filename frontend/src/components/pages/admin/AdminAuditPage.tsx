@@ -11,6 +11,7 @@ import {
     AdminAuditTestCreatedCard,
     AdminAuditTestUpdatedCard,
     AdminAuditTestDeletedCard,
+    AdminAuditTestAccessUpdatedCard,
 } from "../../molecules/cards/admin";
 
 import type {
@@ -32,6 +33,7 @@ export const AdminAuditPage = observer(() => {
             { value: "test_created", label: "Создание теста" },
             { value: "test_updated", label: "Изменение теста" },
             { value: "test_deleted", label: "Удаление теста" },
+            { value: "test_access_updated", label: "Доступ к тесту" },
         ],
         [],
     );
@@ -77,6 +79,13 @@ export const AdminAuditPage = observer(() => {
             case "test_deleted":
                 return (
                     <AdminAuditTestDeletedCard
+                        key={record.id}
+                        record={record}
+                    />
+                );
+            case "test_access_updated":
+                return (
+                    <AdminAuditTestAccessUpdatedCard
                         key={record.id}
                         record={record}
                     />

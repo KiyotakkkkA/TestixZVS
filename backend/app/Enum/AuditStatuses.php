@@ -11,4 +11,5 @@ enum AuditStatuses: string
     case ACTION_TEST_CREATED = 'test_created';
     case ACTION_TEST_UPDATED = 'test_updated';
     case ACTION_TEST_DELETED = 'test_deleted';
+    case ACTION_TEST_ACCESS_UPDATED = 'test_access_updated';
 }
