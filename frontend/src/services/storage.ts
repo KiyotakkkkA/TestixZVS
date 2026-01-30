@@ -2,7 +2,7 @@ import {
     LOCAL_STORAGE_KEYS,
     type TestResult,
     type TestSession,
-} from "../types/Test";
+} from "../types/tests/Test";
 
 export const StorageService = {
     getSession: (): TestSession | null => {

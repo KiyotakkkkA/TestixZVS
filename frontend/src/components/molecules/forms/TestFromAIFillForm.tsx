@@ -9,13 +9,13 @@ import {
     ProgressBar,
 } from "../../atoms";
 import { TestService } from "../../../services/test";
-import { OllamaService } from "../../../services/ollama";
+import { AIService } from "../../../services/aiWorker";
 import { useToasts } from "../../../hooks/useToasts";
 
 import type {
     JsonQuestionInput,
     TestAutoFillPayload,
-} from "../../../types/editing/TestManagement";
+} from "../../../types/tests/TestManagement";
 
 type ParsedSelection = {
     indices: number[];
@@ -223,7 +223,7 @@ export const TestFromAIFillForm = ({
 
             startProgress(65, 90);
 
-            const response = await OllamaService.fillTestFromText({
+            const response = await AIService.fillTestFromText({
                 text: textForModel,
             });
 

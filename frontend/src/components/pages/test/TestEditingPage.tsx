@@ -4,7 +4,7 @@ import { Icon } from "@iconify/react";
 
 import { Button, InputSmall, Modal, Spinner } from "../../atoms";
 import { TestAutoCreateModal } from "../../molecules/modals";
-import { QuestionEditEntity } from "../../organisms/test";
+import { QuestionEditEntity } from "../../organisms/tests";
 import { useTestManage } from "../../../hooks/tests/useTestManage";
 import { useToasts } from "../../../hooks/useToasts";
 import {
@@ -17,7 +17,7 @@ import {
 import { QuestionFilesService } from "../../../services/questionFiles";
 import { TestService } from "../../../services/test";
 
-import type { QuestionDraft } from "../../organisms/test/QuestionEditEntity";
+import type { QuestionDraft } from "../../organisms/tests/QuestionEditEntity";
 
 export const TestEditingPage = () => {
     const [questions, setQuestions] = useState<QuestionDraft[]>([

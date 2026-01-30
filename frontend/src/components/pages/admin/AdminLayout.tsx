@@ -1,3 +1,4 @@
+import { Icon } from "@iconify/react";
 import { useEffect, useRef, useState } from "react";
 
 import { NavLink, Outlet } from "react-router-dom";
@@ -17,19 +18,24 @@ const NavigationPanel = () => {
             </div>
             <nav className="mt-4 flex flex-col gap-2">
                 <NavLink to="/admin" end className={navItemClass}>
+                    <Icon icon="mdi:account" width={22} height={22} />
                     Кабинет
                 </NavLink>
                 <NavLink to="/admin/users" className={navItemClass}>
+                    <Icon icon="mdi:account-multiple" width={22} height={22} />
                     Пользователи
                 </NavLink>
                 <NavLink to="/admin/tests-access" className={navItemClass}>
+                    <Icon icon="mdi:lock" width={22} height={22} />
                     Доступ к тестам
                 </NavLink>
                 <div className="border-t border-slate-200 my-2" />
                 <NavLink to="/admin/audit" className={navItemClass}>
+                    <Icon icon="mdi:journal" width={22} height={22} />
                     Журнал аудита
                 </NavLink>
                 <NavLink to="/admin/statistics" className={navItemClass}>
+                    <Icon icon="mdi:chart-bar" width={22} height={22} />
                     Статистика
                 </NavLink>
             </nav>

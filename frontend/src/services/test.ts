@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { api } from "../configs/api";
 
 import type {
     TestCreationPayload,
@@ -7,13 +7,13 @@ import type {
     TestAutoFillPayload,
     TestAutoFillResponse,
     TestUpdatePayload,
-} from "../types/editing/TestManagement";
-import type { TestListResponse } from "../types/TestList";
+} from "../types/tests/TestManagement";
+import type { TestListResponse } from "../types/tests/TestList";
 import type {
     PublicTestResponse,
     TestCompletitionStatisticsPayload,
     TestQuestion,
-} from "../types/Test";
+} from "../types/tests/Test";
 
 export const TestService = {
     createBlankTest: async (

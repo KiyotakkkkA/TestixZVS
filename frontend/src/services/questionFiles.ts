@@ -1,6 +1,6 @@
-import { api } from "./api";
+import { api } from "../configs/api";
 
-import type { QuestionFile } from "../types/editing/TestManagement";
+import type { QuestionFile } from "../types/tests/TestManagement";
 
 export const QuestionFilesService = {
     upload: async (

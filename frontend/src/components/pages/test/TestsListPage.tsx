@@ -9,7 +9,7 @@ import { useTestManage } from "../../../hooks/tests/useTestManage";
 import { useToasts } from "../../../hooks/useToasts";
 import { useTestsList } from "../../../hooks/tests/useTestsList";
 
-import type { TestListItem, TestListSort } from "../../../types/TestList";
+import type { TestListItem, TestListSort } from "../../../types/tests/TestList";
 
 export const TestsListPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);

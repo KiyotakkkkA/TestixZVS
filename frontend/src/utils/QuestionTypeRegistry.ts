@@ -1,5 +1,5 @@
 import { TestService } from "../services/test";
-import { OllamaService } from "../services/ollama";
+import { AIService } from "../services/aiWorker";
 
 import {
     SingleChoice,
@@ -8,7 +8,7 @@ import {
     FullAnswer,
 } from "../components/molecules/test/answering";
 
-import type { TestSettings, TestQuestion } from "../types/Test";
+import type { TestSettings, TestQuestion } from "../types/tests/Test";
 import type { FullAnswerModelEvaluation } from "../types/AI";
 
 export type AnswerValue = number[] | string[];
@@ -66,13 +66,12 @@ const fullAnswerEvaluate = async (
     }
 
     try {
-        const ev: FullAnswerModelEvaluation =
-            await OllamaService.gradeFullAnswer({
-                questionText: question.question,
-                correctAnswers: question.correctAnswers,
-                userAnswer: userText,
-                checkMode: settings?.fullAnswerCheckMode ?? "medium",
-            });
+        const ev: FullAnswerModelEvaluation = await AIService.gradeFullAnswer({
+            questionText: question.question,
+            correctAnswers: question.correctAnswers,
+            userAnswer: userText,
+            checkMode: settings?.fullAnswerCheckMode ?? "medium",
+        });
 
         const correct = ev.scorePercent >= FULL_ANSWER_CORRECT_FROM_PERCENT;
         return {

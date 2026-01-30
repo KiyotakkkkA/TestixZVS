@@ -1,4 +1,4 @@
-import type { MultipleChoiceQuestion } from "../../../../types/Test";
+import type { MultipleChoiceQuestion } from "../../../../types/tests/Test";
 
 interface MultipleChoiceProps {
     question: MultipleChoiceQuestion;

@@ -22,7 +22,6 @@ export const AdminTestsAccessPage = observer(() => {
         error,
         usersError,
         updateFilters,
-        loadTests,
         loadUsers,
         updateTestAccessStatus,
         updateTestAccessUsers,
@@ -72,6 +71,15 @@ export const AdminTestsAccessPage = observer(() => {
                 e?.response?.data?.message || "Не удалось обновить доступ",
             );
         }
+    };
+
+    const resetFilters = () => {
+        updateFilters({
+            page: 1,
+            sort_by: "title",
+            sort_dir: "asc",
+        });
+        setUserSearch("");
     };
 
     const handleUsersSave = async (testId: string, userIds: number[]) => {
@@ -185,12 +193,11 @@ export const AdminTestsAccessPage = observer(() => {
                         </Button>
                     </div>
                     <Button
-                        secondary
+                        dangerInverted
                         className="w-full px-4 py-2 text-sm sm:w-auto"
-                        onClick={() => loadTests()}
-                        disabled={isLoading}
+                        onClick={resetFilters}
                     >
-                        Обновить
+                        Сбросить фильтры
                     </Button>
                 </div>
             </div>

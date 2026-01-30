@@ -6,7 +6,7 @@ import {
     TestSettings,
     TestQuestion,
     FullAnswerReviewItem,
-} from "../../types/Test";
+} from "../../types/tests/Test";
 import { StorageService } from "../../services/storage";
 import { TestService } from "../../services/test";
 

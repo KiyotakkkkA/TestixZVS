@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { Button, InputSlider, Modal } from "../../atoms";
 import { useTestPassing } from "../../../hooks/tests/useTestPassing";
-import { Test, type FullAnswerCheckMode } from "../../../types/Test";
+import { Test, type FullAnswerCheckMode } from "../../../types/tests/Test";
 
 export interface ExpressTestConfig {
     timeLimitEnabled: boolean;

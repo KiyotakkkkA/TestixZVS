@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 import { Selector } from "../../../atoms";
-import type { MatchingQuestion } from "../../../../types/Test";
+import type { MatchingQuestion } from "../../../../types/tests/Test";
 
 interface MatchingProps {
     question: MatchingQuestion;

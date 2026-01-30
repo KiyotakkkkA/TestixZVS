@@ -3,7 +3,7 @@ import { InputBig } from "../../../atoms";
 import type {
     FullAnswerCheckMode,
     FullAnswerQuestion,
-} from "../../../../types/Test";
+} from "../../../../types/tests/Test";
 
 export type FullAnswerEvaluationView = {
     scorePercent: number;

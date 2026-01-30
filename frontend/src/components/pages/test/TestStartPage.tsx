@@ -16,7 +16,7 @@ import { TestService } from "../../../services/test";
 import { Spinner } from "../../atoms";
 import { authStore } from "../../../stores/authStore";
 
-import type { Test } from "../../../types/Test";
+import type { Test } from "../../../types/tests/Test";
 
 export const TestStartPage: React.FC = () => {
     const [isOpenSlided, setIsOpenSlided] = useState(false);

@@ -2,15 +2,17 @@
 
 use App\Http\Controllers\Admin\AdminTestsAccessController;
 use App\Http\Controllers\Admin\AdminUsersController;
+use App\Http\Controllers\AI\AIController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AuditController;
-use App\Http\Controllers\TestsController;
+use App\Http\Controllers\QuestionFilesController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\StatisticsController;
-use App\Http\Controllers\QuestionFilesController;
+use App\Http\Controllers\TestsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+// Роуты аутентификации и авторизации
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
     Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
@@ -21,7 +23,15 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-// Admin routes
+// Роуты для интеграции с языковыми моделями
+Route::prefix('ai')->group(function () {
+    Route::group(['middleware' => 'auth:sanctum'], function () {
+        Route::post('/fill-test', [AIController::class, 'fillTestFromText'])->middleware('permission:edit tests')->name('ai.fill_test');
+    });
+    Route::post('/grade-full-answer', [AIController::class, 'gradeFullAnswer'])->name('ai.grade_full_answer');
+});
+
+// Админские роуты
 Route::middleware(['auth:sanctum', 'permission:view admin panel'])->prefix('admin')->group(function () {
     Route::get('/roles', [AdminUsersController::class, 'roles'])->name('admin.roles');
     Route::get('/permissions', [AdminUsersController::class, 'permissions'])->name('admin.permissions');
@@ -53,7 +63,7 @@ Route::middleware(['auth:sanctum', 'permission:view admin panel'])->prefix('admi
     });
 });
 
-// Download reports AND statistics
+// Роуты для скачиваний файлов
 Route::middleware('auth:sanctum')->prefix('download')->group(function () {
     
     Route::get('/test/{testId}/pdf', [ReportsController::class, 'makeTestToPDF'])->middleware('permission:make reports')->name('download.test.pdf');
@@ -61,7 +71,7 @@ Route::middleware('auth:sanctum')->prefix('download')->group(function () {
 
 });
 
-// Workbench routes for test creation and editing
+// Роуты для редактирования тестов
 Route::middleware('auth:sanctum')->prefix('workbench')->group(function () {
 
     Route::group(['prefix' => 'tests'], function () {
@@ -78,6 +88,7 @@ Route::middleware('auth:sanctum')->prefix('workbench')->group(function () {
     });
 });
 
+// Роуты для всех
 Route::get('/tests', [TestsController::class, 'index'])->name('tests.index');
 Route::get('/tests/{testId}', [TestsController::class, 'publicShow'])->name('tests.show');
 

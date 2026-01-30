@@ -5,10 +5,10 @@ import { useTestPassing } from "../../../hooks/tests/useTestPassing";
 import { TestService } from "../../../services/test";
 import { StorageService } from "../../../services/storage";
 import { QuestionNavigator } from "../../molecules/test";
-import { Question } from "../../organisms/test";
+import { Question } from "../../organisms/tests";
 import { Spinner } from "../../atoms";
 
-import type { Test } from "../../../types/Test";
+import type { Test } from "../../../types/tests/Test";
 
 export const TestPage = () => {
     const [checkGlow, setCheckGlow] = useState<"none" | "correct" | "wrong">(

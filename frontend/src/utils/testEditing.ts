@@ -1,11 +1,11 @@
 import type {
     QuestionDraft,
     QuestionDraftType,
-} from "../components/organisms/test/QuestionEditEntity";
+} from "../components/organisms/tests/QuestionEditEntity";
 import type {
     TestQuestionPayload,
     TestQuestionResponse,
-} from "../types/editing/TestManagement";
+} from "../types/tests/TestManagement";
 
 const createClientId = (): string =>
     `${Date.now()}-${Math.random().toString(16).slice(2)}`;

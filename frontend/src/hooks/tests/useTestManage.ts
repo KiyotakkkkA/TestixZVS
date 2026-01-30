@@ -8,7 +8,7 @@ import type {
     TestCreationResult,
     TestDetails,
     TestUpdatePayload,
-} from "../../types/editing/TestManagement";
+} from "../../types/tests/TestManagement";
 
 export type TestUpdateResult = {
     test: TestDetails | null;

@@ -38,6 +38,9 @@ services:
       DB_DATABASE: ${DB_DATABASE:-testix}
       DB_USERNAME: ${DB_USERNAME:-testix}
       DB_PASSWORD: ${DB_PASSWORD:-testix}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://localhost:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL}
+      OLLAMA_TOKEN: ${OLLAMA_TOKEN}
     depends_on:
       - mysql
     networks:
@@ -64,9 +67,6 @@ services:
       dockerfile: docker/frontend/Dockerfile.frontend
       args:
         NODE_VERSION: ${NODE_VERSION:-23.1-alpine}
-        REACT_APP_OLLAMA_BASE_URL: ${REACT_APP_OLLAMA_BASE_URL}
-        REACT_APP_OLLAMA_MODEL: ${REACT_APP_OLLAMA_MODEL}
-        REACT_APP_OLLAMA_TOKEN: ${REACT_APP_OLLAMA_TOKEN}
         REACT_APP_FULL_ANSWER_CORRECT_FROM_PERCENT: ${REACT_APP_FULL_ANSWER_CORRECT_FROM_PERCENT}
     container_name: testix-frontend
     restart: unless-stopped

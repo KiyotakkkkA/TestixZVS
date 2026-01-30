@@ -7,7 +7,7 @@ import { useToasts } from "../../../hooks/useToasts";
 import type {
     JsonQuestionInput,
     TestAutoFillPayload,
-} from "../../../types/editing/TestManagement";
+} from "../../../types/tests/TestManagement";
 
 type ParsedSelection = {
     indices: number[];

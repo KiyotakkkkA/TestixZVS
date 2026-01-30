@@ -6,7 +6,7 @@ import {
     type AnswerEvaluation,
 } from "../../../utils/QuestionTypeRegistry";
 
-import type { TestQuestion, TestSettings } from "../../../types/Test";
+import type { TestQuestion, TestSettings } from "../../../types/tests/Test";
 import { Button } from "../../atoms";
 
 interface QuestionProps {

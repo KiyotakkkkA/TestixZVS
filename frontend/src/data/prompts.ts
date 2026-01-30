@@ -1,4 +1,4 @@
-import type { FullAnswerCheckMode } from "../types/Test";
+import type { FullAnswerCheckMode } from "../types/tests/Test";
 
 export const fillTestSystemPrompt =
     "Ты — помощник для подготовки тестов. " +

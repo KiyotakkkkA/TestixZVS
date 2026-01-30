@@ -1,4 +1,4 @@
-import type { SingleChoiceQuestion } from "../../../../types/Test";
+import type { SingleChoiceQuestion } from "../../../../types/tests/Test";
 
 interface SingleChoiceProps {
     question: SingleChoiceQuestion;

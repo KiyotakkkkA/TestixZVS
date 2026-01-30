@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { api } from "../configs/api";
 import type { User } from "../types/User";
 
 export type AuthResponse = {

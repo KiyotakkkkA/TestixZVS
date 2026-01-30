@@ -7,9 +7,9 @@ import {
     MatchingForm,
     MultipleChoiceForm,
     SingleChoiceForm,
-} from "../../molecules/forms/test/editing";
+} from "../../molecules/forms/tests/editing";
 
-import type { TestQuestionPayload } from "../../../types/editing/TestManagement";
+import type { TestQuestionPayload } from "../../../types/tests/TestManagement";
 
 export type QuestionDraftType =
     | "single"

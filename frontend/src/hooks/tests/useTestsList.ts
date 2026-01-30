@@ -6,7 +6,7 @@ import type {
     TestListDbItem,
     TestListResponse,
     TestListSort,
-} from "../../types/TestList";
+} from "../../types/tests/TestList";
 
 export type UseTestsListResult = {
     tests: TestListDbItem[];

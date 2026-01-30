@@ -67,15 +67,6 @@ export const AdminAuditTestAccessUpdatedCard = ({
                     </div>
                 </div>
                 <div className="flex flex-wrap gap-2 sm:flex-nowrap">
-                    {test?.link && (
-                        <Button
-                            secondary
-                            className="px-3 py-1.5 text-xs"
-                            to={test.link}
-                        >
-                            Перейти
-                        </Button>
-                    )}
                     <Button
                         primaryNoBackground
                         className="text-sm whitespace-nowrap"

@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-import type { TestListItem } from "../../../types/TestList";
+import type { TestListItem } from "../../../types/tests/TestList";
 
 interface TestListElementCardProps {
     test: TestListItem;
