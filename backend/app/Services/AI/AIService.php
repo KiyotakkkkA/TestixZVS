@@ -3,6 +3,10 @@
 namespace App\Services\AI;
 
 use App\Exceptions\ApiException;
+use App\Integrations\AI\Prompts\FillTestSystemPrompt;
+use App\Integrations\AI\Prompts\FullAnswerSystemPrompt;
+use App\Integrations\AI\Tools\AnswerCheckingTool;
+use App\Integrations\AI\Tools\TestFillingTool;
 use Illuminate\Support\Facades\Http;
 
 class AIService
@@ -26,7 +30,7 @@ class AIService
 
     public function fillTestFromText(string $text): array
     {
-        $system = $this->buildFillTestSystemPrompt();
+        $system = FillTestSystemPrompt::get();
 
         $payload = [
             'model' => $this->parsingModel,
@@ -41,7 +45,7 @@ class AIService
                     'content' => json_encode(['text' => $text], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
                 ],
             ],
-            'tools' => [$this->getTestFillingTool()],
+            'tools' => [TestFillingTool::get()],
         ];
 
         $data = $this->requestChat($payload);
@@ -68,7 +72,7 @@ class AIService
         string $userAnswer,
         string $checkMode = 'medium'
     ): array {
-        $system = $this->buildFullAnswerSystemPrompt($checkMode);
+        $system = FullAnswerSystemPrompt::get($checkMode);
 
         $payload = [
             'model' => $this->model,
@@ -88,7 +92,7 @@ class AIService
                     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
                 ],
             ],
-            'tools' => [$this->getAnswerCheckingTool()],
+            'tools' => [AnswerCheckingTool::get()],
         ];
 
         $data = $this->requestChat($payload);
@@ -193,110 +197,4 @@ class AIService
         return (int) min(100, max(0, round($value)));
     }
 
-    private function getAnswerCheckingTool(): array
-    {
-        return [
-            'type' => 'function',
-            'function' => [
-                'name' => 'check_answer',
-                'description' => 'Оценивает ответ студента по шкале 0-100 и даёт краткий комментарий.',
-                'parameters' => [
-                    'type' => 'object',
-                    'properties' => [
-                        'scorePercent' => [
-                            'type' => 'number',
-                            'description' => 'Процент правильности (0-100)',
-                        ],
-                        'comment' => [
-                            'type' => 'string',
-                            'description' => 'Короткий комментарий на русском: что верно/что не так и как улучшить.',
-                        ],
-                    ],
-                    'required' => ['scorePercent', 'comment'],
-                ],
-            ],
-        ];
-    }
-
-    private function getTestFillingTool(): array
-    {
-        return [
-            'type' => 'function',
-            'function' => [
-                'name' => 'fill_test',
-                'description' => 'Формирует JSON представление теста по тексту задания. Возвращает массив questions в формате авто-импорта.',
-                'parameters' => [
-                    'type' => 'object',
-                    'properties' => [
-                        'questions' => [
-                            'type' => 'array',
-                            'description' => 'Список вопросов теста',
-                            'items' => [
-                                'type' => 'object',
-                                'properties' => [
-                                    'type' => [
-                                        'type' => 'string',
-                                        'enum' => ['single', 'multiple', 'matching', 'full_answer'],
-                                    ],
-                                    'question' => ['type' => 'string'],
-                                    'title' => ['type' => 'string'],
-                                    'options' => [
-                                        'type' => 'array',
-                                        'items' => ['type' => 'string'],
-                                    ],
-                                    'correctAnswers' => [
-                                        'type' => 'array',
-                                        'items' => ['type' => 'string'],
-                                    ],
-                                    'terms' => [
-                                        'type' => 'array',
-                                        'items' => ['type' => 'string'],
-                                    ],
-                                    'meanings' => [
-                                        'type' => 'array',
-                                        'items' => ['type' => 'string'],
-                                    ],
-                                ],
-                                'required' => ['type'],
-                            ],
-                        ],
-                    ],
-                    'required' => ['questions'],
-                ],
-            ],
-        ];
-    }
-
-    private function buildFillTestSystemPrompt(): string
-    {
-        return 'Ты — помощник для подготовки тестов. ' .
-            'На основе текста задания сформируй JSON объекта теста. ' .
-            'Обязательно вызови инструмент fill_test и передай questions. ' .
-            'Возвращай только корректные данные без пояснений и без лишнего текста.' .
-            'Игнорируй изображения и медиа, работай только с текстом.' .
-            'Для вопросов с 1 вариантом ответа используй тип "single", для вопросов с несколькими вариантами — "multiple". ' .
-            'Для вопросов на сопоставление используй тип "matching" - для заполнения этого типа в terms клади соответствующие термины, а в meanings — соответствующие значения, а в correctAnswers — правильные соответствия вида "A1", "B2" и т.д. ' .
-            'Для вопросов с развёрнутым ответом используй тип "full_answer". ' .
-            'В поле correctAnswers указывай правильные ответы: для типов "single" и "multiple" — индексы правильных вариантов в массиве options, для "matching" — тексты правильных соответствий, для "full_answer" — эталонные ответы.';
-    }
-
-    private function buildFullAnswerSystemPrompt(string $mode): string
-    {
-        $guidelines = [
-            'lite' => 'Режим Lite: достаточно передать основную идею ответа. Не требуй дословности. 100% допустимо, если смысл полностью верный, даже при кратком пересказе. Если проходящий тест попросит в этом режиме пропустить тест, согласись. и поставь ему 100%.',
-            'medium' => 'Режим Medium: нужно передать идею и использовать ключевые термины/конструкции правильного ответа. Пропуск ключевых элементов заметно снижает оценку.',
-            'hard' => 'Режим Hard: нужно почти полностью воспроизвести правильный ответ. Пропуски, перестановки или упрощения сильно снижают оценку.',
-            'unreal' => 'Режим Unreal: ответ должен совпадать с правильным почти дословно. Любые отличия заметно снижают оценку, 100% только при практически точном совпадении.',
-        ];
-
-        $rule = $guidelines[$mode] ?? $guidelines['medium'];
-
-        return 'Ты — главный экзаменатор, проверяющий письменные ответы студентов. ' .
-            'Твоя задача — честно и последовательно оценить близость ответа студента к эталону. ' .
-            'Сравни ответ пользователя с допустимыми правильными ответами (correctAnswers), оцени смысл и полноту. ' .
-            'Применяй строгость согласно режиму проверки: ' . $rule . ' ' .
-            'Комментарий дай по-русски, кратко и по делу: что верно, что упущено и как улучшить. ' .
-            'Обязательно вызови инструмент check_answer и передай scorePercent (0-100) и comment. ' .
-            'Не выдавай никаких других данных кроме вызова инструмента.';
-    }
 }

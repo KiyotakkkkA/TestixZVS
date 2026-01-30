@@ -34,7 +34,7 @@ const ensurePdfWorker = (() => {
     return () => {
         if (ready) return;
         pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-            "pdfjs-dist/build/pdf.worker.min.mjs",
+            "pdfjs-dist/legacy/build/pdf.worker.min.js",
             import.meta.url,
         ).toString();
         ready = true;
