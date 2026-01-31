@@ -45,17 +45,16 @@ export const Button = ({
 }: ButtonProps) => {
     let buttonClasses = `transition-colors duration-300 rounded-lg font-semibold`;
     if (primary)
-        buttonClasses += " bg-indigo-500 text-white hover:bg-indigo-600";
+        buttonClasses += " bg-indigo-500 text-contrast hover:bg-indigo-600";
     if (primaryNoBackground)
         buttonClasses += " text-gray-600 hover:text-indigo-600";
 
     if (secondary)
         buttonClasses +=
-            " border border-indigo-500/50 text-indigo-500 hover:bg-indigo-500 hover:text-white";
+            " border border-indigo-500/50 text-indigo-500 hover:bg-indigo-500 hover:text-contrast";
     if (secondaryNoBorder)
         buttonClasses +=
-            " text-indigo-500 hover:bg-indigo-500 hover:text-white";
-
+            " text-indigo-500 hover:bg-indigo-500 hover:text-contrast";
     if (success) buttonClasses += " bg-green-500 text-white hover:bg-green-600";
     if (successInverted)
         buttonClasses +=

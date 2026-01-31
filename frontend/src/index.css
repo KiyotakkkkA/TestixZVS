@@ -3,15 +3,6 @@
 @tailwind utilities;
 
 :root {
-    --cprimary: 99 102 241;
-    --cdanger: 244 63 94;
-    --csuccess: 16 185 129;
-    --cwarning: 245 158 11;
-    --cfont: 30 41 59;
-    --cmuted: 100 116 139;
-    --cbackground: 238 241 253;
-    --csurface: 255 255 255;
-
     --slate-50: 255 255 255;
     --slate-100: 241 245 249;
     --slate-200: 226 232 240;
@@ -68,18 +59,11 @@
     --blue-400: 96 165 250;
     --blue-500: 59 130 246;
     --blue-600: 37 99 235;
+
+    --contrast: 255 255 255;
 }
 
 .dark {
-    --cprimary: 198 160 246;
-    --cdanger: 237 135 150;
-    --csuccess: 166 218 149;
-    --cwarning: 238 212 159;
-    --cfont: 202 211 245;
-    --cmuted: 165 173 203;
-    --cbackground: 36 39 58;
-    --csurface: 54 58 79;
-
     --slate-50: 24 25 38;
     --slate-100: 30 32 48;
     --slate-200: 36 39 58;
@@ -136,11 +120,13 @@
     --blue-400: 96 165 250;
     --blue-500: 147 197 253;
     --blue-600: 191 219 254;
+
+    --contrast: 0 0 0;
 }
 
 body {
-    background-color: rgb(var(--cbackground));
-    color: rgb(var(--cfont));
+    background-color: rgb(var(--slate-50));
+    color: rgb(var(--slate-800));
 }
 
 * {

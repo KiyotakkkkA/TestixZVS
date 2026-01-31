@@ -5,6 +5,7 @@ module.exports = {
     theme: {
         extend: {
             colors: {
+                contrast: "rgb(var(--contrast) / <alpha-value>)",
                 slate: {
                     50: "rgb(var(--slate-50) / <alpha-value>)",
                     100: "rgb(var(--slate-100) / <alpha-value>)",
