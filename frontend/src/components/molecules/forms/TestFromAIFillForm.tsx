@@ -33,10 +33,14 @@ const ensurePdfWorker = (() => {
     let ready = false;
     return () => {
         if (ready) return;
-
-        pdfjsLib.GlobalWorkerOptions.workerSrc =
-            "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs";
-
+        if (process.env.REACT_APP_ENV_TYPE === "dev") {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+                "pdfjs-dist/build/pdf.worker.min.mjs",
+                import.meta.url,
+            ).toString();
+        } else if (process.env.REACT_APP_ENV_TYPE === "prod") {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+        }
         ready = true;
     };
 })();
