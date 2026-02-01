@@ -3,7 +3,13 @@ import { observer } from "mobx-react-lite";
 
 import { Button, InputSmall, Selector, Spinner } from "../../atoms";
 import { AdminTestAccessCard } from "../../molecules/cards/admin";
-import { useAdminTestsAccess } from "../../../hooks/admin/useAdminTestsAccess";
+import {
+    useAdminTestsAccess,
+    useAdminTestsAccessManage,
+    useAdminTestsAccessUpdateStatus,
+    useAdminTestsAccessUpdateUsers,
+    useAdminTestsAccessUsers,
+} from "../../../hooks/admin/access";
 import { useToasts } from "../../../hooks/useToasts";
 
 import type { ArrayAutoFillOption } from "../../atoms/ArrayAutoFillSelector";
@@ -11,23 +17,25 @@ import type { AdminTestsAccessStatus } from "../../../types/admin/AdminTestsAcce
 
 export const AdminTestsAccessPage = observer(() => {
     const { toast } = useToasts();
-    const {
-        tests,
-        pagination,
-        filters,
-        users,
-        isLoading,
-        isUpdating,
-        usersLoading,
-        error,
-        usersError,
-        updateFilters,
-        loadUsers,
-        updateTestAccessStatus,
-        updateTestAccessUsers,
-    } = useAdminTestsAccess();
-
+    const { filters, appliedFilters, updateFilters } =
+        useAdminTestsAccessManage();
+    const { tests, pagination, isLoading, error } =
+        useAdminTestsAccess(appliedFilters);
     const [userSearch, setUserSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+    const {
+        users,
+        isLoading: usersLoading,
+        error: usersError,
+    } = useAdminTestsAccessUsers(debouncedSearch || undefined);
+    const { updateTestAccessStatus, isUpdating: statusUpdating } =
+        useAdminTestsAccessUpdateStatus();
+    const { updateTestAccessUsers, isUpdating: usersUpdating } =
+        useAdminTestsAccessUpdateUsers();
+    const isUpdating = useMemo(
+        () => ({ ...statusUpdating, ...usersUpdating }),
+        [statusUpdating, usersUpdating],
+    );
 
     const sortOptions = useMemo(
         () => [
@@ -54,10 +62,10 @@ export const AdminTestsAccessPage = observer(() => {
 
     useEffect(() => {
         const handle = window.setTimeout(() => {
-            loadUsers(userSearch.trim() || undefined);
+            setDebouncedSearch(userSearch.trim());
         }, 300);
         return () => window.clearTimeout(handle);
-    }, [loadUsers, userSearch]);
+    }, [userSearch]);
 
     const handleStatusChange = async (
         testId: string,
@@ -80,6 +88,7 @@ export const AdminTestsAccessPage = observer(() => {
             sort_dir: "asc",
         });
         setUserSearch("");
+        setDebouncedSearch("");
     };
 
     const handleUsersSave = async (testId: string, userIds: number[]) => {

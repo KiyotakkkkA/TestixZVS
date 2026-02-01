@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 
-import { useTestPassing } from "../../../hooks/tests/useTestPassing";
+import { useTestPassing } from "../../../hooks/tests/passing";
 
 export const TestResultsPage = () => {
     const testId = useParams<{ testId: string }>().testId;

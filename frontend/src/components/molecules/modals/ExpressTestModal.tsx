@@ -5,7 +5,7 @@ import {
     ExpressTestForm,
     type ExpressTestConfig,
 } from "../forms/tests/ExpressTestForm";
-import { useTestPassing } from "../../../hooks/tests/useTestPassing";
+import { useTestPassing } from "../../../hooks/tests/passing";
 import { Test } from "../../../types/tests/Test";
 
 interface ExpressTestModalProps {

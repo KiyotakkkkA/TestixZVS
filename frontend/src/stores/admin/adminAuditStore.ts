@@ -1,27 +1,11 @@
-import { makeAutoObservable, reaction, runInAction } from "mobx";
+import { makeAutoObservable } from "mobx";
 
-import { AdminService } from "../../services/admin";
-
-import type {
-    AdminAuditFilters,
-    AdminAuditPagination,
-    AdminAuditRecord,
-} from "../../types/admin/AdminAudit";
-
-const getErrorMessage = (error: any, fallback: string) =>
-    error?.response?.data?.message || error?.message || fallback;
+import type { AdminAuditFilters } from "../../types/admin/AdminAudit";
 
 const isShallowEqual = (a: Record<string, any>, b: Record<string, any>) =>
     Object.keys(a).every((key) => a[key] === b[key]);
 
 export class AdminAuditStore {
-    auditRecords: AdminAuditRecord[] = [];
-    auditPagination: AdminAuditPagination = {
-        page: 1,
-        per_page: 10,
-        total: 0,
-        last_page: 1,
-    };
     auditFilters: AdminAuditFilters = {
         action_type: "",
         date_from: "",
@@ -29,19 +13,9 @@ export class AdminAuditStore {
         page: 1,
         per_page: 10,
     };
-    auditLoading = false;
-    auditError: string | null = null;
 
     constructor() {
         makeAutoObservable(this, {}, { autoBind: true });
-
-        reaction(
-            () => this.auditAppliedFilters,
-            () => {
-                this.loadAudit();
-            },
-            { fireImmediately: false },
-        );
     }
 
     get auditAppliedFilters(): AdminAuditFilters {
@@ -70,31 +44,6 @@ export class AdminAuditStore {
         )
             return;
         this.auditFilters = updated;
-    }
-
-    async loadAudit(): Promise<void> {
-        try {
-            this.auditLoading = true;
-            this.auditError = null;
-            const response = await AdminService.getAudit(
-                this.auditAppliedFilters,
-            );
-            runInAction(() => {
-                this.auditRecords = response.data;
-                this.auditPagination = response.pagination;
-            });
-        } catch (e: any) {
-            runInAction(() => {
-                this.auditError = getErrorMessage(
-                    e,
-                    "Не удалось загрузить журнал аудита",
-                );
-            });
-        } finally {
-            runInAction(() => {
-                this.auditLoading = false;
-            });
-        }
     }
 }
 

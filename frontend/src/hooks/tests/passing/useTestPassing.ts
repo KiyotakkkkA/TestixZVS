@@ -6,14 +6,15 @@ import {
     TestSettings,
     TestQuestion,
     FullAnswerReviewItem,
-} from "../../types/tests/Test";
-import { StorageService } from "../../services/storage";
-import { TestService } from "../../services/test";
+} from "../../../types/tests/Test";
+import { StorageService } from "../../../services/storage";
+import { TestService } from "../../../services/test";
 
 import {
     evaluateAnswer,
     type AnswerEvaluation,
-} from "../../utils/QuestionTypeRegistry";
+} from "../../../utils/QuestionTypeRegistry";
+import { useTestCompletionCreate } from "./useTestCompletionCreate";
 
 export const useTestPassing = (
     testId: string | null,
@@ -26,6 +27,8 @@ export const useTestPassing = (
     );
     const [timeLeftSeconds, setTimeLeftSeconds] = useState<number | null>(null);
     const timedOutRef = useRef(false);
+
+    const { saveCompletion } = useTestCompletionCreate();
 
     const setAnswerEvaluation = useCallback(
         (
@@ -191,7 +194,7 @@ export const useTestPassing = (
             setSession(newSession);
             StorageService.saveSession(newSession);
 
-            TestService.saveTestCompletionStatistics({
+            saveCompletion({
                 test_id: testId,
                 type: "started",
                 right_answers: 0,
@@ -201,7 +204,7 @@ export const useTestPassing = (
                 console.error("Failed to save test start statistics:", e);
             });
         },
-        [testId, getDefaultSettings, settingsDraft],
+        [testId, getDefaultSettings, settingsDraft, saveCompletion],
     );
 
     const updateSettings = useCallback(
@@ -439,7 +442,7 @@ export const useTestPassing = (
 
         if (finalResult) {
             try {
-                await TestService.saveTestCompletionStatistics({
+                await saveCompletion({
                     test_id: session.testId,
                     type: "finished",
                     right_answers: finalResult.correctAnswers,
@@ -456,7 +459,7 @@ export const useTestPassing = (
         setResult(finalResult);
         StorageService.saveResult(session.testId, finalResult);
         StorageService.clearSession();
-    }, [session, activeQuestions, getDefaultSettings]);
+    }, [session, activeQuestions, getDefaultSettings, saveCompletion]);
 
     useEffect(() => {
         if (!session?.timeLimitSeconds || session.timeLimitSeconds <= 0) {

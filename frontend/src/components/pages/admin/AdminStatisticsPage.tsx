@@ -3,7 +3,10 @@ import { observer } from "mobx-react-lite";
 
 import { Button, InputDate, Selector, Spinner } from "../../atoms";
 import { TestsStatisticsGeneral } from "../../organisms/admin";
-import { useAdminStatistics } from "../../../hooks/admin/useAdminStatistics";
+import {
+    useAdminStatistics,
+    useAdminStatisticsManage,
+} from "../../../hooks/admin/statistic";
 
 type StatisticsViewMode = "general" | "target";
 
@@ -16,8 +19,9 @@ const formatRangeDate = (value: string) =>
 
 export const AdminStatisticsPage = observer(() => {
     const [viewMode, setViewMode] = useState<StatisticsViewMode>("general");
-    const { data, isLoading, error, filters, updateFilters } =
-        useAdminStatistics();
+    const { filters, appliedFilters, updateFilters } =
+        useAdminStatisticsManage();
+    const { data, isLoading, error } = useAdminStatistics(appliedFilters);
 
     const finished = data?.finished ?? {
         summary: {

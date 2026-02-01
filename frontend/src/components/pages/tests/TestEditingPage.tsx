@@ -5,7 +5,7 @@ import { Icon } from "@iconify/react";
 import { Button, InputSmall, Modal, Spinner } from "../../atoms";
 import { TestAutoCreateModal } from "../../molecules/modals";
 import { QuestionEditEntity } from "../../organisms/tests";
-import { useTestManage } from "../../../hooks/tests/useTestManage";
+import { useTest, useTestUpdate } from "../../../hooks/tests/manage";
 import { useToasts } from "../../../hooks/useToasts";
 import {
     createQuestionDraft,
@@ -38,43 +38,38 @@ export const TestEditingPage = () => {
     const current = questions[currentIndex];
 
     const { testId } = useParams();
-    const { getTestById, updateTest, isFetching, isSaving, error } =
-        useTestManage();
+    const {
+        test,
+        isLoading: isFetching,
+        error: fetchError,
+        refetch,
+    } = useTest(testId);
+    const { updateTest, isSaving, error: updateError } = useTestUpdate();
     const { toast } = useToasts();
     const navigate = useNavigate();
 
     useEffect(() => {
-        let mounted = true;
+        if (!testId) {
+            navigate("/errors/404", { replace: true });
+        }
+    }, [testId, navigate]);
 
-        const load = async () => {
-            if (!testId) {
-                navigate("/errors/404", { replace: true });
-                return;
-            }
+    useEffect(() => {
+        if (!testId || isFetching) return;
+        if (!test && !fetchError) {
+            navigate("/errors/404", { replace: true });
+            return;
+        }
+        if (!test) return;
 
-            const test = await getTestById(testId);
-            if (!mounted) return;
-
-            if (!test) {
-                navigate("/errors/404", { replace: true });
-                return;
-            }
-
-            setTestTitle(test.title);
-            setSavedTitle(test.title);
-            const mapped = test.questions.map(mapApiQuestionToDraft);
-            const prepared = mapped.length ? mapped : [createQuestionDraft()];
-            setQuestions(prepared);
-            setCurrentIndex(0);
-            setRemovedQuestionIds([]);
-        };
-
-        load();
-
-        return () => {
-            mounted = false;
-        };
-    }, [testId, getTestById, navigate]);
+        setTestTitle(test.title);
+        setSavedTitle(test.title);
+        const mapped = test.questions.map(mapApiQuestionToDraft);
+        const prepared = mapped.length ? mapped : [createQuestionDraft()];
+        setQuestions(prepared);
+        setCurrentIndex(0);
+        setRemovedQuestionIds([]);
+    }, [testId, test, isFetching, fetchError, navigate]);
 
     const handleAddQuestion = () => {
         const nextQuestions = [...questions, createQuestionDraft()];
@@ -130,7 +125,7 @@ export const TestEditingPage = () => {
 
         const updated = await updateTest(testId, payload);
         if (!updated || !updated.test) {
-            toast.danger(error || "Не удалось сохранить тест");
+            toast.danger(updateError || "Не удалось сохранить тест");
             return;
         }
 
@@ -174,13 +169,13 @@ export const TestEditingPage = () => {
             return;
         }
 
-        const refreshed = await getTestById(testId);
-        if (refreshed) {
-            const mapped = refreshed.questions.map(mapApiQuestionToDraft);
+        const refreshed = await refetch();
+        if (refreshed.data) {
+            const mapped = refreshed.data.questions.map(mapApiQuestionToDraft);
             setQuestions(mapped.length ? mapped : [createQuestionDraft()]);
             setCurrentIndex(0);
-            setTestTitle(refreshed.title);
-            setSavedTitle(refreshed.title);
+            setTestTitle(refreshed.data.title);
+            setSavedTitle(refreshed.data.title);
             setRemovedQuestionIds([]);
         }
 
@@ -414,9 +409,9 @@ export const TestEditingPage = () => {
                         </div>
                     </div>
 
-                    {error && !isFetching && (
+                    {fetchError && !isFetching && (
                         <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-sm text-rose-700">
-                            {error}
+                            {fetchError}
                         </div>
                     )}
 
@@ -485,9 +480,9 @@ export const TestEditingPage = () => {
                     testId={testId}
                     fillBy={autoFillType}
                     onCompleted={async () => {
-                        const refreshed = await getTestById(testId);
-                        if (refreshed) {
-                            const mapped = refreshed.questions.map(
+                        const refreshed = await refetch();
+                        if (refreshed.data) {
+                            const mapped = refreshed.data.questions.map(
                                 mapApiQuestionToDraft,
                             );
                             setQuestions(
@@ -496,8 +491,8 @@ export const TestEditingPage = () => {
                                     : [createQuestionDraft()],
                             );
                             setCurrentIndex(0);
-                            setTestTitle(refreshed.title);
-                            setSavedTitle(refreshed.title);
+                            setTestTitle(refreshed.data.title);
+                            setSavedTitle(refreshed.data.title);
                             setRemovedQuestionIds([]);
                         }
                     }}

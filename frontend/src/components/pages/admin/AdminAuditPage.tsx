@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { observer } from "mobx-react-lite";
 
 import { Button, InputDate, Selector, Spinner } from "../../atoms";
-import { useAdminAudit } from "../../../hooks/admin/useAdminAudit";
+import { useAdminAudit, useAdminAuditManage } from "../../../hooks/admin/audit";
 import {
     AdminAuditPermissionsChangeCard,
     AdminAuditRolesChangeCard,
@@ -20,8 +20,9 @@ import type {
 } from "../../../types/admin/AdminAudit";
 
 export const AdminAuditPage = observer(() => {
-    const { records, pagination, isLoading, error, filters, updateFilters } =
-        useAdminAudit();
+    const { filters, appliedFilters, updateFilters } = useAdminAuditManage();
+    const { records, pagination, isLoading, error } =
+        useAdminAudit(appliedFilters);
 
     const actionOptions = useMemo(
         () => [

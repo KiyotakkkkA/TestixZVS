@@ -1,38 +1,19 @@
-import { makeAutoObservable, reaction, runInAction } from "mobx";
+import { makeAutoObservable } from "mobx";
 
-import { AdminService } from "../../services/admin";
-
-import type {
-    AdminStatisticsFilters,
-    AdminStatisticsResponse,
-} from "../../types/admin/AdminStatistics";
-
-const getErrorMessage = (error: any, fallback: string) =>
-    error?.response?.data?.message || error?.message || fallback;
+import type { AdminStatisticsFilters } from "../../types/admin/AdminStatistics";
 
 const isShallowEqual = (a: Record<string, any>, b: Record<string, any>) =>
     Object.keys(a).every((key) => a[key] === b[key]);
 
 export class AdminStatisticsStore {
-    statisticsData: AdminStatisticsResponse | null = null;
     statisticsFilters: AdminStatisticsFilters = {
         date_from: "",
         date_to: "",
         min_percentage: "",
     };
-    statisticsLoading = false;
-    statisticsError: string | null = null;
 
     constructor() {
         makeAutoObservable(this, {}, { autoBind: true });
-
-        reaction(
-            () => this.statisticsAppliedFilters,
-            () => {
-                this.loadStatistics();
-            },
-            { fireImmediately: false },
-        );
     }
 
     get statisticsAppliedFilters(): AdminStatisticsFilters {
@@ -56,30 +37,6 @@ export class AdminStatisticsStore {
         )
             return;
         this.statisticsFilters = updated;
-    }
-
-    async loadStatistics(): Promise<void> {
-        try {
-            this.statisticsLoading = true;
-            this.statisticsError = null;
-            const response = await AdminService.getStatistics(
-                this.statisticsAppliedFilters,
-            );
-            runInAction(() => {
-                this.statisticsData = response;
-            });
-        } catch (e: any) {
-            runInAction(() => {
-                this.statisticsError = getErrorMessage(
-                    e,
-                    "Не удалось загрузить статистику",
-                );
-            });
-        } finally {
-            runInAction(() => {
-                this.statisticsLoading = false;
-            });
-        }
     }
 }
 

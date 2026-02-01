@@ -14,7 +14,14 @@ import {
     Spinner,
 } from "../../atoms";
 import { RegisterForm } from "../../molecules/forms/auth";
-import { useAdministrateUsers } from "../../../hooks/admin/useAdministrateUsers";
+import {
+    useAdminUsers,
+    useAdminUsersCreate,
+    useAdminUsersDelete,
+    useAdminUsersManage,
+    useAdminUsersUpdatePermissions,
+    useAdminUsersUpdateRoles,
+} from "../../../hooks/admin/users";
 import { useToasts } from "../../../hooks/useToasts";
 
 export const AdminUsersPage = observer(() => {
@@ -25,22 +32,13 @@ export const AdminUsersPage = observer(() => {
         email: string;
     }>(null);
     const { toast } = useToasts();
-    const {
-        users,
-        roles,
-        permissions,
-        pagination,
-        filters,
-        updateFilters,
-        isLoading,
-        isAdding,
-        error,
-        deletingIds,
-        createUser,
-        deleteUser,
-        updateUserRoles,
-        updateUserPermissions,
-    } = useAdministrateUsers();
+    const { filters, appliedFilters, updateFilters } = useAdminUsersManage();
+    const { users, roles, permissions, pagination, isLoading, error } =
+        useAdminUsers(appliedFilters);
+    const { createUser, isAdding } = useAdminUsersCreate();
+    const { deleteUser, deletingIds } = useAdminUsersDelete();
+    const { updateUserRoles } = useAdminUsersUpdateRoles();
+    const { updateUserPermissions } = useAdminUsersUpdatePermissions();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? "");
 

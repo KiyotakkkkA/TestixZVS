@@ -5,9 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { Button, InputSmall, Modal, Selector, Spinner } from "../../atoms";
 import { TestListElementCard } from "../../molecules/cards";
 import { authStore } from "../../../stores/authStore";
-import { useTestManage } from "../../../hooks/tests/useTestManage";
+import { useTestCreate } from "../../../hooks/tests/manage";
 import { useToasts } from "../../../hooks/useToasts";
-import { useTestsList } from "../../../hooks/tests/useTestsList";
+import { useTestsList, useTestsListManage } from "../../../hooks/tests/list";
 
 import type { TestListItem, TestListSort } from "../../../types/tests/TestList";
 
@@ -15,18 +15,15 @@ export const TestsListPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [testName, setTestName] = useState("");
 
-    const { error, createBlankTest } = useTestManage();
+    const { createTest, error: createError } = useTestCreate();
+    const { sort, setSort, page, perPage, setPage, resetFilters } =
+        useTestsListManage();
     const {
         tests: dbTests,
         isLoading: isLoadingTests,
         error: testsError,
-        sort,
-        setSort,
-        page,
-        lastPage,
-        setPage,
-        resetFilters,
-    } = useTestsList();
+        pagination,
+    } = useTestsList({ sort, page, perPage });
     const { addToast } = useToasts();
     const navigate = useNavigate();
 
@@ -86,13 +83,16 @@ export const TestsListPage = () => {
                                 </span>{" "}
                                 из{" "}
                                 <span className="font-semibold text-slate-700">
-                                    {lastPage}
+                                    {pagination.last_page}
                                 </span>
                             </div>
                             <Button
                                 primary
                                 className="w-full px-4 py-2 text-sm sm:w-auto"
-                                disabled={page >= lastPage || isLoadingTests}
+                                disabled={
+                                    page >= pagination.last_page ||
+                                    isLoadingTests
+                                }
                                 onClick={() => setPage(page + 1)}
                             >
                                 Вперёд
@@ -173,7 +173,7 @@ export const TestsListPage = () => {
                         <Button
                             primary
                             onClick={async () => {
-                                const result = await createBlankTest({
+                                const result = await createTest({
                                     title: testName,
                                 });
                                 if (result?.testId) {
@@ -190,7 +190,8 @@ export const TestsListPage = () => {
                                     addToast({
                                         type: "danger",
                                         message:
-                                            error || "Не удалось создать тест",
+                                            createError ||
+                                            "Не удалось создать тест",
                                     });
                                 }
                             }}

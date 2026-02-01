@@ -10,8 +10,8 @@ import {
     SwitchRow,
 } from "../../atoms";
 import { ExpressTestModal } from "../../molecules/modals";
-import { useTestPassing } from "../../../hooks/tests/useTestPassing";
-import { useTestManage } from "../../../hooks/tests/useTestManage";
+import { useTestPassing } from "../../../hooks/tests/passing";
+import { useTestDelete } from "../../../hooks/tests/manage";
 import { TestService } from "../../../services/test";
 import { Spinner } from "../../atoms";
 import { authStore } from "../../../stores/authStore";
@@ -30,7 +30,7 @@ export const TestStartPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { isSaving, deleteTest } = useTestManage();
+    const { isSaving, deleteTest } = useTestDelete();
 
     const testId = useParams<{ testId: string }>().testId;
     const source =
