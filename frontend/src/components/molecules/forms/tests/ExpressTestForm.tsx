@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { Button, InputSlider, InputSmall } from "../../atoms";
-import type { FullAnswerCheckMode } from "../../../types/tests/Test";
+import { Button, InputSlider, InputSmall } from "../../../atoms";
+import type { FullAnswerCheckMode } from "../../../../types/tests/Test";
 
 export interface ExpressTestConfig {
     timeLimitEnabled: boolean;

@@ -4,7 +4,7 @@ import { Modal } from "../../atoms";
 import {
     ExpressTestForm,
     type ExpressTestConfig,
-} from "../forms/ExpressTestForm";
+} from "../forms/tests/ExpressTestForm";
 import { useTestPassing } from "../../../hooks/tests/useTestPassing";
 import { Test } from "../../../types/tests/Test";
 

@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { InputCheckbox, Button, Spinner } from "../../atoms";
-import { ROLE_RANKS, ROLES_NAMES } from "../../../data/admin";
-import { authStore } from "../../../stores/authStore";
+import { InputCheckbox, Button, Spinner } from "../../../atoms";
+import { ROLE_RANKS, ROLES_NAMES } from "../../../../data/admin";
+import { authStore } from "../../../../stores/authStore";
 
-import type { User } from "../../../types/User";
+import type { User } from "../../../../types/User";
 import type {
     AdminPermissionsResponse,
     RoleOption,
-} from "../../../types/admin/AdminUsers";
+} from "../../../../types/admin/AdminUsers";
 
-export type UserRolesFormProps = {
+export type AdminUserRolesFormProps = {
     user: User;
     roles: RoleOption[];
     permissions: AdminPermissionsResponse["permissions"];
@@ -22,7 +22,7 @@ export type UserRolesFormProps = {
     canAssignPermissions: boolean;
 };
 
-export const UserRolesForm = ({
+export const AdminUserRolesForm = ({
     user,
     roles,
     permissions,
@@ -32,7 +32,7 @@ export const UserRolesForm = ({
     onSaveRoles,
     onSavePermissions,
     canAssignPermissions,
-}: UserRolesFormProps) => {
+}: AdminUserRolesFormProps) => {
     const [selectedRoles, setSelectedRoles] = useState<string[]>(
         user.roles ?? [],
     );

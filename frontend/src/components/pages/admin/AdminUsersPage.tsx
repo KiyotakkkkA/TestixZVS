@@ -13,7 +13,7 @@ import {
     Selector,
     Spinner,
 } from "../../atoms";
-import { RegisterForm } from "../../molecules/forms";
+import { RegisterForm } from "../../molecules/forms/auth";
 import { useAdministrateUsers } from "../../../hooks/admin/useAdministrateUsers";
 import { useToasts } from "../../../hooks/useToasts";
 

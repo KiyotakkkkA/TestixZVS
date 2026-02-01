@@ -1,5 +1,5 @@
 import { Modal } from "../../atoms";
-import { TestFromAIFillForm, TestFromJsonFillForm } from "../forms";
+import { TestFromAIFillForm, TestFromJsonFillForm } from "../forms/tests";
 
 interface TestAutoCreateModalProps {
     open: boolean;

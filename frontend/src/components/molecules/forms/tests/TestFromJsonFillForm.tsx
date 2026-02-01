@@ -1,21 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import * as pdfjsLib from "pdfjs-dist";
+import { useMemo, useState } from "react";
 
-import {
-    Button,
-    InputMedia,
-    InputSmall,
-    Modal,
-    ProgressBar,
-} from "../../atoms";
-import { TestService } from "../../../services/test";
-import { AIService } from "../../../services/aiWorker";
-import { useToasts } from "../../../hooks/useToasts";
+import { Button, InputMedia, InputSmall, Modal } from "../../../atoms";
+import { TestService } from "../../../../services/test";
+import { useToasts } from "../../../../hooks/useToasts";
 
 import type {
     JsonQuestionInput,
     TestAutoFillPayload,
-} from "../../../types/tests/TestManagement";
+} from "../../../../types/tests/TestManagement";
 
 type ParsedSelection = {
     indices: number[];
@@ -29,47 +21,6 @@ const typeLabels: Record<JsonQuestionInput["type"], string> = {
     full_answer: "Полный ответ",
 };
 
-const ensurePdfWorker = (() => {
-    let ready = false;
-    return () => {
-        if (ready) return;
-        if (process.env.REACT_APP_ENV_TYPE === "dev") {
-            pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-                "pdfjs-dist/build/pdf.worker.min.mjs",
-                import.meta.url,
-            ).toString();
-        } else if (process.env.REACT_APP_ENV_TYPE === "prod") {
-            pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-        }
-        ready = true;
-    };
-})();
-
-const extractPdfText = async (
-    file: File,
-    onProgress?: (value: number) => void,
-): Promise<string> => {
-    ensurePdfWorker();
-    const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-    const totalPages = pdf.numPages || 1;
-    let text = "";
-
-    for (let pageIndex = 1; pageIndex <= totalPages; pageIndex += 1) {
-        const page = await pdf.getPage(pageIndex);
-        const content = await page.getTextContent();
-        const pageText = (content.items as any[])
-            .map((item) => (item?.str ? String(item.str) : ""))
-            .filter(Boolean)
-            .join(" ");
-        text += `${pageText}\n\n`;
-        const percent = 10 + Math.round((pageIndex / totalPages) * 45);
-        onProgress?.(percent);
-    }
-
-    return text.trim();
-};
-
 const getQuestionsFromJson = (data: any): JsonQuestionInput[] => {
     if (!data) return [];
     if (Array.isArray(data)) return data as JsonQuestionInput[];
@@ -77,8 +28,6 @@ const getQuestionsFromJson = (data: any): JsonQuestionInput[] => {
         return data.questions as JsonQuestionInput[];
     if (Array.isArray(data.test?.questions))
         return data.test.questions as JsonQuestionInput[];
-    if (Array.isArray(data.result?.questions))
-        return data.result.questions as JsonQuestionInput[];
     return [];
 };
 
@@ -134,24 +83,21 @@ const parseSelection = (raw: string, total: number): ParsedSelection => {
     return { indices: list, error };
 };
 
-interface TestFromAIFillFormProps {
+interface TestFromJsonFillFormProps {
     testId: string;
     onSuccess: () => void;
 }
 
-export const TestFromAIFillForm = ({
+export const TestFromJsonFillForm = ({
     testId,
     onSuccess,
-}: TestFromAIFillFormProps) => {
+}: TestFromJsonFillFormProps) => {
     const { toast } = useToasts();
-    const [file, setFile] = useState<File | null>(null);
     const [questions, setQuestions] = useState<JsonQuestionInput[]>([]);
     const [selection, setSelection] = useState("");
     const [parseError, setParseError] = useState<string | null>(null);
-    const [isGenerating, setIsGenerating] = useState(false);
+    const [isReading, setIsReading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [progress, setProgress] = useState(0);
-    const timerRef = useRef<number | null>(null);
     const [isReplaceConfirmOpen, setIsReplaceConfirmOpen] = useState(false);
 
     const total = questions.length;
@@ -169,91 +115,57 @@ export const TestFromAIFillForm = ({
         [parsedSelection.indices, questions],
     );
 
-    const clearTimer = () => {
-        if (timerRef.current) {
-            window.clearInterval(timerRef.current);
-            timerRef.current = null;
-        }
-    };
-
-    useEffect(() => {
-        return () => clearTimer();
-    }, []);
-
-    const startProgress = (startAt = 8, cap = 90) => {
-        clearTimer();
-        setProgress((prev) => Math.max(prev, startAt));
-        timerRef.current = window.setInterval(() => {
-            setProgress((prev) => {
-                if (prev >= cap) return prev;
-                const next = prev + Math.round(Math.random() * 6 + 4);
-                return Math.min(next, cap);
-            });
-        }, 700);
-    };
-
     const handleFileChange = (files: File[]) => {
-        const nextFile = files[0] ?? null;
-        setFile(nextFile);
-        setQuestions([]);
-        setSelection("");
-        setParseError(null);
-        setProgress(0);
-    };
-
-    const handleGenerate = async () => {
+        const file = files[0];
         if (!file) {
-            toast.danger("Прикрепите PDF файл с заданиями.");
+            setQuestions([]);
+            setSelection("");
+            setParseError(null);
             return;
         }
 
-        try {
-            setIsGenerating(true);
-            setParseError(null);
+        setIsReading(true);
+        setParseError(null);
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            try {
+                const raw = String(reader.result ?? "").trim();
+                const data = JSON.parse(raw);
+                const parsed = getQuestionsFromJson(data);
+
+                if (!parsed.length) {
+                    setQuestions([]);
+                    setSelection("");
+                    setParseError("В файле не найден массив questions.");
+                    return;
+                }
+
+                setQuestions(parsed);
+                setSelection(parsed.length > 1 ? `1:${parsed.length}` : "1");
+                setParseError(null);
+            } catch (e: any) {
+                setQuestions([]);
+                setSelection("");
+                setParseError("Не удалось прочитать JSON файл.");
+            } finally {
+                setIsReading(false);
+            }
+        };
+
+        reader.onerror = () => {
             setQuestions([]);
             setSelection("");
-            setProgress(5);
+            setParseError("Не удалось прочитать файл.");
+            setIsReading(false);
+        };
 
-            const rawText = await extractPdfText(file, (percent) => {
-                setProgress((prev) => Math.max(prev, percent));
-            });
-
-            const normalized = rawText.replace(/\s+/g, " ").trim();
-            const maxChars = 12000;
-            const textForModel =
-                normalized.length > maxChars
-                    ? `${normalized.slice(0, maxChars)}...`
-                    : normalized;
-
-            startProgress(65, 90);
-
-            const response = await AIService.fillTestFromText({
-                text: textForModel,
-            });
-
-            const parsed = getQuestionsFromJson(response);
-            if (!parsed.length) {
-                setParseError("Модель не вернула массив questions.");
-                setProgress(0);
-                return;
-            }
-
-            clearTimer();
-            setProgress(100);
-            setQuestions(parsed);
-            setSelection(parsed.length > 1 ? `1:${parsed.length}` : "1");
-        } catch (e: any) {
-            clearTimer();
-            setProgress(0);
-            setParseError(e?.message || "Не удалось обработать PDF файл.");
-        } finally {
-            setIsGenerating(false);
-        }
+        reader.readAsText(file);
     };
 
     const handleSubmit = async (replace = false) => {
         if (!questions.length) {
-            toast.danger("Сначала сформируйте вопросы из PDF.");
+            toast.danger("Загрузите JSON с вопросами.");
             return;
         }
         if (parsedSelection.error) {
@@ -291,42 +203,17 @@ export const TestFromAIFillForm = ({
     return (
         <div className="space-y-5 pb-2">
             <div className="space-y-2">
-                <div className="border border-amber-300 bg-amber-50 p-2 rounded-md text-slate-600 text-sm">
-                    За раз рекомендуется загружать не более 10-12 страниц текста
-                    средней плотности, или не более 5-6 страниц текста высокой
-                    плотности.
-                </div>
                 <div className="text-sm font-semibold text-slate-700">
-                    PDF файл с заданиями
+                    JSON файл с вопросами
                 </div>
                 <InputMedia
-                    accept=".pdf,application/pdf"
+                    accept=".json,application/json"
                     multiple={false}
                     onChange={handleFileChange}
-                    disabled={isGenerating || isSubmitting}
-                    helperText="Загрузите PDF с заданиями — модель сформирует JSON вопросов"
+                    disabled={isReading || isSubmitting}
                 />
                 {parseError && (
                     <div className="text-sm text-rose-600">{parseError}</div>
-                )}
-            </div>
-
-            <div className="space-y-3">
-                <Button
-                    secondary
-                    className="w-full px-4 py-2"
-                    onClick={handleGenerate}
-                    disabled={isGenerating || isSubmitting || !file}
-                >
-                    {isGenerating
-                        ? "Формируем вопросы..."
-                        : "Сформировать вопросы"}
-                </Button>
-                {(isGenerating || progress > 0) && (
-                    <ProgressBar
-                        value={progress}
-                        label="Обработка PDF и генерация"
-                    />
                 )}
             </div>
 
@@ -374,7 +261,7 @@ export const TestFromAIFillForm = ({
 
                             return (
                                 <div
-                                    key={`ai-preview-${number}`}
+                                    key={`json-preview-${number}`}
                                     className="rounded-xl border border-slate-200 bg-slate-50 p-3 shadow-sm"
                                 >
                                     <div className="text-xs font-semibold text-slate-400">
@@ -398,7 +285,7 @@ export const TestFromAIFillForm = ({
                     primary
                     className="px-4 py-2 flex-1"
                     onClick={() => handleSubmit(false)}
-                    disabled={isGenerating || isSubmitting || !questions.length}
+                    disabled={isReading || isSubmitting || !questions.length}
                 >
                     {isSubmitting ? "Импортируем..." : "Импортировать в конец"}
                 </Button>
@@ -406,7 +293,7 @@ export const TestFromAIFillForm = ({
                     danger
                     className="px-4 py-2 flex-1"
                     onClick={() => setIsReplaceConfirmOpen(true)}
-                    disabled={isGenerating || isSubmitting || !questions.length}
+                    disabled={isReading || isSubmitting || !questions.length}
                 >
                     Импортировать с заменой
                 </Button>

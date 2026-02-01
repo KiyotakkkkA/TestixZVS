@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 
-import { UserRolesForm } from "../../forms";
+import { AdminUserRolesForm } from "../../forms/admin";
 import { Button, Spinner } from "../../../atoms";
 import { ROLES_NAMES } from "../../../../data/admin";
 
@@ -11,7 +11,7 @@ import type {
     RoleOption,
 } from "../../../../types/admin/AdminUsers";
 
-export type UserCardProps = {
+export type AdminUserCardProps = {
     user: User;
     roles: RoleOption[];
     permissions: AdminPermissionsResponse["permissions"];
@@ -41,7 +41,7 @@ export const AdminUserCard = ({
     onSaveRoles,
     onSavePermissions,
     canAssignPermissions,
-}: UserCardProps) => {
+}: AdminUserCardProps) => {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -143,7 +143,7 @@ export const AdminUserCard = ({
                 <div
                     className={`mt-5 border-t border-slate-100 pt-5 transition-transform duration-300 ${isOpen ? "translate-y-0" : "-translate-y-2"}`}
                 >
-                    <UserRolesForm
+                    <AdminUserRolesForm
                         user={user}
                         roles={roles}
                         permissions={permissions}

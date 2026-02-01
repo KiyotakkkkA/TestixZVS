@@ -4,9 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { observer } from "mobx-react-lite";
 
-import { Button, InputCheckbox, InputSmall, Spinner } from "../../atoms";
-import { useToasts } from "../../../hooks/useToasts";
-import { authStore } from "../../../stores/authStore";
+import { Button, InputCheckbox, InputSmall, Spinner } from "../../../atoms";
+import { useToasts } from "../../../../hooks/useToasts";
+import { authStore } from "../../../../stores/authStore";
 
 const loginSchema = z.object({
     email: z.string().email("Введите корректный email"),
