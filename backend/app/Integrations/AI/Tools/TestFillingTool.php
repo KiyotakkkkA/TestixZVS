@@ -24,7 +24,6 @@ class TestFillingTool
                                         'type' => 'string',
                                         'enum' => ['single', 'multiple', 'matching', 'full_answer'],
                                     ],
-                                    'question' => ['type' => 'string'],
                                     'title' => ['type' => 'string'],
                                     'options' => [
                                         'type' => 'array',
