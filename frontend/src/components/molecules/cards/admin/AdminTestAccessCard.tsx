@@ -29,6 +29,7 @@ const statusOptions = [
     { value: "all", label: "Доступен всем" },
     { value: "auth", label: "Только авторизованные" },
     { value: "protected", label: "Выборочно" },
+    { value: "link", label: "По ссылке" },
 ];
 
 const statusMeta: Record<
@@ -50,6 +51,11 @@ const statusMeta: Record<
         icon: "mdi:lock-check",
         className: "bg-amber-50 text-amber-700 ring-amber-200",
     },
+    link: {
+        label: "По ссылке",
+        icon: "mdi:link-variant",
+        className: "bg-sky-50 text-sky-700 ring-sky-200",
+    },
 };
 
 export const AdminTestAccessCard = ({
@@ -66,6 +72,7 @@ export const AdminTestAccessCard = ({
     const [selectedUserIds, setSelectedUserIds] =
         useState<string[]>(initialUserIds);
     const [isSavingUsers, setIsSavingUsers] = useState(false);
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         setSelectedUserIds(initialUserIds);
@@ -87,7 +94,32 @@ export const AdminTestAccessCard = ({
         }
     };
 
+    const accessLink = useMemo(() => {
+        if (!test.access_link) return null;
+        if (typeof window === "undefined") return test.access_link;
+        return `${window.location.origin}/tests/${test.id}?access_link=${test.access_link}`;
+    }, [test.access_link, test.id]);
+
+    const handleCopy = async () => {
+        if (!accessLink) return;
+        try {
+            await navigator.clipboard.writeText(accessLink);
+            setCopied(true);
+            window.setTimeout(() => setCopied(false), 1500);
+        } catch {
+            setCopied(false);
+        }
+    };
+
     const statusDetails = statusMeta[test.access_status];
+
+    if (isUpdating) {
+        return (
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-5 shadow-sm">
+                <Spinner className="h-8 w-8 text-slate-400" />
+            </div>
+        );
+    }
 
     return (
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-5 shadow-sm">
@@ -129,6 +161,29 @@ export const AdminTestAccessCard = ({
                     />
                 </div>
             </div>
+
+            {test.access_status === "link" && (
+                <div className="mt-4">
+                    <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                        Ссылка
+                    </div>
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                        <div className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 break-all">
+                            {accessLink ?? "Ссылка не сгенерирована"}
+                        </div>
+                        {accessLink && (
+                            <Button
+                                disabled={copied}
+                                secondary
+                                className="px-4 py-2 text-sm"
+                                onClick={handleCopy}
+                            >
+                                {copied ? "Скопировано" : "Скопировать"}
+                            </Button>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {test.access_status === "protected" && (
                 <div className="mt-5">

@@ -27,6 +27,12 @@ export const AdminAuditUserRemoveCard = ({
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
+                        <span className="inline-flex h-7 w-7 items-center justify-center rounded-full ring-1 ring-inset bg-rose-50 text-rose-700 ring-rose-200">
+                            <Icon
+                                icon="mdi:account-remove"
+                                className="h-4 w-4"
+                            />
+                        </span>
                         <span className="rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">
                             Удаление пользователя
                         </span>

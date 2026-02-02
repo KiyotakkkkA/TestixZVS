@@ -1,3 +1,5 @@
+import { Icon } from "@iconify/react";
+
 import { Button } from "../../../atoms";
 
 import type { AdminAuditRecord } from "../../../../types/admin/AdminAudit";
@@ -16,6 +18,9 @@ export const AdminAuditTestCreatedCard = ({
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
+                        <span className="inline-flex h-7 w-7 items-center justify-center rounded-full ring-1 ring-inset bg-sky-50 text-sky-700 ring-sky-200">
+                            <Icon icon="mdi:file-plus" className="h-4 w-4" />
+                        </span>
                         <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
                             Тест создан
                         </span>

@@ -20,6 +20,7 @@ class Test extends Model
         'creator_id',
         'title',
         'access_status',
+        'access_link',
         'total_questions',
         'total_disabled',
     ];

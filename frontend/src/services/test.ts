@@ -99,8 +99,13 @@ export const TestService = {
         });
         return response.data;
     },
-    getPublicTestById: async (testId: string): Promise<PublicTestResponse> => {
-        const response = await api.get(`/tests/${testId}`);
+    getPublicTestById: async (
+        testId: string,
+        accessLink?: string | null,
+    ): Promise<PublicTestResponse> => {
+        const response = await api.get(`/tests/${testId}`, {
+            params: accessLink ? { access_link: accessLink } : undefined,
+        });
         return response.data;
     },
     saveTestCompletionStatistics: async (

@@ -15,7 +15,7 @@ class AdminTestsAccessUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'access_status' => ['sometimes', 'string', Rule::in(['all', 'auth', 'protected'])],
+            'access_status' => ['sometimes', 'string', Rule::in(['all', 'auth', 'protected', 'link'])],
             'user_ids' => ['sometimes', 'array'],
             'user_ids.*' => ['integer', 'exists:users,id'],
         ];

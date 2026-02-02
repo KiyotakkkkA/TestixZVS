@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { InputCheckbox, Button, Spinner } from "../../../atoms";
-import { ROLE_RANKS, ROLES_NAMES } from "../../../../data/admin";
+import {
+    ROLE_RANKS,
+    ROLES_NAMES,
+    PERMISSION_GROUPS,
+} from "../../../../data/admin";
 import { authStore } from "../../../../stores/authStore";
 
 import type { User } from "../../../../types/User";
@@ -106,7 +110,7 @@ export const AdminUserRolesForm = ({
                         return (
                             <label
                                 key={role.name}
-                                className={`flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2 text-sm ${disabled ? "bg-slate-50 text-slate-400" : "bg-slate-50"} hover:ring-2 hover:ring-indigo-200 cursor-pointer`}
+                                className={`flex items-center justify-between rounded-lg bg-slate-100 border border-slate-300 px-3 py-2 text-sm ${disabled ? "text-slate-400" : ""} hover:ring-2 hover:ring-indigo-200 cursor-pointer`}
                             >
                                 <span>
                                     {ROLES_NAMES[
@@ -152,38 +156,69 @@ export const AdminUserRolesForm = ({
                     <div className="text-xs uppercase text-slate-400">
                         Права
                     </div>
-                    <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        {permOptions.map((perm) => {
-                            const disabled = !canAssignPermissions || isSelf;
-                            const meta = permissions[perm];
-                            const label = meta?.description ?? "[ОШИБКА]";
-                            const sublabel = meta?.name;
+                    <div className="mt-3 space-y-4">
+                        {Object.entries(PERMISSION_GROUPS).map(
+                            ([groupKey, group]) => {
+                                const groupPerms = permOptions.filter((perm) =>
+                                    group.permissions.includes(perm),
+                                );
 
-                            return (
-                                <label
-                                    key={perm}
-                                    className={`flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2 text-sm ${disabled ? "bg-slate-50 text-slate-400" : "bg-slate-50"} hover:ring-2 hover:ring-indigo-200 cursor-pointer`}
-                                >
-                                    <span className="flex min-w-0 flex-col">
-                                        <span className="truncate">
-                                            {label}
-                                        </span>
-                                        {sublabel && (
-                                            <span className="text-xs text-slate-400 truncate">
-                                                {sublabel}
-                                            </span>
-                                        )}
-                                    </span>
-                                    <InputCheckbox
-                                        checked={selectedPerms.includes(perm)}
-                                        onChange={() => {
-                                            if (disabled) return;
-                                            togglePerm(perm);
-                                        }}
-                                    />
-                                </label>
-                            );
-                        })}
+                                if (groupPerms.length === 0) return null;
+
+                                return (
+                                    <div
+                                        key={groupKey}
+                                        className="rounded-lg border border-slate-200 bg-slate-100 p-4"
+                                    >
+                                        <div className="mb-3 text-sm font-semibold text-slate-700">
+                                            {group.title}
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                            {groupPerms.map((perm) => {
+                                                const disabled =
+                                                    !canAssignPermissions ||
+                                                    isSelf;
+                                                const meta = permissions[perm];
+                                                const label =
+                                                    meta?.description ??
+                                                    "[ОШИБКА]";
+                                                const sublabel = meta?.name;
+
+                                                return (
+                                                    <label
+                                                        key={perm}
+                                                        className={`flex items-center bg-slate-200 border border-slate-300 justify-between rounded-lg px-3 py-2 text-sm ${disabled ? "text-slate-400" : ""} hover:ring-2 hover:ring-indigo-200 cursor-pointer`}
+                                                    >
+                                                        <span className="flex min-w-0 flex-col">
+                                                            <span className="truncate">
+                                                                {label}
+                                                            </span>
+                                                            {sublabel && (
+                                                                <span className="text-xs text-slate-400 truncate">
+                                                                    {sublabel}
+                                                                </span>
+                                                            )}
+                                                        </span>
+                                                        <InputCheckbox
+                                                            checked={selectedPerms.includes(
+                                                                perm,
+                                                            )}
+                                                            onChange={() => {
+                                                                if (disabled)
+                                                                    return;
+                                                                togglePerm(
+                                                                    perm,
+                                                                );
+                                                            }}
+                                                        />
+                                                    </label>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                );
+                            },
+                        )}
                     </div>
                     <div className="mt-3 flex justify-end">
                         <Button

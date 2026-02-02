@@ -1,4 +1,4 @@
-export type AdminTestsAccessStatus = "all" | "auth" | "protected";
+export type AdminTestsAccessStatus = "all" | "auth" | "protected" | "link";
 
 export type AdminTestAccessUser = {
     id: number;
@@ -12,6 +12,7 @@ export type AdminTestAccessItem = {
     total_questions: number;
     total_disabled?: number;
     access_status: AdminTestsAccessStatus;
+    access_link?: string | null;
     access_users: AdminTestAccessUser[];
 };
 

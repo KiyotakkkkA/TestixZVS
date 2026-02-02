@@ -29,6 +29,8 @@ export const TestPage = () => {
         savedSource ??
         "db";
 
+    const accessLink = new URLSearchParams(location.search).get("access_link");
+
     useEffect(() => {
         let mounted = true;
 
@@ -38,7 +40,10 @@ export const TestPage = () => {
             try {
                 setIsLoading(true);
                 setAccessError(null);
-                const response = await TestService.getPublicTestById(testId);
+                const response = await TestService.getPublicTestById(
+                    testId,
+                    accessLink,
+                );
                 if (!mounted) return;
                 setDbTest({
                     uuid: response.test.id,
@@ -61,7 +66,7 @@ export const TestPage = () => {
         return () => {
             mounted = false;
         };
-    }, [testId, source]);
+    }, [testId, source, accessLink]);
 
     const test = dbTest;
 

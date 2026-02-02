@@ -20,7 +20,7 @@ const RightPart = observer(() => {
                 </span>
                 {authStore.hasPermission("view admin panel") && (
                     <Button to="/admin" secondary className="px-3 py-2">
-                        Админ-панель
+                        Панель управления
                     </Button>
                 )}
                 <ThemeToggle />
@@ -89,7 +89,7 @@ const MobileNav = observer(({ onClose }: { onClose: () => void }) => {
                             className="py-2 px-3 text-center"
                             onClick={onClose}
                         >
-                            Админ-панель
+                            Панель управления
                         </Button>
                     )}
                     <Button

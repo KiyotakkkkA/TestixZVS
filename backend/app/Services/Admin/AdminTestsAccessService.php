@@ -6,6 +6,7 @@ use App\Models\Test\Test;
 use App\Models\User;
 use App\Repositories\TestsRepository;
 use App\Services\TestsAccessService;
+use Illuminate\Support\Str;
 
 class AdminTestsAccessService
 {
@@ -58,6 +59,13 @@ class AdminTestsAccessService
 
         if (array_key_exists('access_status', $payload)) {
             $test->access_status = $payload['access_status'];
+            if ($payload['access_status'] === 'link') {
+                if (!$test->access_link) {
+                    $test->access_link = Str::random(32);
+                }
+            } else {
+                $test->access_link = null;
+            }
             $test->save();
         }
 
@@ -125,6 +133,7 @@ class AdminTestsAccessService
             'total_questions' => $test->total_questions,
             'total_disabled' => $test->total_disabled,
             'access_status' => $this->resolveStatus($test->access_status),
+            'access_link' => $test->access_link,
             'access_users' => $this->mapAccessUsers($test->accessUsers),
         ];
     }

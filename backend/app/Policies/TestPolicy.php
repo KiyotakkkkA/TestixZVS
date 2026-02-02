@@ -97,6 +97,16 @@ class TestPolicy
             return true;
         }
 
+        // Доступ по ссылке для любого авторизованного пользователя
+        if ($test->access_status === TestAccessStatus::LINK) {
+            $accessLink = request()->query('access_link');
+            if (!$accessLink || !$test->access_link) {
+                return false;
+            }
+
+            return hash_equals($test->access_link, $accessLink);
+        }
+
         // А иначе проверяем, есть ли у пользователя доступ к этому тесту
         return $test->accessUsers()->where('users.id', $user->id)->exists();
     }

@@ -9,12 +9,33 @@ export type AdminAuditTestAccessUpdatedCardProps = {
     record: AdminAuditRecord;
 };
 
+const statusMeta: Record<string, { icon: string; className: string }> = {
+    all: {
+        icon: "mdi:earth",
+        className: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+    },
+    auth: {
+        icon: "mdi:account-check",
+        className: "bg-indigo-50 text-indigo-700 ring-indigo-200",
+    },
+    protected: {
+        icon: "mdi:lock-check",
+        className: "bg-amber-50 text-amber-700 ring-amber-200",
+    },
+    link: {
+        icon: "mdi:link-variant",
+        className: "bg-sky-50 text-sky-700 ring-sky-200",
+    },
+};
+
 const statusLabel = (value?: string) => {
     switch (value) {
         case "auth":
             return "Только авторизованные";
         case "protected":
             return "Выборочно";
+        case "link":
+            return "По ссылке";
         case "all":
         default:
             return "Доступен всем";
@@ -33,11 +54,44 @@ export const AdminAuditTestAccessUpdatedCard = ({
     const oldUsers = useMemo(() => oldAccess?.users ?? [], [oldAccess?.users]);
     const newUsers = useMemo(() => newAccess?.users ?? [], [newAccess?.users]);
 
+    const oldStatusKey = oldAccess?.status ?? "all";
+    const newStatusKey = newAccess?.status ?? "all";
+    const oldStatusDetails = statusMeta[oldStatusKey] ?? statusMeta.all;
+    const newStatusDetails = statusMeta[newStatusKey] ?? statusMeta.all;
+
     return (
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 md:p-5 shadow-sm">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
+                        <span className="inline-flex h-7 w-7 items-center justify-center rounded-full ring-1 ring-inset bg-indigo-50 text-indigo-700 ring-indigo-200">
+                            <Icon icon="mdi:lock-check" className="h-4 w-4" />
+                        </span>
+                        <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-100 px-2 py-1">
+                            <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+                                Было
+                            </span>
+                            <span
+                                className={`inline-flex h-6 w-6 items-center justify-center rounded-full ring-1 ring-inset ${oldStatusDetails.className}`}
+                            >
+                                <Icon
+                                    icon={oldStatusDetails.icon}
+                                    className="h-4 w-4"
+                                />
+                            </span>
+                            <span className="mx-1 h-4 w-px bg-slate-200" />
+                            <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+                                Стало
+                            </span>
+                            <span
+                                className={`inline-flex h-6 w-6 items-center justify-center rounded-full ring-1 ring-inset ${newStatusDetails.className}`}
+                            >
+                                <Icon
+                                    icon={newStatusDetails.icon}
+                                    className="h-4 w-4"
+                                />
+                            </span>
+                        </div>
                         <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
                             Доступ к тесту
                         </span>

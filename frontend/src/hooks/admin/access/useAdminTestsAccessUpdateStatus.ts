@@ -39,6 +39,6 @@ export const useAdminTestsAccessUpdateStatus = () => {
             testId: string,
             status: AdminTestsAccessStatus,
         ) => mutation.mutateAsync({ testId, status }).then((resp) => resp.test),
-        isUpdating,
+        isUpdating: isUpdating,
     };
 };

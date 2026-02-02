@@ -31,6 +31,9 @@ export const AdminAuditRolesChangeCard = ({
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
+                        <span className="inline-flex h-7 w-7 items-center justify-center rounded-full ring-1 ring-inset bg-indigo-50 text-indigo-600 ring-indigo-200">
+                            <Icon icon="mdi:account-key" className="h-4 w-4" />
+                        </span>
                         <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600">
                             Изменение ролей
                         </span>
