@@ -1,8 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
+import { Icon } from "@iconify/react";
 
 import { Button, InputDate, Selector, Spinner } from "../../atoms";
 import { useAdminAudit, useAdminAuditManage } from "../../../hooks/admin/audit";
+import { AdminService } from "../../../services/admin";
 import {
     AdminAuditPermissionsChangeCard,
     AdminAuditRolesChangeCard,
@@ -23,6 +25,7 @@ export const AdminAuditPage = observer(() => {
     const { filters, appliedFilters, updateFilters } = useAdminAuditManage();
     const { records, pagination, isLoading, error } =
         useAdminAudit(appliedFilters);
+    const [isDownloading, setIsDownloading] = useState(false);
 
     const actionOptions = useMemo(
         () => [
@@ -93,6 +96,27 @@ export const AdminAuditPage = observer(() => {
                 );
             default:
                 return null;
+        }
+    };
+
+    const normalizedFilters = useMemo(
+        () => ({
+            ...appliedFilters,
+            action_type: appliedFilters.action_type || undefined,
+            date_from: appliedFilters.date_from || undefined,
+            date_to: appliedFilters.date_to || undefined,
+            page: undefined,
+            per_page: undefined,
+        }),
+        [appliedFilters],
+    );
+
+    const handleDownload = async () => {
+        try {
+            setIsDownloading(true);
+            await AdminService.downloadAuditPdf(normalizedFilters);
+        } finally {
+            setIsDownloading(false);
         }
     };
 
@@ -187,19 +211,33 @@ export const AdminAuditPage = observer(() => {
                             Вперёд
                         </Button>
                     </div>
-                    <Button
-                        dangerInverted
-                        className="w-full px-4 py-2 text-sm sm:w-auto"
-                        onClick={() =>
-                            updateFilters({
-                                action_type: "",
-                                date_from: "",
-                                date_to: "",
-                            })
-                        }
-                    >
-                        Сбросить фильтры
-                    </Button>
+                    <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+                        <Button
+                            secondary
+                            className="p-2"
+                            onClick={handleDownload}
+                            disabled={isDownloading}
+                        >
+                            {isDownloading ? (
+                                <Spinner className="h-4 w-4" />
+                            ) : (
+                                <Icon icon="mdi:download" className="h-5 w-5" />
+                            )}
+                        </Button>
+                        <Button
+                            dangerInverted
+                            className="w-full px-4 py-2 text-sm sm:w-auto"
+                            onClick={() =>
+                                updateFilters({
+                                    action_type: "",
+                                    date_from: "",
+                                    date_to: "",
+                                })
+                            }
+                        >
+                            Сбросить фильтры
+                        </Button>
+                    </div>
                 </div>
             </div>
 
