@@ -110,7 +110,7 @@ export const AdminAuditFiltersPanel = ({
                 </Button>
                 <Button
                     dangerInverted
-                    className="px-4 py-2 text-sm"
+                    className="flex-1 px-4 py-2 text-sm"
                     onClick={onReset}
                 >
                     Сбросить фильтры

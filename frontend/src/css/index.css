@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "./animations.css";
+
 :root {
     --slate-50: 255 255 255;
     --slate-100: 241 245 249;

@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "react-query";
 
-import "./index.css";
+import "./css/index.css";
 import App from "./App";
 import { ToastProvider } from "./providers/ToastProvider";
 import { ThemeProvider } from "./providers/ThemeProvider";

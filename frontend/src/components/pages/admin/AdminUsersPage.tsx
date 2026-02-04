@@ -167,7 +167,7 @@ export const AdminUsersPage = observer(() => {
 
     return (
         <>
-            <div className="flex flex-col gap-4 lg:flex-row">
+            <div className="flex flex-col gap-4 lg:flex-row animate-fade-in">
                 <div className="order-2 flex-1 space-y-4 lg:order-1">
                     <div className="rounded-lg border border-slate-200 bg-slate-50 p-6 shadow-sm">
                         <div className="flex flex-col gap-3 md:items-start sm:flex-row sm:items-start sm:justify-between">
