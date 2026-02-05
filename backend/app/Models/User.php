@@ -21,6 +21,7 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'registered_by',
         'name',
         'email',
         'password',
@@ -51,5 +52,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function registeredBy()
+    {
+        return $this->belongsTo(User::class, 'registered_by');
     }
 }

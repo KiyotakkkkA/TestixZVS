@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { InputCheckbox, Button, Spinner } from "../../../atoms";
+import { InputCheckbox, Button } from "../../../atoms";
 import {
     ROLE_RANKS,
     ROLES_NAMES,
@@ -133,6 +133,8 @@ export const AdminUserRolesForm = ({
                     <Button
                         secondary
                         className="px-4 py-2 text-sm"
+                        isLoading={savingRoles}
+                        loadingText="Сохраняем..."
                         disabled={savingRoles || isSelf}
                         onClick={async () => {
                             setSavingRoles(true);
@@ -143,10 +145,7 @@ export const AdminUserRolesForm = ({
                             }
                         }}
                     >
-                        <span className="inline-flex items-center gap-2">
-                            {savingRoles && <Spinner className="h-4 w-4" />}
-                            Сохранить роли
-                        </span>
+                        Сохранить роли
                     </Button>
                 </div>
             </div>
@@ -224,6 +223,8 @@ export const AdminUserRolesForm = ({
                         <Button
                             secondary
                             className="px-4 py-2 text-sm"
+                            isLoading={savingPerms}
+                            loadingText="Сохраняем..."
                             disabled={
                                 savingPerms || !canAssignPermissions || isSelf
                             }
@@ -236,10 +237,7 @@ export const AdminUserRolesForm = ({
                                 }
                             }}
                         >
-                            <span className="inline-flex items-center gap-2">
-                                {savingPerms && <Spinner className="h-4 w-4" />}
-                                Сохранить права
-                            </span>
+                            Сохранить права
                         </Button>
                     </div>
                 </div>

@@ -203,6 +203,8 @@ export const AdminTestAccessCard = ({
                             <Button
                                 primary
                                 className="px-4 py-2 text-sm"
+                                isLoading={isSavingUsers}
+                                loadingText="Сохраняем..."
                                 disabled={
                                     !hasUsersChanges ||
                                     isSavingUsers ||
@@ -210,11 +212,7 @@ export const AdminTestAccessCard = ({
                                 }
                                 onClick={handleUsersSave}
                             >
-                                {isSavingUsers ? (
-                                    <Spinner className="h-4 w-4" />
-                                ) : (
-                                    "Сохранить доступ"
-                                )}
+                                Сохранить доступ
                             </Button>
                             {hasUsersChanges && !isSavingUsers && (
                                 <Button

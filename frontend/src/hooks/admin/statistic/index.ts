@@ -1,2 +1,2 @@
-export { useAdminStatistics } from "./useAdminStatistics";
+export { useAdminStatisticsAPI } from "./useAdminStatisticsAPI";
 export { useAdminStatisticsManage } from "./useAdminStatisticsManage";

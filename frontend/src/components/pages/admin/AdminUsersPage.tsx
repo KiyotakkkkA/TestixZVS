@@ -5,18 +5,15 @@ import { Icon } from "@iconify/react";
 import { AdminUserCard } from "../../molecules/cards/admin";
 import { authStore } from "../../../stores/authStore";
 import { ROLE_RANKS, ROLES_NAMES } from "../../../data/admin";
-import { Button, Modal, Spinner } from "../../atoms";
+import { Button, Modal } from "../../atoms";
 import { RegisterForm } from "../../molecules/forms/auth";
 import { AdminUsersFiltersPanel } from "../../molecules/filters/admin/AdminUsersFiltersPanel";
 import {
-    useAdminUsers,
-    useAdminUsersCreate,
-    useAdminUsersDelete,
+    useAdminUsersAPI,
     useAdminUsersManage,
-    useAdminUsersUpdatePermissions,
-    useAdminUsersUpdateRoles,
 } from "../../../hooks/admin/users";
 import { useToasts } from "../../../hooks/useToasts";
+import { DataInformalBlock } from "../../molecules/general";
 
 export const AdminUsersPage = observer(() => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -27,12 +24,20 @@ export const AdminUsersPage = observer(() => {
     }>(null);
     const { toast } = useToasts();
     const { filters, appliedFilters, updateFilters } = useAdminUsersManage();
-    const { users, roles, permissions, pagination, isLoading, error } =
-        useAdminUsers(appliedFilters);
-    const { createUser, isAdding } = useAdminUsersCreate();
-    const { deleteUser, deletingIds } = useAdminUsersDelete();
-    const { updateUserRoles } = useAdminUsersUpdateRoles();
-    const { updateUserPermissions } = useAdminUsersUpdatePermissions();
+    const {
+        users,
+        roles,
+        permissions,
+        pagination,
+        isLoading,
+        error,
+        createUser,
+        isAdding,
+        deleteUser,
+        deletingIds,
+        updateUserRoles,
+        updateUserPermissions,
+    } = useAdminUsersAPI(appliedFilters);
 
     const [searchValue, setSearchValue] = useState(filters.search ?? "");
 
@@ -197,26 +202,16 @@ export const AdminUsersPage = observer(() => {
                         </div>
                     </div>
 
-                    {isLoading && (
-                        <div className="w-full rounded-lg border border-slate-200 bg-slate-50 p-6 text-center text-sm text-slate-500">
-                            <div className="flex items-center justify-center gap-2">
-                                <Spinner className="h-4 w-4" />
-                                Загружаем пользователей...
-                            </div>
-                        </div>
-                    )}
-
-                    {!isLoading && error && (
-                        <div className="w-full rounded-lg border border-rose-200 bg-rose-50 p-6 text-sm text-rose-700">
-                            {error}
-                        </div>
-                    )}
-
-                    {!isLoading && !error && users.length === 0 && (
-                        <div className="w-full rounded-lg border border-slate-200 bg-slate-50 p-6 text-center text-sm text-slate-500">
-                            Пользователи не найдены.
-                        </div>
-                    )}
+                    <DataInformalBlock
+                        isLoading={isLoading}
+                        isError={!!error}
+                        isEmpty={users.length === 0 && !isLoading && !error}
+                        loadingMessage="Загрузка пользователей..."
+                        errorMessage={
+                            error || "Не удалось загрузить пользователей."
+                        }
+                        emptyMessage="Пользователей не найдено."
+                    />
 
                     {!isLoading && !error && users.length > 0 && (
                         <div className="grid gap-4">
@@ -322,19 +317,19 @@ export const AdminUsersPage = observer(() => {
                             danger
                             className="p-2"
                             onClick={handleConfirmDelete}
+                            isLoading={
+                                deleteTarget
+                                    ? Boolean(deletingIds[deleteTarget.id])
+                                    : false
+                            }
+                            loadingText="Удаляем..."
                             disabled={
                                 deleteTarget
                                     ? Boolean(deletingIds[deleteTarget.id])
                                     : false
                             }
                         >
-                            <span className="inline-flex items-center gap-2">
-                                {deleteTarget &&
-                                    deletingIds[deleteTarget.id] && (
-                                        <Spinner className="h-4 w-4" />
-                                    )}
-                                Удалить
-                            </span>
+                            Удалить
                         </Button>
                     </div>
                 </div>

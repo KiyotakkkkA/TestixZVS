@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Icon } from "@iconify/react";
 
 import { AdminUserRolesForm } from "../../forms/admin";
-import { Button, Spinner } from "../../../atoms";
+import { Button } from "../../../atoms";
 import { ROLES_NAMES } from "../../../../data/admin";
 
 import type { User } from "../../../../types/User";
@@ -111,19 +111,13 @@ export const AdminUserCard = ({
                             <Button
                                 dangerNoBackground
                                 className="p-1"
+                                isLoading={isDeleting}
                                 disabled={isDeleting}
                                 onClick={async () => {
                                     onRequestDelete(user);
                                 }}
                             >
-                                {isDeleting ? (
-                                    <Spinner className="h-4 w-4" />
-                                ) : (
-                                    <Icon
-                                        icon="mdi:trash"
-                                        className="h-6 w-6"
-                                    />
-                                )}
+                                <Icon icon="mdi:trash" className="h-6 w-6" />
                             </Button>
                         )}
                     </div>

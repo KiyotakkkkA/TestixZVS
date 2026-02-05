@@ -8,6 +8,7 @@ use App\Http\Controllers\AuditController;
 use App\Http\Controllers\QuestionFilesController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\StatisticsController;
+use App\Http\Controllers\Teacher\TeacherUsersController;
 use App\Http\Controllers\TestsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -61,6 +62,20 @@ Route::middleware(['auth:sanctum', 'permission:view admin panel'])->prefix('admi
         Route::patch('/{testId}/access', [AdminTestsAccessController::class, 'update'])
             ->middleware('permission:edit tests access')
             ->name('admin.tests.access.update');
+    });
+});
+
+// Роуты для панели преподавателя
+Route::middleware(['auth:sanctum', 'permission:view teacher panel'])->prefix('teacher')->group(function () {
+    Route::group(['prefix' => 'groups'], function () {
+        Route::get('/', [TeacherUsersController::class, 'index'])->name('teacher.groups.index');
+        Route::post('/', [TeacherUsersController::class, 'store'])->name('teacher.groups.store');
+        Route::patch('/{group}/name', [TeacherUsersController::class, 'updateName'])->name('teacher.groups.update_name');
+        Route::post('/{group}/participants', [TeacherUsersController::class, 'addParticipants'])->name('teacher.groups.add_participants');
+        Route::delete('/{group}/participants/{user}', [TeacherUsersController::class, 'removeParticipant'])->name('teacher.groups.remove_participant');
+        Route::delete('/{group}', [TeacherUsersController::class, 'destroy'])->name('teacher.groups.destroy');
+        Route::get('/users', [TeacherUsersController::class, 'users'])->name('teacher.groups.users');
+        Route::post('/users', [TeacherUsersController::class, 'registerUser'])->name('teacher.groups.users.register');
     });
 });
 

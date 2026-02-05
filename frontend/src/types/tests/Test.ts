@@ -1,6 +1,5 @@
 export interface TestSession {
     testId: string;
-    source?: "local" | "db";
     currentQuestionIndex: number;
     userAnswers: Record<number, number[] | string[]>;
     answerEvaluations?: Record<

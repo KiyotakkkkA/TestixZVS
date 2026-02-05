@@ -23,7 +23,7 @@ const NavigationPanel = () => {
                 </NavLink>
                 <NavLink to="/teacher/users" className={navItemClass}>
                     <Icon icon="mdi:account-multiple" width={22} height={22} />
-                    Пользователи
+                    Группы
                 </NavLink>
                 <NavLink to="/teacher/tests-access" className={navItemClass}>
                     <Icon icon="mdi:lock" width={22} height={22} />
@@ -79,7 +79,7 @@ export const TeacherLayout = () => {
 
                 <div className="flex-1">
                     <div className="flex w-full justify-center">
-                        <div className="w-full max-w-5xl p-4 md:p-6">
+                        <div className="w-full max-w-[110rem] md:px-4">
                             <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-3 shadow-md md:hidden">
                                 <NavigationPanel />
                             </div>

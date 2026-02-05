@@ -160,7 +160,6 @@ export const useTestPassing = (
     const startTest = useCallback(
         (opts?: {
             mode?: "normal" | "express";
-            source?: "local" | "db";
             questionIds?: number[];
             settings?: TestSettings;
             timeLimitSeconds?: number;
@@ -175,7 +174,6 @@ export const useTestPassing = (
             };
             const newSession: TestSession = {
                 testId,
-                source: opts?.source,
                 currentQuestionIndex: 0,
                 userAnswers: {},
                 answerEvaluations: {},

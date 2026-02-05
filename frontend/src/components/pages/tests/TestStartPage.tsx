@@ -9,7 +9,7 @@ import {
     SlidedPanel,
     SwitchRow,
 } from "../../atoms";
-import { ExpressTestModal } from "../../molecules/modals";
+import { ExpressTestModal } from "../../molecules/modals/tests";
 import { useTestPassing } from "../../../hooks/tests/passing";
 import { useTestDelete } from "../../../hooks/tests/manage";
 import { TestService } from "../../../services/test";
@@ -33,15 +33,12 @@ export const TestStartPage = () => {
     const { isSaving, deleteTest } = useTestDelete();
 
     const testId = useParams<{ testId: string }>().testId;
-    const source =
-        (location.state as { source?: "local" | "db" } | null)?.source ?? "db";
     const accessLink = new URLSearchParams(location.search).get("access_link");
 
     useEffect(() => {
         let mounted = true;
         const load = async () => {
             if (!testId) return;
-            if (source === "local") return;
             try {
                 setIsLoading(true);
                 setAccessError(null);
@@ -73,7 +70,7 @@ export const TestStartPage = () => {
         return () => {
             mounted = false;
         };
-    }, [testId, source, accessLink]);
+    }, [testId, accessLink]);
 
     const test = dbTest;
 
@@ -156,13 +153,9 @@ export const TestStartPage = () => {
         (test.is_current_user_creator ?? false) ||
         authStore.hasPermission("tests master access");
     const canDeleteTest =
-        accessToTestManagement &&
-        source === "db" &&
-        authStore.hasPermission("delete tests");
+        accessToTestManagement && authStore.hasPermission("delete tests");
     const canEditTest =
-        accessToTestManagement &&
-        source === "db" &&
-        authStore.hasPermission("edit tests");
+        accessToTestManagement && authStore.hasPermission("edit tests");
     const canDownloadTest = authStore.hasPermission("make reports");
 
     const handleDownload = async () => {
@@ -196,17 +189,14 @@ export const TestStartPage = () => {
                                     <Button
                                         onClick={handleDownload}
                                         primaryNoBackground
+                                        isLoading={isDownloadingPdf}
                                         className="text-md font-medium flex items-center gap-2"
                                         disabled={isDownloadingPdf}
                                     >
-                                        {isDownloadingPdf ? (
-                                            <Spinner className="h-6 w-6" />
-                                        ) : (
-                                            <Icon
-                                                icon="mdi:download"
-                                                className="h-7 w-7"
-                                            />
-                                        )}
+                                        <Icon
+                                            icon="mdi:download"
+                                            className="h-7 w-7"
+                                        />
                                     </Button>
                                 )}
                                 {canEditTest && (
@@ -292,7 +282,7 @@ export const TestStartPage = () => {
 
                 <Button
                     onClick={() => {
-                        startTest({ mode: "normal", source });
+                        startTest({ mode: "normal" });
                         const linkQuery = accessLink
                             ? `?access_link=${accessLink}`
                             : "";
@@ -429,7 +419,6 @@ export const TestStartPage = () => {
                 test={test}
                 open={isOpenModal}
                 totalQuestions={test.questions.length}
-                source={source}
                 onClose={() => setIsOpenModal(false)}
             />
             <Modal
@@ -462,6 +451,8 @@ export const TestStartPage = () => {
                         <Button
                             danger
                             className="p-2 flex items-center gap-3"
+                            isLoading={isSaving}
+                            loadingText="Удаляем..."
                             disabled={isSaving}
                             onClick={async () => {
                                 if (!testId) return;
@@ -469,8 +460,7 @@ export const TestStartPage = () => {
                                 navigate("/");
                             }}
                         >
-                            {isSaving && <Spinner className="h-5 w-5" />}
-                            {isSaving ? "Удаление..." : "Удалить"}
+                            Удалить
                         </Button>
                     </div>
                 </div>

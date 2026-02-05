@@ -1,19 +1,18 @@
 import { useNavigate } from "react-router-dom";
 
-import { Modal } from "../../atoms";
+import { Modal } from "../../../atoms";
 import {
     ExpressTestForm,
     type ExpressTestConfig,
-} from "../forms/tests/ExpressTestForm";
-import { useTestPassing } from "../../../hooks/tests/passing";
-import { Test } from "../../../types/tests/Test";
+} from "../../forms/tests/ExpressTestForm";
+import { useTestPassing } from "../../../../hooks/tests/passing";
+import { Test } from "../../../../types/tests/Test";
 
 interface ExpressTestModalProps {
     test: Test;
     open: boolean;
     totalQuestions: number;
     onClose: () => void;
-    source?: "local" | "db";
 }
 
 export const ExpressTestModal = ({
@@ -21,7 +20,6 @@ export const ExpressTestModal = ({
     open,
     totalQuestions,
     onClose,
-    source = "local",
 }: ExpressTestModalProps) => {
     const { startTest } = useTestPassing(test.uuid, test.questions);
 
@@ -57,7 +55,6 @@ export const ExpressTestModal = ({
 
         startTest({
             mode: "express",
-            source,
             questionIds,
             timeLimitSeconds,
             settings: {

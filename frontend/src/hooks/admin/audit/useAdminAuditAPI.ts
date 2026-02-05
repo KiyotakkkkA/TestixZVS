@@ -24,7 +24,7 @@ const normalizeFilters = (filters: AdminAuditFilters): AdminAuditFilters => ({
     date_to: filters.date_to || undefined,
 });
 
-export const useAdminAudit = (filters: AdminAuditFilters) => {
+export const useAdminAuditAPI = (filters: AdminAuditFilters) => {
     const appliedFilters = normalizeFilters(filters);
 
     const query = useQuery(

@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { observer } from "mobx-react-lite";
 
-import { Button, InputCheckbox, InputSmall, Spinner } from "../../../atoms";
+import { Button, InputCheckbox, InputSmall } from "../../../atoms";
 import { useToasts } from "../../../../hooks/useToasts";
 import { authStore } from "../../../../stores/authStore";
 
@@ -131,12 +131,11 @@ export const LoginForm = observer(() => {
                 <Button
                     primary
                     className="flex-1 px-5 py-2 text-sm font-medium flex items-center justify-center"
+                    isLoading={authStore.isLoading}
+                    loadingText="Входим..."
                     type="submit"
                     disabled={authStore.isLoading}
                 >
-                    {authStore.isLoading && (
-                        <Spinner className="h-4 w-4 mr-2" />
-                    )}
                     Войти
                 </Button>
             </div>

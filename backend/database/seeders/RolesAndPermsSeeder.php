@@ -105,6 +105,7 @@ class RolesAndPermsSeeder extends Seeder
                 'create tests',
                 'edit tests',
                 'delete tests',
+                'edit tests access',
                 'view teacher panel'
             ],
             'editor' => [

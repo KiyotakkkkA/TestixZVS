@@ -1,15 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 
-import { Spinner } from "../../atoms";
+import { DataInformalBlock } from "../../molecules/general";
 import { AdminTestAccessCard } from "../../molecules/cards/admin";
 import { AdminTestsAccessFiltersPanel } from "../../molecules/filters/admin/AdminTestsAccessFiltersPanel";
 import {
-    useAdminTestsAccess,
+    useAdminTestsAccessAPI,
     useAdminTestsAccessManage,
-    useAdminTestsAccessUpdateStatus,
-    useAdminTestsAccessUpdateUsers,
-    useAdminTestsAccessUsers,
 } from "../../../hooks/admin/access";
 import { useToasts } from "../../../hooks/useToasts";
 
@@ -20,19 +17,21 @@ export const AdminTestsAccessPage = observer(() => {
     const { toast } = useToasts();
     const { filters, appliedFilters, updateFilters } =
         useAdminTestsAccessManage();
-    const { tests, pagination, isLoading, error } =
-        useAdminTestsAccess(appliedFilters);
     const [userSearch, setUserSearch] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
     const {
+        tests,
+        pagination,
+        isLoading,
+        error,
         users,
-        isLoading: usersLoading,
-        error: usersError,
-    } = useAdminTestsAccessUsers(debouncedSearch || undefined);
-    const { updateTestAccessStatus, isUpdating: statusUpdating } =
-        useAdminTestsAccessUpdateStatus();
-    const { updateTestAccessUsers, isUpdating: usersUpdating } =
-        useAdminTestsAccessUpdateUsers();
+        usersLoading,
+        usersError,
+        updateTestAccessStatus,
+        statusUpdating,
+        updateTestAccessUsers,
+        usersUpdating,
+    } = useAdminTestsAccessAPI(appliedFilters, debouncedSearch || undefined);
     const isUpdating = useMemo(
         () => ({ ...statusUpdating, ...usersUpdating }),
         [statusUpdating, usersUpdating],
@@ -120,26 +119,14 @@ export const AdminTestsAccessPage = observer(() => {
                     </div>
                 </div>
 
-                {isLoading && (
-                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-6 text-center text-sm text-slate-500">
-                        <div className="flex items-center justify-center gap-2">
-                            <Spinner className="h-4 w-4" />
-                            Загружаем тесты...
-                        </div>
-                    </div>
-                )}
-
-                {!isLoading && error && (
-                    <div className="rounded-lg border border-rose-200 bg-rose-50 p-6 text-sm text-rose-700">
-                        {error}
-                    </div>
-                )}
-
-                {!isLoading && !error && tests.length === 0 && (
-                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-6 text-center text-sm text-slate-500">
-                        Тестов не найдено.
-                    </div>
-                )}
+                <DataInformalBlock
+                    isLoading={isLoading}
+                    isError={!!error}
+                    isEmpty={tests.length === 0 && !isLoading && !error}
+                    loadingMessage="Загрузка тестов..."
+                    errorMessage={error || "Не удалось загрузить тесты."}
+                    emptyMessage="Тестов не найдено."
+                />
 
                 {!isLoading && !error && tests.length > 0 && (
                     <div className="space-y-4">

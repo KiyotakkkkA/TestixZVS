@@ -1,6 +1,6 @@
 import { Icon } from "@iconify/react";
 
-import { Button, InputDate, Selector, Spinner } from "../../../atoms";
+import { Button, InputDate, Selector } from "../../../atoms";
 
 import type { SelectorOption } from "../../../atoms/Selector";
 import type { AdminAuditActionType } from "../../../../types/admin/AdminAudit";
@@ -99,14 +99,12 @@ export const AdminAuditFiltersPanel = ({
                 <Button
                     secondary
                     className="p-2"
+                    isLoading={isDownloading}
+                    loadingText="Готовим файл..."
                     onClick={onDownload}
                     disabled={isDownloading}
                 >
-                    {isDownloading ? (
-                        <Spinner className="h-4 w-4" />
-                    ) : (
-                        <Icon icon="mdi:download" className="h-5 w-5" />
-                    )}
+                    <Icon icon="mdi:download" className="h-5 w-5" />
                 </Button>
                 <Button
                     dangerInverted

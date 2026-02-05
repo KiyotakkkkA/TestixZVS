@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 
-import { Spinner } from "../../atoms";
-import { useAdminAudit, useAdminAuditManage } from "../../../hooks/admin/audit";
+import {
+    useAdminAuditAPI,
+    useAdminAuditManage,
+} from "../../../hooks/admin/audit";
 import { AdminService } from "../../../services/admin";
 import { AdminAuditFiltersPanel } from "../../molecules/filters/admin/AdminAuditFiltersPanel";
 import {
@@ -15,6 +17,7 @@ import {
     AdminAuditTestDeletedCard,
     AdminAuditTestAccessUpdatedCard,
 } from "../../molecules/cards/admin";
+import { DataInformalBlock } from "../../molecules/general";
 
 import type {
     AdminAuditActionType,
@@ -24,7 +27,7 @@ import type {
 export const AdminAuditPage = observer(() => {
     const { filters, appliedFilters, updateFilters } = useAdminAuditManage();
     const { records, pagination, isLoading, error } =
-        useAdminAudit(appliedFilters);
+        useAdminAuditAPI(appliedFilters);
     const [isDownloading, setIsDownloading] = useState(false);
 
     const actionOptions = useMemo(
@@ -147,26 +150,16 @@ export const AdminAuditPage = observer(() => {
                     </div>
                 </div>
 
-                {isLoading && (
-                    <div className="w-full rounded-lg border border-slate-200 bg-slate-50 p-6 text-center text-sm text-slate-500">
-                        <div className="flex items-center justify-center gap-2">
-                            <Spinner className="h-4 w-4" />
-                            Загружаем журналы...
-                        </div>
-                    </div>
-                )}
-
-                {!isLoading && error && (
-                    <div className="w-full rounded-lg border border-rose-200 bg-rose-50 p-6 text-sm text-rose-700">
-                        {error}
-                    </div>
-                )}
-
-                {!isLoading && !error && records.length === 0 && (
-                    <div className="w-full rounded-lg border border-slate-200 bg-slate-50 p-6 text-center text-sm text-slate-500">
-                        Журнал пуст.
-                    </div>
-                )}
+                <DataInformalBlock
+                    isLoading={isLoading}
+                    isError={!!error}
+                    isEmpty={records.length === 0 && !isLoading && !error}
+                    loadingMessage="Загрузка журнала аудита..."
+                    errorMessage={
+                        error || "Не удалось загрузить журнал аудита."
+                    }
+                    emptyMessage="Не найдено ни одной записи для текущих фильтров."
+                />
 
                 {!isLoading && !error && records.length > 0 && (
                     <div className="grid gap-4">

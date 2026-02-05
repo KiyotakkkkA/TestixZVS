@@ -1,8 +1,11 @@
 import type React from "react";
 import { Link } from "react-router-dom";
+import { Spinner } from "./Spinner";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     to?: string;
+    isLoading?: boolean;
+    loadingText?: string;
     onClick?: () => void;
 
     primary?: boolean;
@@ -23,6 +26,8 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 export const Button = ({
     to,
+    isLoading,
+    loadingText,
     onClick,
     children,
     className,
@@ -76,7 +81,7 @@ export const Button = ({
             " border border-red-500/50 text-red-500 hover:bg-red-500 hover:text-white";
     if (dangerNoBackground) buttonClasses += " text-red-500 hover:text-red-600";
 
-    if (disabled)
+    if (disabled || isLoading)
         buttonClasses += " opacity-50 cursor-not-allowed pointer-events-none";
 
     const combinedClassName =
@@ -84,7 +89,7 @@ export const Button = ({
 
     if (to) {
         const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
-            if (disabled) {
+            if (disabled || isLoading) {
                 event.preventDefault();
                 return;
             }
@@ -96,7 +101,7 @@ export const Button = ({
                 to={to}
                 onClick={handleClick}
                 className={combinedClassName}
-                aria-disabled={disabled}
+                aria-disabled={disabled || isLoading}
             >
                 {children}
             </Link>
@@ -107,11 +112,18 @@ export const Button = ({
         <button
             onClick={onClick}
             className={combinedClassName}
-            disabled={disabled}
+            disabled={disabled || isLoading}
             type={type}
             {...props}
         >
-            {children}
+            {isLoading ? (
+                <span className="flex gap-2 items-center justify-center">
+                    <Spinner className="h-5 w-5" />
+                    {loadingText || ""}
+                </span>
+            ) : (
+                children
+            )}
         </button>
     );
 };

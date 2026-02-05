@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { observer } from "mobx-react-lite";
 
-import { Button, InputSmall, Spinner } from "../../../atoms";
+import { Button, InputSmall } from "../../../atoms";
 import { useToasts } from "../../../../hooks/useToasts";
 import { authStore } from "../../../../stores/authStore";
 
@@ -37,6 +37,7 @@ type RegisterFormProps = {
     className?: string;
     extraContent?: React.ReactNode;
     isLoading?: boolean;
+    onlyFields?: boolean;
 };
 
 export const RegisterForm = observer(
@@ -49,6 +50,7 @@ export const RegisterForm = observer(
         className,
         extraContent,
         isLoading,
+        onlyFields = true,
     }: RegisterFormProps) => {
         const navigate = useNavigate();
         const { toast } = useToasts();
@@ -227,12 +229,14 @@ export const RegisterForm = observer(
                             onChange={(e) => setConfirmPassword(e.target.value)}
                         />
                     </div>
-                    <Link
-                        to="/login"
-                        className="mt-1 block text-sm text-indigo-600 hover:underline self-end"
-                    >
-                        Уже есть аккаунт?
-                    </Link>
+                    {!onlyFields && (
+                        <Link
+                            to="/login"
+                            className="mt-1 block text-sm text-indigo-600 hover:underline self-end"
+                        >
+                            Уже есть аккаунт?
+                        </Link>
+                    )}
                 </div>
                 {extraContent}
                 {formError && (
@@ -244,13 +248,12 @@ export const RegisterForm = observer(
                     <Button
                         primary
                         className="flex-1 px-5 py-2 text-sm font-medium"
+                        isLoading={busy}
+                        loadingText={submitLabel + "..."}
                         type="submit"
                         disabled={busy}
                     >
-                        <span className="inline-flex items-center justify-center gap-2">
-                            {busy && <Spinner className="h-4 w-4" />}
-                            {submitLabel}
-                        </span>
+                        {submitLabel}
                     </Button>
                 </div>
             </form>

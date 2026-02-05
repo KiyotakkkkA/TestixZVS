@@ -24,5 +24,4 @@ export type TestListItem = {
     questionCount: number;
     disabledCount: number;
     link: string;
-    source: "db" | "local";
 };

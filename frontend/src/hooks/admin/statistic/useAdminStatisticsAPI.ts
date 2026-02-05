@@ -16,7 +16,7 @@ const normalizeFilters = (
         filters.min_percentage === "" ? undefined : filters.min_percentage,
 });
 
-export const useAdminStatistics = (filters: AdminStatisticsFilters) => {
+export const useAdminStatisticsAPI = (filters: AdminStatisticsFilters) => {
     const appliedFilters = normalizeFilters(filters);
 
     const query = useQuery(

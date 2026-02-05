@@ -3,7 +3,6 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 
 import { useTestPassing } from "../../../hooks/tests/passing";
 import { TestService } from "../../../services/test";
-import { StorageService } from "../../../services/storage";
 import { QuestionNavigator } from "../../molecules/tests";
 import { Question } from "../../organisms/tests";
 import { Spinner } from "../../atoms";
@@ -23,12 +22,6 @@ export const TestPage = () => {
 
     const navigate = useNavigate();
 
-    const savedSource = StorageService.getSession()?.source;
-    const source =
-        (location.state as { source?: "local" | "db" } | null)?.source ??
-        savedSource ??
-        "db";
-
     const accessLink = new URLSearchParams(location.search).get("access_link");
 
     useEffect(() => {
@@ -36,7 +29,6 @@ export const TestPage = () => {
 
         const load = async () => {
             if (!testId) return;
-            if (source === "local") return;
             try {
                 setIsLoading(true);
                 setAccessError(null);
@@ -66,7 +58,7 @@ export const TestPage = () => {
         return () => {
             mounted = false;
         };
-    }, [testId, source, accessLink]);
+    }, [testId, accessLink]);
 
     const test = dbTest;
 

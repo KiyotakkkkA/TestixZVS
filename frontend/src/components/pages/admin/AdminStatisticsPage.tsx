@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 
-import { Button, Spinner } from "../../atoms";
+import { Button } from "../../atoms";
 import { TestsStatisticsGeneral } from "../../organisms/admin";
+import { DataInformalBlock } from "../../molecules/general";
 import { AdminStatisticsFiltersPanel } from "../../molecules/filters/admin/AdminStatisticsFiltersPanel";
 import {
-    useAdminStatistics,
+    useAdminStatisticsAPI,
     useAdminStatisticsManage,
 } from "../../../hooks/admin/statistic";
 
@@ -22,7 +23,7 @@ export const AdminStatisticsPage = observer(() => {
     const [viewMode, setViewMode] = useState<StatisticsViewMode>("general");
     const { filters, appliedFilters, updateFilters } =
         useAdminStatisticsManage();
-    const { data, isLoading, error } = useAdminStatistics(appliedFilters);
+    const { data, isLoading, error } = useAdminStatisticsAPI(appliedFilters);
 
     const finished = data?.finished ?? {
         summary: {
@@ -130,20 +131,12 @@ export const AdminStatisticsPage = observer(() => {
                     </div>
                 </div>
 
-                {isLoading && (
-                    <div className="w-full rounded-lg border border-slate-200 bg-slate-50 p-6 text-center text-sm text-slate-500">
-                        <div className="flex items-center justify-center gap-2">
-                            <Spinner className="h-4 w-4" />
-                            Загружаем статистику...
-                        </div>
-                    </div>
-                )}
-
-                {!isLoading && error && (
-                    <div className="w-full rounded-lg border border-rose-200 bg-rose-50 p-6 text-sm text-rose-700">
-                        {error}
-                    </div>
-                )}
+                <DataInformalBlock
+                    isLoading={isLoading}
+                    isError={!!error}
+                    loadingMessage="Загрузка статистики..."
+                    errorMessage={error || "Не удалось загрузить статистику."}
+                />
 
                 {!isLoading && !error && viewMode === "general" && (
                     <div className="space-y-6">

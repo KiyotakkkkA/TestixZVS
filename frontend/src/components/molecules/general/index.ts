@@ -1,0 +1,1 @@
+export { DataInformalBlock } from "./DataInformalBlock";

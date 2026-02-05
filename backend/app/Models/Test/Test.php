@@ -36,7 +36,7 @@ class Test extends Model
 
     public function getIsCurrentUserCreatorAttribute(): bool
     {
-        return $this->creator_id === auth()->id();
+        return $this->creator_id === auth('sanctum')->id();
     }
 
     public function questions()

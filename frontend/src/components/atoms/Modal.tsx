@@ -8,6 +8,7 @@ interface ModalProps {
     onClose: () => void;
     children: React.ReactNode;
     outsideClickClosing?: boolean;
+    zIndexClassName?: string;
 }
 
 const Modal = ({
@@ -16,14 +17,17 @@ const Modal = ({
     onClose,
     children,
     outsideClickClosing = false,
+    zIndexClassName,
 }: ModalProps) => {
+    const zIndexClass = zIndexClassName ?? "z-40";
+
     if (typeof document === "undefined") {
         return null;
     }
 
     return createPortal(
         <div
-            className={`fixed inset-0 z-40 flex items-center justify-center px-4 py-6 sm:py-8 overflow-y-auto ${open ? "pointer-events-auto" : "pointer-events-none"}`}
+            className={`fixed inset-0 ${zIndexClass} flex items-center justify-center px-4 py-6 sm:py-8 overflow-y-auto ${open ? "pointer-events-auto" : "pointer-events-none"}`}
             aria-hidden={!open}
         >
             <div

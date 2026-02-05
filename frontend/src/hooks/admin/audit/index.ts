@@ -1,2 +1,2 @@
-export { useAdminAudit } from "./useAdminAudit";
+export { useAdminAuditAPI } from "./useAdminAuditAPI";
 export { useAdminAuditManage } from "./useAdminAuditManage";

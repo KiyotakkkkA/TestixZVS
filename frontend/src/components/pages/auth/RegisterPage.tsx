@@ -7,6 +7,7 @@ export const RegisterPage = () => {
                 <RegisterForm
                     title="Создайте учётную запись"
                     subtitle="Зарегистрируйтесь, чтобы продолжить"
+                    onlyFields={false}
                 />
             </div>
         </div>

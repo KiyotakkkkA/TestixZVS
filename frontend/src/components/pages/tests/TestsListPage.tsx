@@ -35,7 +35,6 @@ export const TestsListPage = () => {
             questionCount: test.total_questions ?? 0,
             disabledCount: test.total_disabled ?? 0,
             link: `/tests/${test.id}/start`,
-            source: "db" as const,
         }));
 
         return [...dbItems];
@@ -101,7 +100,7 @@ export const TestsListPage = () => {
                     {!isLoadingTests &&
                         listItems.map((test) => (
                             <TestListElementCard
-                                key={`${test.source}-${test.id}`}
+                                key={`${test.id}`}
                                 test={test}
                             />
                         ))}

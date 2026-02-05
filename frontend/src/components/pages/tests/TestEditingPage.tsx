@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Icon } from "@iconify/react";
 
 import { Button, InputSmall, Modal, Spinner } from "../../atoms";
-import { TestAutoCreateModal } from "../../molecules/modals";
+import { TestAutoCreateModal } from "../../molecules/modals/tests";
 import { QuestionEditEntity } from "../../organisms/tests";
 import { useTest, useTestUpdate } from "../../../hooks/tests/manage";
 import { useToasts } from "../../../hooks/useToasts";
@@ -351,14 +351,13 @@ export const TestEditingPage = () => {
                         <Button
                             secondary
                             className="w-full px-4 py-2 text-sm flex justify-center items-center"
+                            isLoading={isDownloadingJson}
+                            loadingText="Генерируем JSON..."
                             onClick={handleExportJson}
                             disabled={
                                 isFetching || isSaving || isDownloadingJson
                             }
                         >
-                            {isDownloadingJson && (
-                                <Spinner className="h-4 w-4 mr-2" />
-                            )}
                             Экспортировать вопросы
                         </Button>
                         <div className="border-b border-slate-200" />
@@ -394,17 +393,12 @@ export const TestEditingPage = () => {
                                     isSaving ||
                                     !testTitle.trim().length
                                 }
+                                isLoading={isSaving}
+                                loadingText="Сохраняем..."
                                 className="px-5 py-2 text-sm"
                                 onClick={handleSave}
                             >
-                                {isSaving ? (
-                                    <span className="inline-flex items-center gap-2">
-                                        <Spinner className="h-4 w-4" />
-                                        Сохраняем...
-                                    </span>
-                                ) : (
-                                    "Сохранить изменения"
-                                )}
+                                Сохранить изменения
                             </Button>
                         </div>
                     </div>

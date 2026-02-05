@@ -1,0 +1,1 @@
+export { TeacherGroupCard } from "./TeacherGroupCard";
