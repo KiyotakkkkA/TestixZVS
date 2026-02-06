@@ -19,7 +19,7 @@ const formatRangeDate = (value: string) =>
         year: "numeric",
     });
 
-export const AdminStatisticsPage = observer(() => {
+export const TeacherStatisticsPage = observer(() => {
     const [viewMode, setViewMode] = useState<StatisticsViewMode>("general");
     const { filters, appliedFilters, updateFilters } =
         useAdminStatisticsManage();

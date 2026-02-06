@@ -3,22 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StatisticsSaveTestCompletionRequest;
-use App\Services\Admin\AdminStatisticsService;
+use App\Http\Requests\Shared\TestsStatisticsRequest;
+use App\Services\Shared\TestsStatisticsService;
 
 class StatisticsController extends Controller
 {
-    protected AdminStatisticsService $adminStatisticsService;
+    protected TestsStatisticsService $testsStatisticsService;
 
-    public function __construct(AdminStatisticsService $adminStatisticsService)
+    public function __construct(TestsStatisticsService $testsStatisticsService)
     {
-        $this->adminStatisticsService = $adminStatisticsService;
+        $this->testsStatisticsService = $testsStatisticsService;
     }
 
     public function saveTetsCompletionStatistics(StatisticsSaveTestCompletionRequest $request)
     {
         $data = $request->validated();
 
-        $this->adminStatisticsService->testStatistics($data);
+        $this->testsStatisticsService->testStatistics($data);
 
         return response()->json(['message' => 'Test statistics saved successfully.'], 201);
     }

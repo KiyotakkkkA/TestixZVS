@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Shared;
 
-use App\Http\Requests\Admin\AdminTestsAccessIndexRequest;
-use App\Http\Requests\Admin\AdminTestsAccessUpdateRequest;
-use App\Http\Requests\Admin\AdminTestsAccessUsersRequest;
+use App\Http\Requests\Shared\TestsAccessIndexRequest;
+use App\Http\Requests\Shared\TestsAccessUpdateRequest;
+use App\Http\Requests\Shared\TestsAccessUsersRequest;
 use App\Models\Test\Test;
 use App\Services\Teacher\TeacherUsersService;
 use App\Services\Shared\TestsAccessService;
@@ -25,7 +25,7 @@ class TestsAccessController extends Controller
         $this->teacherUsersService = $teacherUsersService;
     }
 
-    public function index(AdminTestsAccessIndexRequest $request): Response
+    public function index(TestsAccessIndexRequest $request): Response
     {
         $validated = $request->validated();
 
@@ -37,7 +37,7 @@ class TestsAccessController extends Controller
         return response($data, 200);
     }
 
-    public function update(AdminTestsAccessUpdateRequest $request, string $testId): Response
+    public function update(TestsAccessUpdateRequest $request, string $testId): Response
     {
         $test = Test::with('accessUsers')->find($testId);
         if (!$test) {
@@ -61,7 +61,7 @@ class TestsAccessController extends Controller
         ], 200);
     }
 
-    public function users(AdminTestsAccessUsersRequest $request): Response
+    public function users(TestsAccessUsersRequest $request): Response
     {
         $validated = $request->validated();
 

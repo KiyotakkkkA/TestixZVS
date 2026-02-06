@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Tests;
 
 use App\Exceptions\ApiException;
 use App\Repositories\TestsRepository;

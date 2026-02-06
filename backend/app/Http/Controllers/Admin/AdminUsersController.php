@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\Admin\AdminStatisticsRequest;
+use App\Http\Requests\Shared\TestsStatisticsRequest;
 use App\Http\Requests\Admin\AdminStoreUserRequest;
 use App\Http\Requests\Admin\AdminUpdatePermissionsRequest;
 use App\Http\Requests\Admin\AdminUpdateRolesRequest;
 use App\Http\Requests\Admin\AdminUsersIndexRequest;
 use App\Models\User;
 use App\Services\Admin\AdminUsersService;
-use App\Services\Admin\AdminStatisticsService;
+use App\Services\Shared\TestsStatisticsService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
@@ -17,12 +17,12 @@ use App\Http\Controllers\Controller;
 class AdminUsersController extends Controller
 {
     protected AdminUsersService $adminUsersService;
-    protected AdminStatisticsService $adminStatisticsService;
+    protected TestsStatisticsService $testsStatisticsService;
 
-    public function __construct(AdminUsersService $adminUsersService, AdminStatisticsService $adminStatisticsService)
+    public function __construct(AdminUsersService $adminUsersService, TestsStatisticsService $testsStatisticsService)
     {
         $this->adminUsersService = $adminUsersService;
-        $this->adminStatisticsService = $adminStatisticsService;
+        $this->testsStatisticsService = $testsStatisticsService;
     }
 
     public function index(AdminUsersIndexRequest $request): Response
@@ -98,11 +98,11 @@ class AdminUsersController extends Controller
         ], 200);
     }
 
-    public function statistics(AdminStatisticsRequest $request): Response
+    public function statistics(TestsStatisticsRequest $request): Response
     {
         $validated = $request->validated();
 
-        $data = $this->adminStatisticsService->getGeneralStatistics($validated);
+        $data = $this->testsStatisticsService->getGeneralStatistics($validated);
 
         return response($data, 200);
     }

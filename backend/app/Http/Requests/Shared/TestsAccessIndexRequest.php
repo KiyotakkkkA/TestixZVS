@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Shared;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class AdminTestsAccessIndexRequest extends FormRequest
+class TestsAccessIndexRequest extends FormRequest
 {
     public function authorize(): bool
     {

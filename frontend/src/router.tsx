@@ -23,6 +23,7 @@ import { TeacherLayout } from "./components/pages/teacher/TeacherLayout";
 import { TeacherCabinetPage } from "./components/pages/teacher/TeacherCabinetPage";
 import { TeacherUsersPage } from "./components/pages/teacher/TeacherUsersPage";
 import { TeacherTestsAccessPage } from "./components/pages/teacher/TeacherTestsAccessPage";
+import { TeacherStatisticsPage } from "./components/pages/teacher/TeacherStatisticsPage";
 
 import { E403 } from "./components/pages/errors/E403";
 import { E404 } from "./components/pages/errors/E404";
@@ -93,6 +94,10 @@ const RouterScheme: Record<string, RouteNode> = {
             testsAccess: {
                 path: "tests-access",
                 component: TeacherTestsAccessPage,
+            },
+            statistics: {
+                path: "statistics",
+                component: TeacherStatisticsPage,
             },
         },
     },

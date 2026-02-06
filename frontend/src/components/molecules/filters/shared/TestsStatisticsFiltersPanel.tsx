@@ -4,7 +4,7 @@ import { Button, InputDate, Selector } from "../../../atoms";
 
 import type { SelectorOption } from "../../../atoms/Selector";
 
-interface AdminStatisticsFiltersPanelProps {
+interface TestsStatisticsFiltersPanelProps {
     minPercentageValue: string;
     percentOptions: SelectorOption[];
     onPercentChange: (value: string) => void;
@@ -20,7 +20,7 @@ interface AdminStatisticsFiltersPanelProps {
     onReset: () => void;
 }
 
-export const AdminStatisticsFiltersPanel = ({
+export const TestsStatisticsFiltersPanel = ({
     minPercentageValue,
     percentOptions,
     onPercentChange,
@@ -34,7 +34,7 @@ export const AdminStatisticsFiltersPanel = ({
     onPrevRange,
     onNextRange,
     onReset,
-}: AdminStatisticsFiltersPanelProps) => (
+}: TestsStatisticsFiltersPanelProps) => (
     <div className="sm:w-full lg:w-fit rounded-lg border border-slate-200 bg-slate-50 p-5 shadow-sm">
         <div className="grid gap-4">
             <div>

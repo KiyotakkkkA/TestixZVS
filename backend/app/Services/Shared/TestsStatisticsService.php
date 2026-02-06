@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Services\Admin;
+namespace App\Services\Shared;
 
 use App\Filters\Tests\TestStatisticsFilter;
 use App\Models\Test\TestStatistic;
 
-class AdminStatisticsService
+class TestsStatisticsService
 {
     public function testStatistics(array $payload): void
     {

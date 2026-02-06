@@ -7,7 +7,7 @@ use App\Http\Requests\Tests\TestsCreateRequest;
 use App\Http\Requests\Tests\TestsIndexRequest;
 use App\Http\Requests\Tests\TestsUpdateRequest;
 use App\Models\Test\Test;
-use App\Services\TestsService;
+use App\Services\Tests\TestsService;
 use Illuminate\Support\Facades\Storage;
 
 class TestsController extends Controller

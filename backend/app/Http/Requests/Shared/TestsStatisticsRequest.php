@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Shared;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AdminStatisticsRequest extends FormRequest
+class TestsStatisticsRequest extends FormRequest
 {
     public function authorize(): bool
     {

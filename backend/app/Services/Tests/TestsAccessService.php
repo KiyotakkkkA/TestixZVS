@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Tests;
 
 use App\Enum\TestAccessStatus;
 use App\Models\Test\Test;

@@ -1,13 +1,18 @@
 import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 
 import type {
     AdminStatisticsDay,
     AdminStatisticsSummary,
 } from "../../../types/admin/AdminStatistics";
+import { Button } from "../../atoms";
+
+type StatisticsBlocks = "totalStats" | "averagePercentage" | "uniqueTests";
 
 export type TestsStatisticsGeneralProps = {
     series: AdminStatisticsDay[];
     summary: AdminStatisticsSummary;
+    blocks?: Record<StatisticsBlocks, boolean>;
     title?: string;
     subtitle?: string;
     totalLabel?: string;
@@ -34,7 +39,14 @@ export const TestsStatisticsGeneral = ({
     subtitle = "Динамика прохождений и популярные тесты по дням.",
     totalLabel = "Всего прохождений",
     tooltipTotalLabel = "Всего прохождений",
+    blocks = {
+        totalStats: true,
+        averagePercentage: true,
+        uniqueTests: true,
+    },
 }: TestsStatisticsGeneralProps) => {
+    const navigate = useNavigate();
+
     const maxTotal = useMemo(
         () => Math.max(1, ...series.map((item) => item.total)),
         [series],
@@ -54,31 +66,37 @@ export const TestsStatisticsGeneral = ({
                 </div>
             </div>
 
-            <div className="mt-6 grid gap-4 sm:grid-cols-3">
-                <div className="rounded-lg border border-slate-100 bg-slate-100 p-4">
-                    <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                        {totalLabel}
+            <div className="mt-6 grid gap-4 grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
+                {blocks.totalStats && (
+                    <div className="rounded-lg border border-slate-100 bg-slate-100 p-4">
+                        <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                            {totalLabel}
+                        </div>
+                        <div className="mt-2 text-2xl font-semibold text-slate-800">
+                            {summary.total_completions}
+                        </div>
                     </div>
-                    <div className="mt-2 text-2xl font-semibold text-slate-800">
-                        {summary.total_completions}
+                )}
+                {blocks.averagePercentage && (
+                    <div className="rounded-lg border border-slate-100 bg-slate-100 p-4">
+                        <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                            Средний процент
+                        </div>
+                        <div className="mt-2 text-2xl font-semibold text-slate-800">
+                            {summary.average_percentage}%
+                        </div>
                     </div>
-                </div>
-                <div className="rounded-lg border border-slate-100 bg-slate-100 p-4">
-                    <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                        Средний процент
+                )}
+                {blocks.uniqueTests && (
+                    <div className="rounded-lg border border-slate-100 bg-slate-100 p-4">
+                        <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                            Различных тестов пройдено
+                        </div>
+                        <div className="mt-2 text-2xl font-semibold text-slate-800">
+                            {summary.unique_tests}
+                        </div>
                     </div>
-                    <div className="mt-2 text-2xl font-semibold text-slate-800">
-                        {summary.average_percentage}%
-                    </div>
-                </div>
-                <div className="rounded-lg border border-slate-100 bg-slate-100 p-4">
-                    <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                        Различных тестов пройдено
-                    </div>
-                    <div className="mt-2 text-2xl font-semibold text-slate-800">
-                        {summary.unique_tests}
-                    </div>
-                </div>
+                )}
             </div>
 
             <div className="mt-6">
@@ -97,7 +115,7 @@ export const TestsStatisticsGeneral = ({
                             return (
                                 <div
                                     key={day.date}
-                                    className="group relative flex h-full flex-1 flex-col justify-end"
+                                    className="group relative flex h-full flex-1 flex-col justify-end cursor-pointer"
                                 >
                                     <div className="absolute -top-2 left-1/2 z-10 hidden w-64 -translate-x-1/2 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600 shadow-lg group-hover:block">
                                         <div className="text-sm font-semibold text-slate-800">
@@ -139,6 +157,18 @@ export const TestsStatisticsGeneral = ({
                                                 </div>
                                             )}
                                         </div>
+                                        <Button
+                                            secondary
+                                            className="w-full p-2 mt-2"
+                                            onClick={() => {
+                                                navigate(
+                                                    "/admin/statistics?tag=date&value=" +
+                                                        day.date,
+                                                );
+                                            }}
+                                        >
+                                            Подробнее по дню
+                                        </Button>
                                     </div>
                                     <div
                                         className="rounded-md bg-indigo-500/80 transition-all duration-200 group-hover:bg-indigo-600"
