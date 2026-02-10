@@ -8,7 +8,7 @@ import {
     VerifyPayload,
 } from "../services/auth";
 
-import type { User } from "../types/User";
+import type { User, UserPermission, UserRole } from "../types/User";
 
 export class AuthStore {
     user: User | null = AuthStorage.getUser();
@@ -38,12 +38,16 @@ export class AuthStore {
         AuthStorage.clear();
     }
 
-    hasRole(role: string): boolean {
-        return this.user?.roles.includes(role) ?? false;
+    hasRoles(roles: UserRole[]): boolean {
+        return roles.every((role) => this.user?.roles.includes(role)) ?? false;
     }
 
-    hasPermission(permission: string): boolean {
-        return this.user?.perms.includes(permission) ?? false;
+    hasPermissions(permissions: UserPermission[]): boolean {
+        return (
+            permissions.every((permission) =>
+                this.user?.perms.includes(permission),
+            ) ?? false
+        );
     }
 
     async init(): Promise<void> {

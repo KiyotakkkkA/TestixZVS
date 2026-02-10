@@ -90,7 +90,7 @@ export const TestsStatisticsFiltersPanel = ({
                 </Button>
             </div>
             <div className="grid w-full gap-2 sm:flex sm:flex-row sm:items-center">
-                {authStore.hasPermission("make reports") && (
+                {authStore.hasPermissions(["make reports"]) && (
                     <Button
                         secondary
                         className="w-full p-2 sm:w-auto"

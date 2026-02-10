@@ -1,47 +1,45 @@
-import { Icon } from "@iconify/react";
 import { useEffect, useRef, useState } from "react";
+import { Outlet } from "react-router-dom";
 
-import { NavLink, Outlet } from "react-router-dom";
+import { NavigationPanel } from "../../molecules/shared";
 
-const navItemClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ${
-        isActive
-            ? "bg-indigo-600 text-slate-50 shadow-sm"
-            : "text-slate-600 hover:bg-indigo-50 hover:text-indigo-700"
-    }`;
+import type { NavElement } from "../../molecules/shared";
 
-const NavigationPanel = () => {
-    return (
-        <>
-            <div className="text-xs uppercase tracking-wide text-slate-400">
-                Навигация
-            </div>
-            <nav className="mt-4 flex flex-col gap-2">
-                <NavLink to="/admin" end className={navItemClass}>
-                    <Icon icon="mdi:account" width={22} height={22} />
-                    Кабинет
-                </NavLink>
-                <NavLink to="/admin/users" className={navItemClass}>
-                    <Icon icon="mdi:account-multiple" width={22} height={22} />
-                    Пользователи
-                </NavLink>
-                <NavLink to="/admin/tests-access" className={navItemClass}>
-                    <Icon icon="mdi:lock" width={22} height={22} />
-                    Доступ к тестам
-                </NavLink>
-                <div className="border-t border-slate-200 my-2" />
-                <NavLink to="/admin/audit" className={navItemClass}>
-                    <Icon icon="mdi:journal" width={22} height={22} />
-                    Журнал аудита
-                </NavLink>
-                <NavLink to="/admin/statistics" className={navItemClass}>
-                    <Icon icon="mdi:chart-bar" width={22} height={22} />
-                    Статистика
-                </NavLink>
-            </nav>
-        </>
-    );
-};
+const NavigationElements: NavElement[][] = [
+    [
+        {
+            to: "/admin",
+            icon: "mdi:account",
+            label: "Кабинет",
+            navProps: { end: true },
+        },
+        {
+            to: "/admin/users",
+            icon: "mdi:account-multiple",
+            label: "Пользователи",
+        },
+        {
+            to: "/admin/tests-access",
+            icon: "mdi:lock",
+            label: "Доступ к тестам",
+            forPerms: ["edit tests access"],
+        },
+    ],
+    [
+        {
+            to: "/admin/audit",
+            icon: "mdi:journal",
+            label: "Журнал аудита",
+            forPerms: ["view audit logs"],
+        },
+        {
+            to: "/admin/statistics",
+            icon: "mdi:chart-bar",
+            label: "Статистика",
+            forPerms: ["view statistics"],
+        },
+    ],
+];
 
 export const AdminLayout = () => {
     const [showScrollTop, setShowScrollTop] = useState(false);
@@ -78,14 +76,20 @@ export const AdminLayout = () => {
         <div className="w-full self-stretch">
             <div className="flex w-full">
                 <aside className="hidden rounded-lg shadow-md w-64 border-r border-slate-200 bg-slate-50/90 px-4 py-6 md:block self-start">
-                    <NavigationPanel />
+                    <NavigationPanel
+                        title="Навигация"
+                        elements={NavigationElements}
+                    />
                 </aside>
 
                 <div className="flex-1">
                     <div className="flex w-full justify-center">
                         <div className="w-full max-w-[110rem] md:px-4">
                             <aside className="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-3 shadow-md md:hidden">
-                                <NavigationPanel />
+                                <NavigationPanel
+                                    title="Навигация"
+                                    elements={NavigationElements}
+                                />
                             </aside>
                             <Outlet />
                         </div>

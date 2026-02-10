@@ -18,12 +18,12 @@ const RightPart = observer(() => {
                 <span className="hidden text-sm text-slate-400 lg:inline">
                     {authStore.user?.name ?? "Пользователь"}
                 </span>
-                {authStore.hasPermission("view admin panel") && (
+                {authStore.hasPermissions(["view admin panel"]) && (
                     <Button to="/admin" secondary className="px-3 py-2">
                         Панель управления
                     </Button>
                 )}
-                {authStore.hasPermission("view teacher panel") && (
+                {authStore.hasPermissions(["view teacher panel"]) && (
                     <Button to="/teacher" secondary className="px-3 py-2">
                         Панель преподавателя
                     </Button>
@@ -87,7 +87,7 @@ const MobileNav = observer(({ onClose }: { onClose: () => void }) => {
             </div>
             {authStore.isAuthorized ? (
                 <div className="flex flex-col gap-4">
-                    {authStore.hasPermission("view admin panel") && (
+                    {authStore.hasPermissions(["view admin panel"]) && (
                         <Button
                             secondary
                             to="/admin"
@@ -97,7 +97,7 @@ const MobileNav = observer(({ onClose }: { onClose: () => void }) => {
                             Панель управления
                         </Button>
                     )}
-                    {authStore.hasPermission("view teacher panel") && (
+                    {authStore.hasPermissions(["view teacher panel"]) && (
                         <Button
                             secondary
                             to="/teacher"

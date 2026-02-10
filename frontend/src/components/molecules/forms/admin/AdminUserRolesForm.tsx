@@ -93,17 +93,17 @@ export const AdminUserRolesForm = ({
 
                         if (
                             role.name === "admin" &&
-                            !authStore.hasPermission("assign admin role")
+                            !authStore.hasPermissions(["assign admin role"])
                         )
                             return null;
                         if (
                             role.name === "editor" &&
-                            !authStore.hasPermission("assign editor role")
+                            !authStore.hasPermissions(["assign editor role"])
                         )
                             return null;
                         if (
                             role.name === "user" &&
-                            !authStore.hasPermission("add users")
+                            !authStore.hasPermissions(["add users"])
                         )
                             return null;
 
@@ -150,7 +150,7 @@ export const AdminUserRolesForm = ({
                 </div>
             </div>
 
-            {authStore.hasPermission("assign permissions") && (
+            {authStore.hasPermissions(["assign permissions"]) && (
                 <div className="p-2">
                     <div className="text-xs uppercase text-slate-400">
                         Права

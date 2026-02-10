@@ -151,12 +151,12 @@ export const TestStartPage = () => {
 
     const accessToTestManagement =
         (test.is_current_user_creator ?? false) ||
-        authStore.hasPermission("tests master access");
+        authStore.hasPermissions(["tests master access"]);
     const canDeleteTest =
-        accessToTestManagement && authStore.hasPermission("delete tests");
+        accessToTestManagement && authStore.hasPermissions(["delete tests"]);
     const canEditTest =
-        accessToTestManagement && authStore.hasPermission("edit tests");
-    const canDownloadTest = authStore.hasPermission("make reports");
+        accessToTestManagement && authStore.hasPermissions(["edit tests"]);
+    const canDownloadTest = authStore.hasPermissions(["make reports"]);
 
     const handleDownload = async () => {
         if (!testId) return;

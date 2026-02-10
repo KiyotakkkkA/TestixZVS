@@ -41,11 +41,13 @@ export const AdminUsersPage = observer(() => {
 
     const [searchValue, setSearchValue] = useState(filters.search ?? "");
 
-    const canAssignPermissions = authStore.hasPermission("assign permissions");
-    const canAddUsers = authStore.hasPermission("add users");
-    const canRemoveUsers = authStore.hasPermission("remove users");
-    const canAssignAdmin = authStore.hasPermission("assign admin role");
-    const canAssignEditor = authStore.hasPermission("assign editor role");
+    const canAssignPermissions = authStore.hasPermissions([
+        "assign permissions",
+    ]);
+    const canAddUsers = authStore.hasPermissions(["add users"]);
+    const canRemoveUsers = authStore.hasPermissions(["remove users"]);
+    const canAssignAdmin = authStore.hasPermissions(["assign admin role"]);
+    const canAssignEditor = authStore.hasPermissions(["assign editor role"]);
 
     const actorRank = Math.max(
         -1,
