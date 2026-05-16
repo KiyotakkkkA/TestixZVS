@@ -36,9 +36,12 @@ export const LoginForm = () => {
             <span className="ml-2 text-sm text-main-200">Запомнить меня</span>
           </span>
           {isPassRememberShowing && (
-            <span className="text-sm text-main-300 hover:underline cursor-pointer">
+            <Link
+              href={"/password-recovery"}
+              className="text-sm text-main-300 hover:underline cursor-pointer"
+            >
               Забыли пароль?
-            </span>
+            </Link>
           )}
         </div>
         <Button
