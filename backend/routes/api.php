@@ -4,7 +4,21 @@ declare(strict_types=1);
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 
 Route::name('api.')->group(static function () {
     Route::name('v1.')->prefix('v1')->group(base_path('routes/v1/api.php'));
+});
+
+Route::prefix('auth')->group(function () {
+    Route::post('login', [AuthController::class, 'login'])->name('auth.login');
+    Route::post('register', [AuthController::class, 'register'])->name('auth.register');
+    Route::get('email-confirmation', [AuthController::class, 'emailConfirmation'])->name('auth.email-confirmation');
+    Route::get('password-recovery', [AuthController::class, 'passwordRecovery'])->name('auth.password-recovery');
+    Route::post('password-reset', [AuthController::class, 'passwordReset'])->name('auth.password-reset');
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
+        Route::get('me', [AuthController::class, 'me'])->name('auth.me');
+    });
 });

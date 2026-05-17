@@ -4,23 +4,59 @@ import {
   Button,
   InputCheckBox,
   InputSmall,
+  Loader,
   Separator,
 } from "@kiyotakkkka/zvs-uikit-lib/ui";
 import { FormContainer } from "../shared";
 import { useState } from "react";
 import Link from "next/link";
 import { useToasts } from "@kiyotakkkka/zvs-uikit-lib/hooks";
+import { useApi } from "@/hooks/useApi";
+import { endpoints } from "@/services/endpoints";
+
+type LoginRequest = {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+};
 
 export const LoginForm = () => {
   const toasts = useToasts();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isRememberMe, setIsRememberMe] = useState(false);
   const [isPassRememberShowing, setIsPassRememberShowing] = useState(true);
 
-  const handleRegister = () => {
-    toasts.success({
-      title: "Успех!",
-      description: "Вы успешно вошли!",
+  const { execute, loading } = useApi<LoginRequest>(
+    endpoints.auth.login,
+    "POST",
+    {
+      onSuccessFn: () => {
+        toasts.success({
+          title: "Успех!",
+          description: "Вы успешно вошли!",
+        });
+      },
+      onErrorFn: (error) => {
+        toasts.danger({
+          title: "Ошибка!",
+          description: error,
+        });
+        setIsPassRememberShowing(true);
+      },
+    },
+  );
+
+  const handleLogin = async () => {
+    const res = await execute({
+      email,
+      password,
+      rememberMe: isRememberMe,
     });
+
+    if (!res.ok) return;
+
+    console.log("Login successful:", res.data);
   };
 
   return (
@@ -28,8 +64,18 @@ export const LoginForm = () => {
       <h1 className="text-2xl font-bold text-center tracking-wide">Вход</h1>
       <Separator className="mt-2 mb-4 bg-main-600" />
       <form className="space-y-4">
-        <InputSmall type="email" placeholder="Введите email..." />
-        <InputSmall type="password" placeholder="Введите пароль..." />
+        <InputSmall
+          type="email"
+          placeholder="Введите email..."
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <InputSmall
+          type="password"
+          placeholder="Введите пароль..."
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
         <div className="flex justify-between items-center">
           <span className="flex">
             <InputCheckBox checked={isRememberMe} onChange={setIsRememberMe} />
@@ -45,11 +91,19 @@ export const LoginForm = () => {
           )}
         </div>
         <Button
-          variant="primary"
+          disabled={loading}
+          variant={loading ? "secondary" : "primary"}
           className="w-full text-lg p-0.5 font-semibold"
-          onClick={handleRegister}
+          onClick={handleLogin}
         >
-          Продолжить
+          {loading ? (
+            <span className="flex gap-2 items-center">
+              <Loader></Loader>
+              Вход...
+            </span>
+          ) : (
+            "Войти"
+          )}
         </Button>
         <span className="text-sm text-center block">
           <span className="text-main-400">Впервые здесь? </span>
