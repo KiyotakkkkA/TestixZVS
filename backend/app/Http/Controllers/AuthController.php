@@ -3,46 +3,61 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\AuthService;
 
 class AuthController extends Controller
 {
+    private $authService;
+
+    public function __construct(AuthService $authService)
+    {
+        $this->authService = $authService;
+    }
+
     public function login(Request $request)
     {
-        return response()->json(['message' => 'Login successful']);
+        $data = $request->only(['email', 'password']);
+        $result = $this->authService->login($data);
+        return response()->json($result['data'], $result['status']);
     }
 
     public function register(Request $request)
     {
-        return response()->json(['message' => 'Registration successful']);
+        $data = $request->only(['name', 'email', 'password']);
+        $result = $this->authService->register($data);
+        return response()->json($result['data'], $result['status']);
     }
 
     public function logout(Request $request)
     {
-        return response()->json(['message' => 'Logout successful']);
+        $result = $this->authService->logout();
+        return response()->json($result['data'], $result['status']);
     }
 
     public function me(Request $request)
     {
-        return response()->json([
-            'id' => 1,
-            'name' => 'John Doe',
-            'email' => 'john@doe.com'
-        ]);
+        $result = $this->authService->me();
+        return response()->json($result['data'], $result['status']);
     }
 
     public function passwordRecovery(Request $request)
     {
         $email = $request->query('email');
-        return response()->json(['message' => 'Password recovery email sent']);
+        $result = $this->authService->passwordRecovery($email);
+        return response()->json($result['data'], $result['status']);
     }
 
     public function passwordReset(Request $request)
     {
-        return response()->json(['message' => 'Password reset successful']);
+        $data = $request->only(['token', 'newPassword', 'newPasswordConfirmation']);
+        $result = $this->authService->passwordReset($data);
+        return response()->json($result['data'], $result['status']);
     }
 
     public function emailConfirmation(Request $request)
     {
-        return response()->json(['message' => 'Email confirmed']);
+        $token = $request->query('token');
+        $result = $this->authService->emailConfirmation($token);
+        return response()->json($result['data'], $result['status']);
     }
 }
