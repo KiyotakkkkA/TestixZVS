@@ -2,9 +2,15 @@
 
 namespace App\Services;
 
+use App\Models\User;
+use App\Enum\UserStatuses;
+use Illuminate\Support\Str;
+
 class AuthService
 {
-    public function __construct()
+    private int $TOKEN_EXPIRATION_HOURS = 24;
+
+    public function __construct(private MailService $mailService)
     {
     }
     
@@ -18,6 +24,22 @@ class AuthService
 
     public function register($data)
     {
+
+        $generatedVerificationToken = Str::random(64);
+        $generatedVerificationTokenExpiresAt = now()->addHours($this->TOKEN_EXPIRATION_HOURS);
+        $generatedUsername = 'Пользователь'.'@'.Str::random(12);
+
+        $user = User::create([
+            'name' => $generatedUsername,
+            'email' => $data['email'],
+            'password' => $data['password'],
+            'status' => UserStatuses::CONFIRMATION_PENDING,
+            'verification_token' => $generatedVerificationToken,
+            'verification_token_expires_at' => $generatedVerificationTokenExpiresAt,
+        ]);
+
+        $this->mailService->sendEmailVerification($user);
+
         return [
             'status' => 201,
             'data' => [],

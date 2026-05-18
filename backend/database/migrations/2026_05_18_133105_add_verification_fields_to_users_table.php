@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Enum\UserStatuses;
 
 return new class extends Migration
 {
@@ -12,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('status', ['confirmation_pending', 'active', 'suspended'])->default('confirmation_pending')->after('password');
+            $table->enum('status', UserStatuses::cases())->default(UserStatuses::CONFIRMATION_PENDING)->after('password');
             $table->string('verification_token')->nullable()->after('status');
             $table->timestamp('verification_token_expires_at')->nullable()->after('updated_at');
         });

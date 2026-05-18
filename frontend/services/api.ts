@@ -5,7 +5,9 @@ type ApiResponseSuccess<T> = {
 
 type ApiResponseError = {
   ok: false;
-  error: string;
+  data: {
+    message: string;
+  };
 };
 
 export type AllowedMethods = "GET" | "POST" | "PUT" | "DELETE";
@@ -28,15 +30,13 @@ async function request<T>({
   const res = await fetch(url, {
     method: method,
     headers: {
+      Accept: "application/json",
       "Content-Type": "application/json",
       ...headers,
     },
     body: body ? JSON.stringify(body) : undefined,
   });
-  if (!res.ok) {
-    return { ok: false, error: res.statusText };
-  }
-  return { ok: true, data: await res.json() };
+  return { ok: res.ok, data: await res.json() } as ApiResponse<T>;
 }
 
 export async function GET<T>(

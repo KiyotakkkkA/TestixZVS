@@ -26,16 +26,17 @@ export const RegisterForm = () => {
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [isPasswordMismatch, setIsPasswordMismatch] = useState(false);
+  const [isSuccessRegistration, setIsSuccessRegistration] = useState(false);
 
   const { execute, loading } = useApi<RegisterRequest>(
     endpoints.auth.register,
     "POST",
     {
       onSuccessFn: () => {
-        toasts.success({
-          title: "Успех!",
-          description: "Вы успешно зарегистрировались!",
-        });
+        setIsSuccessRegistration(true);
+        setEmail("");
+        setPassword("");
+        setPasswordConfirmation("");
       },
       onErrorFn: (error) => {
         toasts.danger({
@@ -61,8 +62,6 @@ export const RegisterForm = () => {
     });
 
     if (!res.ok) return;
-
-    console.log("Registration successful:", res.data);
   };
 
   return (
@@ -71,6 +70,12 @@ export const RegisterForm = () => {
         Регистрация
       </h1>
       <Separator className="mt-2 mb-4 bg-main-600" />
+      {isSuccessRegistration && (
+        <Alert variant="success" className="text-sm mb-4">
+          Регистрация прошла успешно! Пожалуйста, активируйте свою учётную
+          запись, перейдя по ссылке в письме.
+        </Alert>
+      )}
       {isPasswordMismatch && (
         <Alert variant="danger" className="text-sm mb-4">
           Введённые пароли не совпадают!

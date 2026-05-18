@@ -71,29 +71,20 @@ export function useApi<T, TBody = unknown>(
       setLoading(true);
       setError(null);
 
-      let response: ApiResponse<T>;
-
-      try {
-        response = await callApi<T, TBody>(
-          url,
-          method,
-          body,
-          headersRef.current,
-        );
-      } catch (error) {
-        response = {
-          ok: false,
-          error: error instanceof Error ? error.message : "Request failed",
-        };
-      }
+      const response = await callApi<T, TBody>(
+        url,
+        method,
+        body,
+        headersRef.current,
+      );
 
       if (requestIdRef.current === requestId) {
         if (response.ok) {
           setData(response.data);
           onSuccessFnRef.current?.(response.data);
         } else {
-          setError(response.error);
-          onErrorFnRef.current?.(response.error);
+          setError(response.data.message);
+          onErrorFnRef.current?.(response.data.message);
         }
         setLoading(false);
       }

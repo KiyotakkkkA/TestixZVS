@@ -23,7 +23,23 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $data = $request->only(['name', 'email', 'password']);
+        $data = $request->validate(
+            [
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8|same:passwordConfirmation',
+                'passwordConfirmation' => 'required|string|min:8',
+            ],
+            [
+                'email.required' => 'Введите адрес электронной почты.',
+                'email.email' => 'Введите корректный адрес электронной почты.',
+                'email.max' => 'Адрес электронной почты не должен быть длиннее 255 символов.',
+                'email.unique' => 'Пользователь с таким адресом уже зарегистрирован.',
+
+                'password.required' => 'Введите пароль.',
+                'password.min' => 'Пароль должен содержать минимум 8 символов.',
+                'password.same' => 'Пароли не совпадают.',
+            ],
+        );
         $result = $this->authService->register($data);
         return response()->json($result['data'], $result['status']);
     }
