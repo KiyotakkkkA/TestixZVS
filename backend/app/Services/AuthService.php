@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class AuthService
 {
-    private int $TOKEN_EXPIRATION_HOURS = 24;
+    private int $TOKEN_EXPIRATION_HOURS = 1;
 
     public function __construct(private MailService $mailService)
     {
@@ -29,7 +29,7 @@ class AuthService
         $generatedVerificationTokenExpiresAt = now()->addHours($this->TOKEN_EXPIRATION_HOURS);
         $generatedUsername = 'Пользователь'.'@'.Str::random(12);
 
-        $user = User::create([
+        $user = new User([
             'name' => $generatedUsername,
             'email' => $data['email'],
             'password' => $data['password'],
@@ -38,7 +38,16 @@ class AuthService
             'verification_token_expires_at' => $generatedVerificationTokenExpiresAt,
         ]);
 
-        $this->mailService->sendEmailVerification($user);
+        if (!$this->mailService->sendEmailVerification($user)) {
+            return [
+                'status' => 503,
+                'data' => [
+                    'message' => 'Не удалось отправить письмо подтверждения. Попробуйте позже.',
+                ],
+            ];
+        }
+
+        $user->save();
 
         return [
             'status' => 201,
