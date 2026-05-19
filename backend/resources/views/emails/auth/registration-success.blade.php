@@ -16,8 +16,8 @@
                         </td>
                     </tr>
                     <tr>
-                        <td style="background-color:#2d2d2d;border-radius:8px;padding:28px 28px 24px;border:1px solid #373737;">
-                            <h1 style="margin:0 0 18px;color:#ffffff;font-size:24px;line-height:1.25;font-weight:700;text-align:center;">Регистрация завершена</h1>
+                        <td style="background-color:#2d2d2d;border-radius:8px;padding:28px 28px 24px;">
+                            <h1 style="margin:0 0 18px;color:#ffffff;font-size:24px;line-height:1.25;font-weight:700;text-align:center;">Завершение регистрации</h1>
 
                             <div style="margin:0 0 22px;padding:14px 16px;background-color:#15352d;border:1px solid #0f7a61;border-radius:8px;">
                                 <p style="margin:0;color:#c7f4e6;font-size:14px;line-height:1.55;">

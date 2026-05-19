@@ -30,4 +30,15 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public static function checkIfVerificationTokenIsValid($token): bool
+    {
+        $user = self::where('verification_token', $token)->first();
+
+        if (!$user) {
+            return false;
+        }
+
+        return $user->verification_token_expires_at->isFuture();
+    }
 }

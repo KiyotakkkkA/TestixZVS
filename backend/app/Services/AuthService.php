@@ -93,9 +93,45 @@ class AuthService
 
     public function emailConfirmation($token)
     {
+        $user = User::where('verification_token', $token)->first();
+
+        if (!$user) {
+            return [
+                'status' => 404,
+                'data' => [
+                    'message' => 'Пользователь не найден.',
+                ],
+            ];
+        }
+
+        if (!User::checkIfVerificationTokenIsValid($token)) {
+            return [
+                'status' => 400,
+                'data' => [
+                    'message' => 'Неверный или просроченный токен подтверждения.',
+                ],
+            ];
+        }
+
+        $user->status = UserStatuses::ACTIVE;
+        $user->verification_token = null;
+        $user->verification_token_expires_at = null;
+        
+        if ($user->save()) {
+
+            $this->mailService->sendRegistrationSuccess($user);
+
+            return [
+                'status' => 200,
+                'data' => [],
+            ];
+        }
+
         return [
-            'status' => 200,
-            'data' => [],
+            'status' => 500,
+            'data' => [
+                'message' => 'Не удалось активировать учётную запись. Попробуйте позже.',
+            ],
         ];
     }
 }
