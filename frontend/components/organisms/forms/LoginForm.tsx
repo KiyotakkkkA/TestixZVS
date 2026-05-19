@@ -8,62 +8,51 @@ import {
   Separator,
 } from "@kiyotakkkka/zvs-uikit-lib/ui";
 import { FormContainer } from "../shared";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useToasts } from "@kiyotakkkka/zvs-uikit-lib/hooks";
-import { useApi } from "@/hooks/useApi";
-import { endpoints } from "@/services/endpoints";
+import { observer } from "mobx-react-lite";
+import { authStore } from "@/stores";
+import { useRouter } from "next/navigation";
 
-type LoginRequest = {
-  email: string;
-  password: string;
-  rememberMe: boolean;
-};
-
-export const LoginForm = () => {
+export const LoginForm = observer(() => {
   const toasts = useToasts();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isRememberMe, setIsRememberMe] = useState(false);
   const [isPassRememberShowing, setIsPassRememberShowing] = useState(true);
 
-  const { execute, loading } = useApi<LoginRequest>(
-    endpoints.auth.login,
-    "POST",
-    {
-      onSuccessFn: () => {
-        toasts.success({
-          title: "Успех!",
-          description: "Вы успешно вошли!",
-        });
-      },
-      onErrorFn: (error) => {
-        toasts.danger({
-          title: "Ошибка!",
-          description: error,
-        });
-        setIsPassRememberShowing(true);
-      },
-    },
-  );
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-  const handleLogin = async () => {
-    const res = await execute({
+    const res = await authStore.login({
       email,
       password,
       rememberMe: isRememberMe,
     });
 
-    if (!res.ok) return;
+    if (!res.ok) {
+      toasts.danger({
+        title: "Ошибка!",
+        description: res.data.message,
+      });
+      setIsPassRememberShowing(true);
+      return;
+    }
 
-    console.log("Login successful:", res.data);
+    toasts.success({
+      title: "Успех!",
+      description: "Вы успешно вошли!",
+    });
+    router.push("/");
   };
 
   return (
     <FormContainer>
       <h1 className="text-2xl font-bold text-center tracking-wide">Вход</h1>
       <Separator className="mt-2 mb-4 bg-main-600" />
-      <form className="space-y-4">
+      <form className="space-y-4" onSubmit={handleLogin}>
         <InputSmall
           type="email"
           placeholder="Введите email..."
@@ -91,12 +80,12 @@ export const LoginForm = () => {
           )}
         </div>
         <Button
-          disabled={loading}
-          variant={loading ? "secondary" : "primary"}
+          disabled={authStore.isLoading}
+          variant={authStore.isLoading ? "secondary" : "primary"}
           className="w-full text-lg p-0.5 font-semibold"
-          onClick={handleLogin}
+          type="submit"
         >
-          {loading ? (
+          {authStore.isLoading ? (
             <span className="flex gap-2 items-center">
               <Loader></Loader>
               Вход...
@@ -117,4 +106,4 @@ export const LoginForm = () => {
       </form>
     </FormContainer>
   );
-};
+});

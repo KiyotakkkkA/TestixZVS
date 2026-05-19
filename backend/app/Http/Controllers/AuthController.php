@@ -16,7 +16,19 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $data = $request->only(['email', 'password']);
+        $data = $request->validate(
+            [
+                'email' => 'required|string|email',
+                'password' => 'required|string',
+                'rememberMe' => 'boolean',
+            ],
+            [
+                'email.required' => 'Введите адрес электронной почты.',
+                'email.email' => 'Введите корректный адрес электронной почты.',
+
+                'password.required' => 'Введите пароль.',
+            ],
+        );
         $result = $this->authService->login($data);
         return response()->json($result['data'], $result['status']);
     }
@@ -46,13 +58,13 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $result = $this->authService->logout();
+        $result = $this->authService->logout($request);
         return response()->json($result['data'], $result['status']);
     }
 
     public function me(Request $request)
     {
-        $result = $this->authService->me();
+        $result = $this->authService->me($request);
         return response()->json($result['data'], $result['status']);
     }
 

@@ -1,3 +1,5 @@
+import { getStoredToken } from "./tokenStorage";
+
 type ApiResponseSuccess<T> = {
   ok: true;
   data: T;
@@ -27,11 +29,14 @@ async function request<T>({
   headers,
   body,
 }: RequestOptions): Promise<ApiResponse<T>> {
+  const storedToken = getStoredToken();
+
   const res = await fetch(url, {
     method: method,
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
+      ...(storedToken ? { Authorization: `Bearer ${storedToken.token}` } : {}),
       ...headers,
     },
     body: body ? JSON.stringify(body) : undefined,

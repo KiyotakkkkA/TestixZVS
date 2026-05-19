@@ -5,10 +5,13 @@ namespace App\Services;
 use App\Models\User;
 use App\Enum\UserStatuses;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
 
 class AuthService
 {
     private int $TOKEN_EXPIRATION_HOURS = 1;
+    private int $REMEMBER_TOKEN_EXPIRATION_DAYS = 30;
 
     public function __construct(private MailService $mailService)
     {
@@ -16,9 +19,41 @@ class AuthService
     
     public function login($credentials)
     {
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            return [
+                'status' => 401,
+                'data' => [
+                    'message' => 'Неверный адрес электронной почты или пароль.',
+                ],
+            ];
+        }
+
+        if ($user->status !== UserStatuses::ACTIVE) {
+            return [
+                'status' => 403,
+                'data' => [
+                    'message' => 'Подтвердите адрес электронной почты, чтобы войти.',
+                ],
+            ];
+        }
+
+        $rememberMe = (bool) ($credentials['rememberMe'] ?? false);
+        $expiresAt = $rememberMe
+            ? now()->addDays($this->REMEMBER_TOKEN_EXPIRATION_DAYS)
+            : now()->addHours($this->TOKEN_EXPIRATION_HOURS);
+
+        $token = $user->createToken('auth_token', ['*'], $expiresAt);
+
         return [
             'status' => 200,
-            'data' => [],
+            'data' => [
+                'token' => $token->plainTextToken,
+                'tokenType' => 'Bearer',
+                'expiresAt' => $expiresAt->toISOString(),
+                'user' => $this->serializeUser($user),
+            ],
         ];
     }
 
@@ -55,23 +90,21 @@ class AuthService
         ];
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
+        $request->user()?->currentAccessToken()?->delete();
+
         return [
             'status' => 200,
             'data' => [],
         ];
     }
 
-    public function me()
+    public function me(Request $request)
     {
         return [
             'status' => 200,
-            'data' => [
-                'id' => 1,
-                'name' => 'John Doe',
-                'email' => 'john.doe@example.com'
-            ],
+            'data' => $this->serializeUser($request->user()),
         ];
     }
 
@@ -132,6 +165,16 @@ class AuthService
             'data' => [
                 'message' => 'Не удалось активировать учётную запись. Попробуйте позже.',
             ],
+        ];
+    }
+
+    private function serializeUser(User $user): array
+    {
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'status' => $user->status,
         ];
     }
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono, Manrope } from "next/font/google";
 import "./globals.css";
 import { AppLayout } from "@/components/layouts";
+import { StoreProvider } from "@/stores/StoreProvider";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -29,7 +30,9 @@ export default function RootLayout({
       className={`${manrope.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full">
-        <AppLayout>{children}</AppLayout>
+        <StoreProvider>
+          <AppLayout>{children}</AppLayout>
+        </StoreProvider>
       </body>
     </html>
   );
