@@ -7,6 +7,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { observer } from "mobx-react-lite";
 import { authStore, type AuthUser } from "@/stores";
+import { useApi } from "@/hooks/useApi";
+import { endpoints } from "@/services/endpoints";
 
 const LinksForSlidedMenu = [
   {
@@ -27,34 +29,49 @@ type UserBadgeProps = {
 
 const UserBadge = ({ user }: UserBadgeProps) => {
   return (
-    <div className="flex items-center gap-3 rounded-lg0 bg-main-900/40 px-3 py-2 shadow-sm">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-main-700 text-main-100 ring-1 ring-main-500/50">
-        <Icon icon="mdi:account" width={24} height={24} />
+    <Link href={"/profile"} className="w-full">
+      <div className="flex items-center gap-3 rounded-lg0 bg-main-900/40 px-3 py-2 shadow-sm hover:bg-main-800/60 transition-colors rounded-lg cursor-pointer">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-main-700 text-main-100 ring-1 ring-main-500/50">
+          <Icon icon="mdi:account" width={24} height={24} />
+        </div>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-main-50">
+            {user.name}
+          </p>
+          <p className="truncate text-xs text-main-300">{user.email}</p>
+        </div>
       </div>
-      <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-main-50">
-          {user.name}
-        </p>
-        <p className="truncate text-xs text-main-300">{user.email}</p>
-      </div>
-    </div>
+    </Link>
   );
 };
 
 export const Header = observer(() => {
   const [isSlidedMenuOpen, setIsSlidedMenuOpen] = useState(false);
   const isAuthenticated = authStore.isAuthenticated;
+  const { execute: logoutRequest, loading: isLogoutLoading } = useApi(
+    endpoints.auth.logout,
+    "POST",
+  );
 
   const handleLogout = async () => {
-    await authStore.logout();
+    await logoutRequest();
+    authStore.logout();
     setIsSlidedMenuOpen(false);
   };
 
   return (
     <>
-      <header className="flex items-center justify-between lg:justify-around px-4 py-2">
+      <header className="flex items-center justify-between lg:justify-around px-4 py-2 sticky top-0 bg-main-800/70 shadow-sm">
         <div>
-          <Image src={"/images/logo.svg"} width={42} height={42} alt="Logo" />
+          <Link href={"/"} className="group">
+            <Image
+              src={"/images/logo.svg"}
+              width={42}
+              height={42}
+              alt="Logo"
+              className="group-hover:opacity-65 transition-opacity"
+            />
+          </Link>
         </div>
         {!isAuthenticated && (
           <div className="hidden sm:flex sm:gap-2 sm:items-center">
@@ -90,8 +107,16 @@ export const Header = observer(() => {
               <>
                 {authStore.user && <UserBadge user={authStore.user} />}
                 <Separator className="my-2" />
+                <Link
+                  href={"/admin/users"}
+                  className="flex items-center gap-2 py-1 px-3 hover:bg-main-100/10 rounded transition-colors"
+                >
+                  <Icon icon="mdi:security" width={20} height={20} />
+                  Панель управления
+                </Link>
                 <Button
                   className="gap-2 justify-start py-1 px-3 bg-transparent hover:text-red-300 hover:bg-red-100/10"
+                  disabled={isLogoutLoading}
                   onClick={handleLogout}
                 >
                   <Icon icon="mdi:logout" width={20} height={20} />

@@ -11,11 +11,18 @@ import { FormContainer } from "../shared";
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useToasts } from "@kiyotakkkka/zvs-uikit-lib/hooks";
-import { observer } from "mobx-react-lite";
-import { authStore } from "@/stores";
+import { authStore, type LoginResponse } from "@/stores";
 import { useRouter } from "next/navigation";
+import { useApi } from "@/hooks/useApi";
+import { endpoints } from "@/services/endpoints";
 
-export const LoginForm = observer(() => {
+type LoginRequest = {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+};
+
+export const LoginForm = () => {
   const toasts = useToasts();
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -23,29 +30,36 @@ export const LoginForm = observer(() => {
   const [isRememberMe, setIsRememberMe] = useState(false);
   const [isPassRememberShowing, setIsPassRememberShowing] = useState(true);
 
+  const { execute, loading } = useApi<LoginResponse, LoginRequest>(
+    endpoints.auth.login,
+    "POST",
+    {
+      onSuccessFn: (data) => {
+        authStore.login(data, isRememberMe ? "local" : "session");
+        toasts.success({
+          title: "Успех!",
+          description: "Вы успешно вошли!",
+        });
+        router.push("/");
+      },
+      onErrorFn: (error) => {
+        toasts.danger({
+          title: "Ошибка!",
+          description: error,
+        });
+        setIsPassRememberShowing(true);
+      },
+    },
+  );
+
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const res = await authStore.login({
+    await execute({
       email,
       password,
       rememberMe: isRememberMe,
     });
-
-    if (!res.ok) {
-      toasts.danger({
-        title: "Ошибка!",
-        description: res.data.message,
-      });
-      setIsPassRememberShowing(true);
-      return;
-    }
-
-    toasts.success({
-      title: "Успех!",
-      description: "Вы успешно вошли!",
-    });
-    router.push("/");
   };
 
   return (
@@ -80,12 +94,12 @@ export const LoginForm = observer(() => {
           )}
         </div>
         <Button
-          disabled={authStore.isLoading}
-          variant={authStore.isLoading ? "secondary" : "primary"}
+          disabled={loading}
+          variant={loading ? "secondary" : "primary"}
           className="w-full text-lg p-0.5 font-semibold"
           type="submit"
         >
-          {authStore.isLoading ? (
+          {loading ? (
             <span className="flex gap-2 items-center">
               <Loader></Loader>
               Вход...
@@ -106,4 +120,4 @@ export const LoginForm = observer(() => {
       </form>
     </FormContainer>
   );
-});
+};

@@ -1,10 +1,11 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { GET, POST } from "@/services/api";
+import { GET } from "@/services/api";
 import { endpoints } from "@/services/endpoints";
 import {
   clearStoredToken,
   getStoredToken,
   setStoredToken,
+  type TokenStorageType,
 } from "@/services/tokenStorage";
 
 export type AuthUser = {
@@ -12,15 +13,10 @@ export type AuthUser = {
   name: string;
   email: string;
   status: string;
+  roles: string[];
 };
 
-type LoginRequest = {
-  email: string;
-  password: string;
-  rememberMe: boolean;
-};
-
-type LoginResponse = {
+export type LoginResponse = {
   token: string;
   tokenType: "Bearer";
   expiresAt: string;
@@ -33,7 +29,6 @@ export class AuthStore {
   user: AuthUser | null = null;
   isBootstrapped = false;
   isBootstrapping = false;
-  isLoading = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -83,43 +78,20 @@ export class AuthStore {
     }
   };
 
-  login = async (credentials: LoginRequest) => {
-    this.isLoading = true;
-
-    const response = await POST<LoginResponse>(
-      endpoints.auth.login,
-      credentials,
-    );
-
-    runInAction(() => {
-      this.isLoading = false;
-
-      if (response.ok) {
-        const storageType = credentials.rememberMe ? "local" : "session";
-
-        setStoredToken({
-          token: response.data.token,
-          expiresAt: response.data.expiresAt,
-          storageType,
-        });
-
-        this.token = response.data.token;
-        this.tokenExpiresAt = response.data.expiresAt;
-        this.user = response.data.user;
-      }
+  login = (session: LoginResponse, storageType: TokenStorageType) => {
+    setStoredToken({
+      token: session.token,
+      expiresAt: session.expiresAt,
+      storageType,
     });
 
-    return response;
+    this.token = session.token;
+    this.tokenExpiresAt = session.expiresAt;
+    this.user = session.user;
   };
 
-  logout = async () => {
-    this.isLoading = true;
-    await POST(endpoints.auth.logout);
-
-    runInAction(() => {
-      this.isLoading = false;
-      this.clearAuth();
-    });
+  logout = () => {
+    this.clearAuth();
   };
 
   clearAuth = () => {
@@ -127,6 +99,10 @@ export class AuthStore {
     this.token = null;
     this.tokenExpiresAt = null;
     this.user = null;
+  };
+
+  isUserInRole = (role: string) => {
+    return this.user?.roles.includes(role) ?? false;
   };
 }
 

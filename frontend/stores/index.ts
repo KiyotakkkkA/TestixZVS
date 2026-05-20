@@ -1,2 +1,2 @@
 export { authStore } from "./AuthStore";
-export type { AuthUser } from "./AuthStore";
+export type { AuthUser, LoginResponse } from "./AuthStore";

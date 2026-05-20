@@ -149,8 +149,11 @@ class AuthService
         $user->status = UserStatuses::ACTIVE;
         $user->verification_token = null;
         $user->verification_token_expires_at = null;
+        $user->email_verified_at = now();
         
         if ($user->save()) {
+
+            $user->assignRole('user');
 
             $this->mailService->sendRegistrationSuccess($user);
 
@@ -175,6 +178,7 @@ class AuthService
             'name' => $user->name,
             'email' => $user->email,
             'status' => $user->status,
+            'roles' => $user->getRoleNames()->toArray(),
         ];
     }
 }
