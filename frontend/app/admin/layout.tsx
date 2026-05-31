@@ -7,13 +7,11 @@ import { usePathname } from "next/navigation";
 const navList = [
   {
     name: "Пользователи",
-    description: "Аккаунты и роли",
     href: "/admin/users",
     icon: "mdi:account-group",
   },
   {
     name: "Журнал аудита",
-    description: "Недавние действия",
     href: "/admin/audit",
     icon: "mdi:clipboard-text-clock",
   },
@@ -36,7 +34,7 @@ export default function AdminLayout({
                 <Link
                   href={item.href}
                   key={item.name}
-                  className={`group flex min-w-0 items-center justify-center gap-2 rounded px-2 py-2 transition-colors sm:justify-start sm:px-2.5 lg:gap-2.5 ${
+                  className={`group flex min-w-0 items-center justify-center gap-2 rounded p-1 transition-colors sm:justify-start sm:px-2.5 lg:gap-2.5 ${
                     isActive
                       ? "bg-main-50/95 text-main-900"
                       : "text-main-300 hover:bg-white/7 hover:text-main-50"
@@ -54,13 +52,6 @@ export default function AdminLayout({
                   <span className="min-w-0 text-center sm:text-left">
                     <span className="block truncate text-xs font-semibold min-[380px]:text-sm">
                       {item.name}
-                    </span>
-                    <span
-                      className={`hidden truncate text-xs lg:block ${
-                        isActive ? "text-main-600" : "text-main-400"
-                      }`}
-                    >
-                      {item.description}
                     </span>
                   </span>
                 </Link>

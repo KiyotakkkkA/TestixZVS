@@ -109,6 +109,7 @@ export const Header = observer(() => {
                 <Separator className="my-2" />
                 <Link
                   href={"/admin/users"}
+                  onClick={() => setIsSlidedMenuOpen(false)}
                   className="flex items-center gap-2 py-1 px-3 hover:bg-main-100/10 rounded transition-colors"
                 >
                   <Icon icon="mdi:security" width={20} height={20} />

@@ -1,5 +1,5 @@
-"use client";
+import { TestCatalogSection } from "@/components/organisms/tests";
 
 export default function Home() {
-  return <div></div>;
+  return <TestCatalogSection />;
 }
