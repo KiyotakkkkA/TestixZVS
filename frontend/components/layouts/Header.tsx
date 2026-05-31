@@ -115,6 +115,15 @@ export const Header = observer(() => {
                   <Icon icon="mdi:security" width={20} height={20} />
                   Панель управления
                 </Link>
+                <Link
+                  href={"/"}
+                  onClick={() => setIsSlidedMenuOpen(false)}
+                  className="flex items-center gap-2 py-1 px-3 hover:bg-main-100/10 rounded transition-colors"
+                >
+                  <Icon icon="mdi:script" width={20} height={20} />
+                  Список тестов
+                </Link>
+                <Separator className="my-2" />
                 <Button
                   className="gap-2 justify-start py-1 px-3 bg-transparent hover:text-red-300 hover:bg-red-100/10"
                   disabled={isLogoutLoading}

@@ -60,13 +60,18 @@ const AdminUsersPage = observer(() => {
               {filteredUsers.length}
             </span>
           </p>
-          <Button
-            variant="danger"
-            onClick={usersStore.resetFilters}
-            className="px-3 py-1.5"
-          >
-            Сбросить фильтры
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="danger"
+              onClick={usersStore.resetFilters}
+              className="px-3 py-1.5"
+            >
+              Сбросить фильтры
+            </Button>
+            <Button variant="primary" className="p-2">
+              <Icon icon="mdi:account-plus-outline" width={22} height={22} />
+            </Button>
+          </div>
         </div>
 
         <section className="overflow-hidden rounded-lg border border-main-700 bg-main-800/45">

@@ -6,7 +6,7 @@ import { useState } from "react";
 type AccessEntity = {
   key: string;
   label: string;
-  description: string;
+  allowedAspects: Record<string, boolean>;
 };
 
 type AccessAspect = {
@@ -18,7 +18,22 @@ const accessEntities: AccessEntity[] = [
   {
     key: "tests",
     label: "Тесты",
-    description: "Каталог, прохождение и управление тестами",
+    allowedAspects: {
+      view: true,
+      edit: true,
+      access: true,
+      master: true,
+    },
+  },
+  {
+    key: "users",
+    label: "Пользователи",
+    allowedAspects: {
+      view: true,
+      edit: true,
+      access: true,
+      master: false,
+    },
   },
 ];
 
@@ -28,12 +43,16 @@ const accessAspects: AccessAspect[] = [
     label: "Просмотр",
   },
   {
-    key: "content",
-    label: "Изменение содержимого",
+    key: "edit",
+    label: "Редактирование",
   },
   {
     key: "access",
     label: "Изменение доступа",
+  },
+  {
+    key: "master",
+    label: "Мастер-доступ",
   },
 ];
 
@@ -91,20 +110,19 @@ export const AdminUsersMaxtrixForm = () => {
                 <span className="block text-sm font-semibold text-main-50">
                   {entity.label}
                 </span>
-                <span className="mt-1 block text-xs leading-5 text-main-400">
-                  {entity.description}
-                </span>
               </th>
               {accessAspects.map((aspect) => (
                 <td key={aspect.key} className="px-4 py-4 text-center">
                   <div className="inline-flex justify-center">
-                    <InputCheckBox
-                      checked={matrix[entity.key][aspect.key]}
-                      onChange={(checked) =>
-                        handleChange(entity.key, aspect.key, checked)
-                      }
-                      aria-label={`${entity.label}: ${aspect.label}`}
-                    />
+                    {entity.allowedAspects[aspect.key] && (
+                      <InputCheckBox
+                        checked={matrix[entity.key][aspect.key]}
+                        onChange={(checked) =>
+                          handleChange(entity.key, aspect.key, checked)
+                        }
+                        aria-label={`${entity.label}: ${aspect.label}`}
+                      />
+                    )}
                   </div>
                 </td>
               ))}
