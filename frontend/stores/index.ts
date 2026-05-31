@@ -7,3 +7,11 @@ export type {
   SortDirection,
   TestDifficulty,
 } from "./TestsStore";
+export { usersStore } from "./UsersStore";
+export type {
+  AdminUser,
+  AdminUserStatus,
+  UserSortDirection,
+  UserSortOption,
+  UserStatusFilter,
+} from "./UsersStore";

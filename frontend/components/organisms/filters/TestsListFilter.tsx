@@ -29,12 +29,14 @@ const sortOptions = [
 
 const selectClassNames = {
   trigger:
-    "h-11 min-w-56 rounded border border-main-700 bg-main-900/70 px-3 text-sm text-main-100 outline-none transition hover:bg-main-900 focus:border-main-400",
+    "h-11 w-full rounded border border-main-700 bg-main-900/70 px-3 text-sm text-main-100 outline-none transition hover:bg-main-900 focus:border-main-400",
   menu: "border border-main-700 bg-main-900 text-main-100",
   search: "border-main-700 bg-main-800 text-main-100 placeholder:text-main-500",
   option: "text-main-100 hover:bg-main-800",
   optionLabel: "text-sm",
 };
+
+const selectClassName = "w-full min-w-0 [&>div]:w-full";
 
 export const TestsListFilter = observer(() => {
   return (
@@ -67,7 +69,10 @@ export const TestsListFilter = observer(() => {
               onChange={(value) => testsStore.setSortBy(value as SortOption)}
               options={sortOptions}
               placeholder="Сортировка"
+              className={selectClassName}
               classNames={selectClassNames}
+              menuWidth="auto"
+              menuPlacement="bottom-right"
             />
 
             <Button

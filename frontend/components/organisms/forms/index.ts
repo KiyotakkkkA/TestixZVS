@@ -3,3 +3,4 @@ export * from "./RegisterForm";
 export * from "./PasswordRecoveryForm";
 export * from "./PasswordResetForm";
 export * from "./EmailConfirmationForm";
+export * from "./AdminUsersMaxtrixForm";

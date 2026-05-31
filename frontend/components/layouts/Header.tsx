@@ -61,7 +61,7 @@ export const Header = observer(() => {
 
   return (
     <>
-      <header className="flex items-center justify-between lg:justify-around px-4 py-2 sticky top-0 bg-main-800/70 shadow-sm">
+      <header className="flex items-center justify-between lg:justify-around px-4 py-2 sticky top-0 bg-main-800 shadow-sm">
         <div>
           <Link href={"/"} className="group">
             <Image
@@ -81,11 +81,11 @@ export const Header = observer(() => {
             >
               Зарегистрироваться
             </Link>
-            <Button variant="primary" className="p-1">
-              <Link href={"/login"} className="w-full h-full">
+            <Link href={"/login"} className="w-full h-full">
+              <Button variant="primary" className="p-1">
                 Войти
-              </Link>
-            </Button>
+              </Button>
+            </Link>
           </div>
         )}
         <Button
