@@ -24,6 +24,10 @@ class RolesSeeder extends Seeder
             'tests.view', // Просмотр тестов
             'tests.edit', // Создание, изменение и удаление тестов
             'tests.access', // Выдача доступа и изменение политик доступа к тестам
+            'users.view', // Просмотр пользователей
+            'users.edit', // Создание и изменение пользователей
+            'users.access', // Изменение прав пользователей
+            'audit.view', // Просмотр журнала аудита
         ];
 
         foreach ($permissions as $permission) {
@@ -36,7 +40,9 @@ class RolesSeeder extends Seeder
 
         $permissionMap = [
             'root' => $permissions,
-            'admin' => $permissions,
+            'admin' => array_filter($permissions, function ($p) {
+                return $p !== 'users.access'; // Не даём админу права на изменение прав по умолчанию
+            }),
             'editor' => ['tests.view', 'tests.edit'],
             'user' => ['tests.view'],
         ];

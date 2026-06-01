@@ -2,12 +2,15 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\AdminUsersController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::name('api.')->group(static function () {
-    Route::name('v1.')->prefix('v1')->group(base_path('routes/v1/api.php'));
+    Route::name('v1.')
+        ->prefix('v1')
+        ->group(static function () {
+            require base_path('routes/v1/api.php');
+        });
 });
 
 Route::prefix('auth')->group(function () {
@@ -22,11 +25,3 @@ Route::prefix('auth')->group(function () {
         Route::get('me', [AuthController::class, 'me'])->name('auth.me');
     });
 });
-
-Route::middleware(['auth:sanctum', 'perm:tests.view'])
-    ->prefix('admin/users')
-    ->name('admin.users.')
-    ->group(function () {
-        Route::get('/', [AdminUsersController::class, 'index'])->name('index');
-        Route::post('/', [AdminUsersController::class, 'store'])->name('store');
-    });

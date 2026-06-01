@@ -1,4 +1,5 @@
 const BASE_URL = "http://localhost:8000/api";
+const V1_BASE_URL = `${BASE_URL}/v1`;
 
 export const endpoints = {
   auth: {
@@ -12,10 +13,13 @@ export const endpoints = {
   },
   admin: {
     users: {
-      list: `${BASE_URL}/admin/users`,
-      create: `${BASE_URL}/admin/users`,
-      "access-change": `${BASE_URL}/admin/users/access-change`,
-      "status-change": `${BASE_URL}/admin/users/status-change`,
+      list: `${V1_BASE_URL}/admin/users`,
+      create: `${V1_BASE_URL}/admin/users`,
+      "access-change": `${V1_BASE_URL}/admin/users/access-change`,
+    },
+    audit: {
+      list: `${V1_BASE_URL}/admin/audit`,
+      detail: (uuid: string) => `${V1_BASE_URL}/admin/audit/${uuid}`,
     },
   },
 };

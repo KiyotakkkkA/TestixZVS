@@ -14,10 +14,19 @@ import {
 } from "@/components/organisms/forms";
 import { Pagination } from "@/components/atoms";
 import { AdminUsersListFilter } from "@/components/organisms/filters";
-import { usersStore, type AdminUserStatus } from "@/stores";
+import { authStore, usersStore, type AdminUserStatus } from "@/stores";
+import { useApi } from "@/hooks/useApi";
+import { useToasts } from "@kiyotakkkka/zvs-uikit-lib/hooks";
+import { endpoints } from "@/services/endpoints";
+import type { User } from "@/models/User";
 import { reaction } from "mobx";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+
+type AccessChangeRequest = {
+  userId: number;
+  permissions: string[];
+};
 
 const statusLabels: Record<AdminUserStatus, string> = {
   active: "Активен",
@@ -35,13 +44,63 @@ const statusBadgeVariants: Record<
 };
 
 const AdminUsersPage = observer(() => {
+  const toasts = useToasts();
   const selectedUser = usersStore.selectedUser;
   const filteredUsers = usersStore.filteredUsers;
+  const canManageUsersAccess = authStore.isUserHasPermission("users.access");
 
   const [isUserCreateModalOpen, setIsUserCreateModalOpen] = useState(false);
+  const [isAccessConfirmModalOpen, setIsAccessConfirmModalOpen] =
+    useState(false);
+  const [selectedAccessPermissions, setSelectedAccessPermissions] = useState<
+    string[]
+  >([]);
+
+  const { execute: changeAccess, loading: isAccessSaving } = useApi<
+    User,
+    AccessChangeRequest
+  >(endpoints.admin.users["access-change"], "POST", {
+    immediate: false,
+    onSuccessFn: () => {
+      toasts.success({
+        title: "Готово!",
+        description: "Права пользователя обновлены.",
+      });
+    },
+    onErrorFn: (error) => {
+      toasts.danger({
+        title: "Ошибка!",
+        description: error,
+      });
+    },
+  });
 
   const closeAccessModal = () => {
+    setIsAccessConfirmModalOpen(false);
     usersStore.clearSelectedUser();
+  };
+
+  const handlePermissionsChange = useCallback((permissions: string[]) => {
+    setSelectedAccessPermissions(permissions);
+  }, []);
+
+  const handleAccessSaveConfirm = async () => {
+    if (!selectedUser) {
+      return;
+    }
+
+    const response = await changeAccess({
+      userId: selectedUser.id,
+      permissions: selectedAccessPermissions,
+    });
+
+    if (!response.ok) {
+      return;
+    }
+
+    setIsAccessConfirmModalOpen(false);
+    closeAccessModal();
+    void usersStore.loadUsers();
   };
 
   useEffect(() => {
@@ -148,9 +207,11 @@ const AdminUsersPage = observer(() => {
                       <th className="px-5 py-3 text-xs font-bold uppercase tracking-wide text-main-300">
                         Статус
                       </th>
-                      <th className="px-5 py-3 text-right text-xs font-bold uppercase tracking-wide text-main-300">
-                        Доступ
-                      </th>
+                      {canManageUsersAccess && (
+                        <th className="px-5 py-3 text-right text-xs font-bold uppercase tracking-wide text-main-300">
+                          Доступ
+                        </th>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
@@ -173,19 +234,21 @@ const AdminUsersPage = observer(() => {
                             {statusLabels[user.status]}
                           </Badge>
                         </td>
-                        <td className="px-5 py-4 text-right">
-                          <Button
-                            onClick={() => usersStore.selectUser(user)}
-                            className="gap-2 px-3 py-1.5"
-                          >
-                            <Icon
-                              icon="mdi:shield-key-outline"
-                              width={18}
-                              height={18}
-                            />
-                            Настроить
-                          </Button>
-                        </td>
+                        {canManageUsersAccess && (
+                          <td className="px-5 py-4 text-right">
+                            <Button
+                              onClick={() => usersStore.selectUser(user)}
+                              className="gap-2 px-3 py-1.5"
+                            >
+                              <Icon
+                                icon="mdi:shield-key-outline"
+                                width={18}
+                                height={18}
+                              />
+                              Настроить
+                            </Button>
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>
@@ -243,7 +306,11 @@ const AdminUsersPage = observer(() => {
             : "[Не удалось определить пользователя]"}
         </Modal.Header>
         <Modal.Content className="space-y-4">
-          <AdminUsersMaxtrixForm />
+          <AdminUsersMaxtrixForm
+            permissions={selectedUser?.permissions}
+            role={selectedUser?.role}
+            onPermissionsChange={handlePermissionsChange}
+          />
         </Modal.Content>
         <Modal.Footer className="flex justify-end gap-2">
           <Button
@@ -254,11 +321,47 @@ const AdminUsersPage = observer(() => {
             Отмена
           </Button>
           <Button
-            onClick={closeAccessModal}
+            onClick={() => setIsAccessConfirmModalOpen(true)}
             className="py-1 px-2"
             variant="primary"
           >
             Сохранить
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal
+        closeOnOverlayClick={false}
+        open={isAccessConfirmModalOpen}
+        onClose={() => setIsAccessConfirmModalOpen(false)}
+        className="w-[min(480px,calc(100vw-2rem))]"
+      >
+        <Modal.Header>Подтвердите изменение доступа</Modal.Header>
+        <Modal.Content className="space-y-3 text-sm text-main-300">
+          <p>
+            Вы собираетесь изменить права пользователя{" "}
+            <span className="font-semibold text-main-50">
+              {selectedUser?.name}
+            </span>
+            .
+          </p>
+        </Modal.Content>
+        <Modal.Footer className="flex justify-end gap-2">
+          <Button
+            variant="secondary"
+            onClick={() => setIsAccessConfirmModalOpen(false)}
+            className="py-1 px-2"
+            disabled={isAccessSaving}
+          >
+            Отмена
+          </Button>
+          <Button
+            onClick={handleAccessSaveConfirm}
+            className="py-1 px-2"
+            variant={isAccessSaving ? "secondary" : "primary"}
+            disabled={isAccessSaving}
+          >
+            {isAccessSaving ? "Сохранение..." : "Подтвердить"}
           </Button>
         </Modal.Footer>
       </Modal>

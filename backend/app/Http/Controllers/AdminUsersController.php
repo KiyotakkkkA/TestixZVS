@@ -37,7 +37,26 @@ class AdminUsersController extends Controller
             ],
         );
 
-        $result = $this->adminUsersService->store($data);
+        $result = $this->adminUsersService->store($data, $request->user(), $request);
+
+        return response()->json($result['data'], $result['status']);
+    }
+
+    public function accessChange(Request $request)
+    {
+        $data = $request->validate(
+            [
+                'userId' => 'required|integer|exists:users,id',
+                'permissions' => 'array',
+                'permissions.*' => 'string',
+            ],
+            [
+                'userId.required' => 'Не удалось определить пользователя.',
+                'userId.exists' => 'Пользователь не найден.',
+            ],
+        );
+
+        $result = $this->adminUsersService->accessChange($data, $request->user(), $request);
 
         return response()->json($result['data'], $result['status']);
     }

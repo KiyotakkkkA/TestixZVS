@@ -14,6 +14,7 @@ export type AuthUser = {
   email: string;
   status: string;
   roles: string[];
+  permissions: string[];
 };
 
 export type LoginResponse = {
@@ -103,6 +104,10 @@ export class AuthStore {
 
   isUserInRole = (role: string) => {
     return this.user?.roles.includes(role) ?? false;
+  };
+
+  isUserHasPermission = (permission: string) => {
+    return this.user?.permissions.includes(permission) ?? false;
   };
 }
 

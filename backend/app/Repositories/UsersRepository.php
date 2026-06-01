@@ -36,4 +36,16 @@ class UsersRepository
             'email_verified_at' => now(),
         ]);
     }
+
+    public function findById(int $id): User
+    {
+        return User::query()->with('roles')->findOrFail($id);
+    }
+
+    public function syncPermissions(User $user, array $permissions): User
+    {
+        $user->syncPermissions($permissions);
+
+        return $user->refresh()->load('roles');
+    }
 }

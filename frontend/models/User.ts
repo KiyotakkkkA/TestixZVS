@@ -5,5 +5,7 @@ export type User = {
   name: string;
   email: string;
   role: string;
+  roles: string[];
+  permissions: string[];
   status: UserStatus;
 };

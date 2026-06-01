@@ -1,38 +1,46 @@
 "use client";
 
 import { InputCheckBox } from "@kiyotakkkka/zvs-uikit-lib/ui";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type AccessEntity = {
   key: string;
   label: string;
-  allowedAspects: Record<string, boolean>;
+  permissionsByAspect: Partial<Record<AccessAspectKey, string[]>>;
 };
 
 type AccessAspect = {
-  key: string;
+  key: AccessAspectKey;
   label: string;
+};
+
+type AccessAspectKey = "view" | "edit" | "access" | "master";
+type MatrixState = Record<string, Record<AccessAspectKey, boolean>>;
+
+type AdminUsersMaxtrixFormProps = {
+  permissions?: string[];
+  role?: string;
+  onPermissionsChange?: (permissions: string[]) => void;
 };
 
 const accessEntities: AccessEntity[] = [
   {
     key: "tests",
     label: "Тесты",
-    allowedAspects: {
-      view: true,
-      edit: true,
-      access: true,
-      master: true,
+    permissionsByAspect: {
+      view: ["tests.view"],
+      edit: ["tests.edit"],
+      access: ["tests.access"],
+      master: ["tests.view", "tests.edit", "tests.access"],
     },
   },
   {
     key: "users",
     label: "Пользователи",
-    allowedAspects: {
-      view: true,
-      edit: true,
-      access: true,
-      master: false,
+    permissionsByAspect: {
+      view: ["users.view"],
+      edit: ["users.edit"],
+      access: ["users.access"],
     },
   },
 ];
@@ -56,21 +64,118 @@ const accessAspects: AccessAspect[] = [
   },
 ];
 
+const rolePermissionsMap: Record<string, string[]> = {
+  root: [
+    "tests.view",
+    "tests.edit",
+    "tests.access",
+    "users.view",
+    "users.edit",
+    "users.access",
+  ],
+  admin: [
+    "tests.view",
+    "tests.edit",
+    "tests.access",
+    "users.view",
+    "users.edit",
+    "users.access",
+  ],
+  editor: ["tests.view", "tests.edit"],
+  user: ["tests.view"],
+};
+
 const createMatrixState = () => {
   return Object.fromEntries(
     accessEntities.map((entity) => [
       entity.key,
       Object.fromEntries(accessAspects.map((aspect) => [aspect.key, false])),
     ]),
-  ) as Record<string, Record<string, boolean>>;
+  ) as MatrixState;
 };
 
-export const AdminUsersMaxtrixForm = () => {
-  const [matrix, setMatrix] = useState(createMatrixState);
+const resolvePermissions = (permissions: string[] = [], role?: string) => {
+  if (permissions.length > 0) {
+    return permissions;
+  }
+
+  return role ? (rolePermissionsMap[role] ?? []) : [];
+};
+
+const hasEveryPermission = (
+  userPermissions: Set<string>,
+  requiredPermissions: string[],
+) => {
+  return requiredPermissions.every((permission) =>
+    userPermissions.has(permission),
+  );
+};
+
+const createMatrixStateFromPermissions = (
+  permissions: string[] = [],
+  role?: string,
+) => {
+  const userPermissions = new Set(resolvePermissions(permissions, role));
+  const matrix = createMatrixState();
+
+  accessEntities.forEach((entity) => {
+    accessAspects.forEach((aspect) => {
+      const requiredPermissions = entity.permissionsByAspect[aspect.key];
+
+      if (!requiredPermissions) {
+        return;
+      }
+
+      matrix[entity.key][aspect.key] = hasEveryPermission(
+        userPermissions,
+        requiredPermissions,
+      );
+    });
+  });
+
+  return matrix;
+};
+
+const getPermissionsFromMatrix = (matrix: MatrixState) => {
+  const permissions = new Set<string>();
+
+  accessEntities.forEach((entity) => {
+    accessAspects.forEach((aspect) => {
+      if (!matrix[entity.key][aspect.key]) {
+        return;
+      }
+
+      entity.permissionsByAspect[aspect.key]?.forEach((permission) => {
+        permissions.add(permission);
+      });
+    });
+  });
+
+  return Array.from(permissions);
+};
+
+export const AdminUsersMaxtrixForm = ({
+  permissions = [],
+  role,
+  onPermissionsChange,
+}: AdminUsersMaxtrixFormProps) => {
+  const initialMatrix = useMemo(
+    () => createMatrixStateFromPermissions(permissions, role),
+    [permissions, role],
+  );
+  const [matrix, setMatrix] = useState(initialMatrix);
+
+  useEffect(() => {
+    setMatrix(initialMatrix);
+  }, [initialMatrix]);
+
+  useEffect(() => {
+    onPermissionsChange?.(getPermissionsFromMatrix(matrix));
+  }, [matrix, onPermissionsChange]);
 
   const handleChange = (
     entityKey: string,
-    aspectKey: string,
+    aspectKey: AccessAspectKey,
     checked: boolean,
   ) => {
     setMatrix((currentMatrix) => ({
@@ -114,7 +219,7 @@ export const AdminUsersMaxtrixForm = () => {
               {accessAspects.map((aspect) => (
                 <td key={aspect.key} className="px-4 py-4 text-center">
                   <div className="inline-flex justify-center">
-                    {entity.allowedAspects[aspect.key] && (
+                    {entity.permissionsByAspect[aspect.key] && (
                       <InputCheckBox
                         checked={matrix[entity.key][aspect.key]}
                         onChange={(checked) =>

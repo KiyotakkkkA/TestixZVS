@@ -107,14 +107,17 @@ export const Header = observer(() => {
               <>
                 {authStore.user && <UserBadge user={authStore.user} />}
                 <Separator className="my-2" />
-                <Link
-                  href={"/admin/users"}
-                  onClick={() => setIsSlidedMenuOpen(false)}
-                  className="flex items-center gap-2 py-1 px-3 hover:bg-main-100/10 rounded transition-colors"
-                >
-                  <Icon icon="mdi:security" width={20} height={20} />
-                  Панель управления
-                </Link>
+                {authStore.isUserInRole("admin") ||
+                  (authStore.isUserInRole("root") && (
+                    <Link
+                      href={"/admin/users"}
+                      onClick={() => setIsSlidedMenuOpen(false)}
+                      className="flex items-center gap-2 py-1 px-3 hover:bg-main-100/10 rounded transition-colors"
+                    >
+                      <Icon icon="mdi:security" width={20} height={20} />
+                      Панель управления
+                    </Link>
+                  ))}
                 <Link
                   href={"/"}
                   onClick={() => setIsSlidedMenuOpen(false)}

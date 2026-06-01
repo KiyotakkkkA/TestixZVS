@@ -127,17 +127,14 @@ export class TestsStore {
     makeAutoObservable(this);
   }
 
-  get categories() {
-    return Array.from(new Set(this.tests.map((test) => test.category))).sort();
-  }
-
   get filteredTests() {
     const normalizedQuery = this.query.trim().toLowerCase();
 
     return this.tests
       .filter((test) => {
         const matchesQuery =
-          !normalizedQuery || test.title.toLowerCase().includes(normalizedQuery);
+          !normalizedQuery ||
+          test.title.toLowerCase().includes(normalizedQuery);
 
         return matchesQuery;
       })
