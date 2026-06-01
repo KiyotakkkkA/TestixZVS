@@ -14,6 +14,7 @@ class AdminUsersService
         'tests.view',
         'tests.edit',
         'tests.access',
+        'tests.master',
         'users.view',
         'users.edit',
         'users.access',

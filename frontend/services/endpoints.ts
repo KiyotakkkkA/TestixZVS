@@ -22,4 +22,8 @@ export const endpoints = {
       detail: (uuid: string) => `${V1_BASE_URL}/admin/audit/${uuid}`,
     },
   },
+  tests: {
+    list: `${V1_BASE_URL}/tests`,
+    create: `${V1_BASE_URL}/tests`,
+  },
 };

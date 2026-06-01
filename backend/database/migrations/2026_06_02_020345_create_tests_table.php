@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('tests', function (Blueprint $table) {
             $table->string('id')->primary();
+            $table->string('author_id');
             $table->string('title');
             $table->text('description');
             $table->integer('estimated_pass_time_int');

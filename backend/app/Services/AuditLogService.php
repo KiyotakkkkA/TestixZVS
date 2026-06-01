@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Filters\AuditLogsFilter;
 use App\Models\AuditLog;
+use App\Models\Test;
 use App\Models\User;
 use App\Repositories\AuditLogRepository;
 use Illuminate\Http\Request;
@@ -121,6 +122,28 @@ class AuditLogService
                 'role' => $targetUser->getRoleNames()->first(),
                 'addedPermissions' => array_values(array_diff($newPermissions, $oldPermissions)),
                 'removedPermissions' => array_values(array_diff($oldPermissions, $newPermissions)),
+            ],
+            request: $request,
+        );
+    }
+
+    public function recordTestCreated(
+        Test $createdTest,
+        array $createdTestSnapshot,
+        User $author,
+        ?Request $request = null,
+    ): AuditLog {
+        return $this->record(
+            eventType: 'created',
+            entityType: 'test',
+            entityId: null,
+            entityLabel: $createdTest->title,
+            author: $author,
+            summary: "Создан тест {$createdTest->title}",
+            newValues: $createdTestSnapshot,
+            metadata: [
+                'testUuid' => $createdTest->id,
+                'estimatedPassTime' => $createdTest->estimated_pass_time_int,
             ],
             request: $request,
         );

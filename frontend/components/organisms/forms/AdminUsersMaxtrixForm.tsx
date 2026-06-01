@@ -43,6 +43,13 @@ const accessEntities: AccessEntity[] = [
       access: ["users.access"],
     },
   },
+  {
+    key: "audit",
+    label: "Аудит",
+    permissionsByAspect: {
+      view: ["audit.view"],
+    },
+  },
 ];
 
 const accessAspects: AccessAspect[] = [

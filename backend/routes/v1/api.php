@@ -4,7 +4,18 @@ declare(strict_types=1);
 
 use App\Http\Controllers\AdminAuditController;
 use App\Http\Controllers\AdminUsersController;
+use App\Http\Controllers\TestsController;
 use Illuminate\Support\Facades\Route;
+
+Route::middleware(['auth:sanctum', 'perm:tests.view'])
+    ->prefix('tests')
+    ->name('tests.')
+    ->group(function () {
+        Route::get('/', [TestsController::class, 'index'])->name('index');
+        Route::post('/', [TestsController::class, 'store'])
+            ->middleware('perm:tests.edit')
+            ->name('store');
+    });
 
 Route::middleware(['auth:sanctum', 'perm:users.view'])
     ->prefix('admin/users')

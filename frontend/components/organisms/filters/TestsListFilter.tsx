@@ -11,9 +11,9 @@ import type { ReactNode } from "react";
 
 const sortOptions = [
   {
-    value: "questions",
-    label: "По количеству вопросов",
-    icon: <Icon icon="mdi:help-circle-outline" />,
+    value: "createdAt",
+    label: "По дате создания",
+    icon: <Icon icon="mdi:calendar-clock-outline" />,
   },
   {
     value: "duration",
@@ -21,9 +21,9 @@ const sortOptions = [
     icon: <Icon icon="mdi:timer-outline" />,
   },
   {
-    value: "rating",
-    label: "По средней оценке",
-    icon: <Icon icon="mdi:star-outline" />,
+    value: "title",
+    label: "По названию",
+    icon: <Icon icon="mdi:sort-alphabetical-ascending" />,
   },
 ] satisfies { value: SortOption; label: string; icon: ReactNode }[];
 
