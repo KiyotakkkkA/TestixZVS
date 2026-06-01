@@ -27,12 +27,12 @@ const statusOptions = [
     icon: <Icon icon="mdi:account-check-outline" />,
   },
   {
-    value: "pending",
+    value: "confirmation_pending",
     label: "Ожидает подтверждения",
     icon: <Icon icon="mdi:account-clock-outline" />,
   },
   {
-    value: "blocked",
+    value: "suspended",
     label: "Заблокирован",
     icon: <Icon icon="mdi:account-cancel-outline" />,
   },
@@ -107,7 +107,7 @@ export const AdminUsersListFilter = observer(() => {
           </span>
           <PrettyBR className="sm:hidden col-span-2" label="Сортировка" />
 
-          <div className="ml-auto grid w-full grid-cols-[1fr_44px] gap-2 sm:w-auto sm:grid-cols-[minmax(14rem,1fr)_44px]">
+          <div className="ml-auto grid w-full grid-cols-[1fr_44px] gap-2 sm:w-auto sm:grid-cols-[minmax(13rem,1fr)_44px]">
             <Select
               value={usersStore.sortBy}
               onChange={(value) =>

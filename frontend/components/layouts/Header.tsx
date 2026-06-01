@@ -61,7 +61,7 @@ export const Header = observer(() => {
 
   return (
     <>
-      <header className="flex items-center justify-between lg:justify-around px-4 py-2 sticky top-0 bg-main-800 shadow-sm">
+      <header className="flex items-center justify-between lg:justify-around px-4 py-2 sticky top-0 bg-main-800 shadow-sm z-1">
         <div>
           <Link href={"/"} className="group">
             <Image

@@ -179,6 +179,7 @@ class AuthService
             'email' => $user->email,
             'status' => $user->status,
             'roles' => $user->getRoleNames()->toArray(),
+            'permissions' => $user->getAllPermissions()->pluck('name')->toArray(),
         ];
     }
 }

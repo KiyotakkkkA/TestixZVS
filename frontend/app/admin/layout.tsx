@@ -25,7 +25,7 @@ export default function AdminLayout({
   return (
     <div className="mx-auto flex w-full max-w-9/12 flex-col gap-5 px-4 py-5 sm:px-6 lg:flex-row lg:items-start lg:gap-6 lg:py-7">
       <aside className="lg:sticky lg:top-20 lg:w-56 lg:shrink-0">
-        <nav className="rounded-md bg-main-800/70 p-3 backdrop-blur-md">
+        <nav className="rounded-lg bg-main-800/70 p-3 backdrop-blur-md border border-main-700">
           <div className="grid grid-cols-2 gap-3 lg:flex lg:flex-col">
             {navList.map((item) => {
               const isActive = pathname === item.href;

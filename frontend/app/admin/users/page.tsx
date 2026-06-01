@@ -8,15 +8,21 @@ import {
   ScrollArea,
 } from "@kiyotakkkka/zvs-uikit-lib/ui";
 import { Icon } from "@iconify/react";
-import { AdminUsersMaxtrixForm } from "@/components/organisms/forms";
+import {
+  AdminUsersAddingForm,
+  AdminUsersMaxtrixForm,
+} from "@/components/organisms/forms";
+import { Pagination } from "@/components/atoms";
 import { AdminUsersListFilter } from "@/components/organisms/filters";
 import { usersStore, type AdminUserStatus } from "@/stores";
+import { reaction } from "mobx";
 import { observer } from "mobx-react-lite";
+import { useEffect, useState } from "react";
 
 const statusLabels: Record<AdminUserStatus, string> = {
   active: "Активен",
-  pending: "Ожидает подтверждения",
-  blocked: "Заблокирован",
+  confirmation_pending: "Ожидает подтверждения",
+  suspended: "Заблокирован",
 };
 
 const statusBadgeVariants: Record<
@@ -24,17 +30,36 @@ const statusBadgeVariants: Record<
   "success" | "warning" | "danger"
 > = {
   active: "success",
-  pending: "warning",
-  blocked: "danger",
+  confirmation_pending: "warning",
+  suspended: "danger",
 };
 
 const AdminUsersPage = observer(() => {
   const selectedUser = usersStore.selectedUser;
   const filteredUsers = usersStore.filteredUsers;
 
+  const [isUserCreateModalOpen, setIsUserCreateModalOpen] = useState(false);
+
   const closeAccessModal = () => {
     usersStore.clearSelectedUser();
   };
+
+  useEffect(() => {
+    return reaction(
+      () => [
+        usersStore.query,
+        usersStore.selectedStatus,
+        usersStore.sortBy,
+        usersStore.sortDirection,
+        usersStore.page,
+        usersStore.perPage,
+      ],
+      () => {
+        void usersStore.loadUsers();
+      },
+      { fireImmediately: true },
+    );
+  }, []);
 
   return (
     <>
@@ -54,12 +79,6 @@ const AdminUsersPage = observer(() => {
         <AdminUsersListFilter />
 
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm text-main-300">
-            Найдено:{" "}
-            <span className="font-semibold text-main-50">
-              {filteredUsers.length}
-            </span>
-          </p>
           <div className="flex gap-2">
             <Button
               variant="danger"
@@ -68,73 +87,111 @@ const AdminUsersPage = observer(() => {
             >
               Сбросить фильтры
             </Button>
-            <Button variant="primary" className="p-2">
+            <Button
+              variant="primary"
+              className="p-2"
+              onClick={() => setIsUserCreateModalOpen(true)}
+            >
               <Icon icon="mdi:account-plus-outline" width={22} height={22} />
             </Button>
           </div>
         </div>
 
         <section className="overflow-hidden rounded-lg border border-main-700 bg-main-800/45">
-          {filteredUsers.length > 0 ? (
-            <ScrollArea orientation="horizontal" className="w-full">
-              <table className="min-w-215 w-full border-collapse text-left">
-                <thead>
-                  <tr className="border-b border-main-700 bg-main-800/80">
-                    <th className="px-5 py-3 text-xs font-bold uppercase tracking-wide text-main-300">
-                      Пользователь
-                    </th>
-                    <th className="px-5 py-3 text-xs font-bold uppercase tracking-wide text-main-300">
-                      Email
-                    </th>
-                    <th className="px-5 py-3 text-xs font-bold uppercase tracking-wide text-main-300">
-                      Роль
-                    </th>
-                    <th className="px-5 py-3 text-xs font-bold uppercase tracking-wide text-main-300">
-                      Статус
-                    </th>
-                    <th className="px-5 py-3 text-right text-xs font-bold uppercase tracking-wide text-main-300">
-                      Доступ
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredUsers.map((user) => (
-                    <tr
-                      key={user.id}
-                      className="border-b border-main-800 last:border-b-0"
-                    >
-                      <td className="px-5 py-4 text-sm font-semibold text-main-50">
-                        {user.name}
-                      </td>
-                      <td className="px-5 py-4 text-sm text-main-300">
-                        {user.email}
-                      </td>
-                      <td className="px-5 py-4 text-sm text-main-300">
-                        {user.role}
-                      </td>
-                      <td className="px-5 py-4 text-sm text-main-300">
-                        <Badge variant={statusBadgeVariants[user.status]}>
-                          {statusLabels[user.status]}
-                        </Badge>
-                      </td>
-                      <td className="px-5 py-4 text-right">
-                        <Button
-                          onClick={() => usersStore.selectUser(user)}
-                          className="gap-2 px-3 py-1.5"
-                        >
-                          <Icon
-                            icon="mdi:shield-key-outline"
-                            width={18}
-                            height={18}
-                          />
-                          Настроить
-                        </Button>
-                      </td>
+          {usersStore.loading ? (
+            <div className="flex items-center justify-center gap-3 p-10 text-sm text-main-300">
+              <Icon
+                icon="mdi:loading"
+                width={24}
+                height={24}
+                className="animate-spin"
+              />
+              Загружаем пользователей...
+            </div>
+          ) : usersStore.error ? (
+            <EmptyState
+              icon={
+                <Icon icon="mdi:alert-circle-outline" width={48} height={48} />
+              }
+              className="bg-main-800/35 p-10 m-3"
+              title="Не удалось загрузить пользователей"
+              description={usersStore.error}
+            />
+          ) : filteredUsers.length > 0 ? (
+            <>
+              <div className="border-b border-main-700 p-2 sm:p-3">
+                <Pagination
+                  page={usersStore.meta.currentPage}
+                  perPage={usersStore.meta.perPage}
+                  total={usersStore.meta.total}
+                  lastPage={usersStore.meta.lastPage}
+                  from={usersStore.meta.from}
+                  to={usersStore.meta.to}
+                  disabled={usersStore.loading}
+                  onPageChange={usersStore.setPage}
+                  onPerPageChange={usersStore.setPerPage}
+                />
+              </div>
+              <ScrollArea orientation="horizontal" className="w-full">
+                <table className="min-w-215 w-full border-collapse text-left">
+                  <thead>
+                    <tr className="border-b border-main-700 bg-main-800/80">
+                      <th className="px-5 py-3 text-xs font-bold uppercase tracking-wide text-main-300">
+                        Пользователь
+                      </th>
+                      <th className="px-5 py-3 text-xs font-bold uppercase tracking-wide text-main-300">
+                        Email
+                      </th>
+                      <th className="px-5 py-3 text-xs font-bold uppercase tracking-wide text-main-300">
+                        Роль
+                      </th>
+                      <th className="px-5 py-3 text-xs font-bold uppercase tracking-wide text-main-300">
+                        Статус
+                      </th>
+                      <th className="px-5 py-3 text-right text-xs font-bold uppercase tracking-wide text-main-300">
+                        Доступ
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </ScrollArea>
+                  </thead>
+                  <tbody>
+                    {filteredUsers.map((user) => (
+                      <tr
+                        key={user.id}
+                        className="border-b border-main-800 last:border-b-0"
+                      >
+                        <td className="px-5 py-4 text-sm font-semibold text-main-50">
+                          {user.name}
+                        </td>
+                        <td className="px-5 py-4 text-sm text-main-300">
+                          {user.email}
+                        </td>
+                        <td className="px-5 py-4 text-sm text-main-300">
+                          {user.role}
+                        </td>
+                        <td className="px-5 py-4 text-sm text-main-300">
+                          <Badge variant={statusBadgeVariants[user.status]}>
+                            {statusLabels[user.status]}
+                          </Badge>
+                        </td>
+                        <td className="px-5 py-4 text-right">
+                          <Button
+                            onClick={() => usersStore.selectUser(user)}
+                            className="gap-2 px-3 py-1.5"
+                          >
+                            <Icon
+                              icon="mdi:shield-key-outline"
+                              width={18}
+                              height={18}
+                            />
+                            Настроить
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </ScrollArea>
+            </>
           ) : (
             <EmptyState
               icon={
@@ -151,6 +208,28 @@ const AdminUsersPage = observer(() => {
           )}
         </section>
       </div>
+
+      <Modal
+        open={isUserCreateModalOpen}
+        onClose={() => setIsUserCreateModalOpen(false)}
+        className="w-[min(520px,calc(100vw-2rem))]"
+      >
+        <Modal.Header className="border-b border-main-700 bg-main-800/40">
+          <span className="flex items-center gap-2">
+            <Icon icon="mdi:account-plus-outline" width={20} height={20} />
+            Создание нового пользователя
+          </span>
+        </Modal.Header>
+        <Modal.Content className="p-5">
+          <AdminUsersAddingForm
+            onCancel={() => setIsUserCreateModalOpen(false)}
+            onCreated={() => {
+              setIsUserCreateModalOpen(false);
+              void usersStore.loadUsers();
+            }}
+          />
+        </Modal.Content>
+      </Modal>
 
       <Modal
         closeOnOverlayClick={false}
@@ -170,11 +249,15 @@ const AdminUsersPage = observer(() => {
           <Button
             variant="secondary"
             onClick={closeAccessModal}
-            className="p-1"
+            className="py-1 px-2"
           >
             Отмена
           </Button>
-          <Button onClick={closeAccessModal} className="p-1" variant="primary">
+          <Button
+            onClick={closeAccessModal}
+            className="py-1 px-2"
+            variant="primary"
+          >
             Сохранить
           </Button>
         </Modal.Footer>

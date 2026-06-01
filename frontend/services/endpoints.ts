@@ -10,4 +10,12 @@ export const endpoints = {
     "password-reset": `${BASE_URL}/auth/password-reset`,
     "email-confirmation": `${BASE_URL}/auth/email-confirmation`,
   },
+  admin: {
+    users: {
+      list: `${BASE_URL}/admin/users`,
+      create: `${BASE_URL}/admin/users`,
+      "access-change": `${BASE_URL}/admin/users/access-change`,
+      "status-change": `${BASE_URL}/admin/users/status-change`,
+    },
+  },
 };
