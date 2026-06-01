@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\AuditLogsFilter;
 use App\Services\AuditLogService;
-use Illuminate\Http\Request;
 
 class AdminAuditController extends Controller
 {
     public function __construct(private AuditLogService $auditLogService) {}
 
-    public function index(Request $request)
+    public function index(AuditLogsFilter $filter)
     {
-        $result = $this->auditLogService->index($request);
+        $result = $this->auditLogService->index($filter);
 
         return response()->json($result['data'], $result['status']);
     }

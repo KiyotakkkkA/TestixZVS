@@ -146,13 +146,15 @@ const AdminUsersPage = observer(() => {
             >
               Сбросить фильтры
             </Button>
-            <Button
-              variant="primary"
-              className="p-2"
-              onClick={() => setIsUserCreateModalOpen(true)}
-            >
-              <Icon icon="mdi:account-plus-outline" width={22} height={22} />
-            </Button>
+            {authStore.isUserHasPermission("users.edit") && (
+              <Button
+                variant="primary"
+                className="p-2"
+                onClick={() => setIsUserCreateModalOpen(true)}
+              >
+                <Icon icon="mdi:account-plus-outline" width={22} height={22} />
+              </Button>
+            )}
           </div>
         </div>
 

@@ -11,7 +11,7 @@ Route::middleware(['auth:sanctum', 'perm:users.view'])
     ->name('admin.users.')
     ->group(function () {
         Route::get('/', [AdminUsersController::class, 'index'])->name('index');
-        Route::post('/', [AdminUsersController::class, 'store'])->name('store');
+        Route::post('/', [AdminUsersController::class, 'store'])->name('store')->middleware('perm:users.edit');
         Route::post('/access-change', [AdminUsersController::class, 'accessChange'])
             ->middleware('perm:users.access')
             ->name('access-change');

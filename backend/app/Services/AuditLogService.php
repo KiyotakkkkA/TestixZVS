@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Filters\AuditLogsFilter;
 use App\Models\AuditLog;
 use App\Models\User;
 use App\Repositories\AuditLogRepository;
@@ -10,17 +11,11 @@ use Illuminate\Support\Str;
 
 class AuditLogService
 {
-    private const MIN_PER_PAGE = 5;
-
-    private const MAX_PER_PAGE = 100;
-
     public function __construct(private AuditLogRepository $auditLogRepository) {}
 
-    public function index(Request $request): array
+    public function index(AuditLogsFilter $filter): array
     {
-        $perPage = min(max((int) $request->query('perPage', 10), self::MIN_PER_PAGE), self::MAX_PER_PAGE);
-        $page = max((int) $request->query('page', 1), 1);
-        $logs = $this->auditLogRepository->paginate($page, $perPage);
+        $logs = $this->auditLogRepository->paginate($filter);
 
         return [
             'status' => 200,

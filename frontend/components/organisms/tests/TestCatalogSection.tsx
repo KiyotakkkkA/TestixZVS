@@ -86,7 +86,7 @@ export const TestCatalogSection = observer(() => {
 
         <TestsListFilter />
 
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Button
             variant="danger"
             onClick={testsStore.resetFilters}
@@ -94,6 +94,12 @@ export const TestCatalogSection = observer(() => {
           >
             Сбросить фильтры
           </Button>
+          {authStore.isUserHasPermission("tests.edit") && (
+            <Button variant="primary" className="py-1.5 px-2 gap-2">
+              <Icon icon="mdi:plus-circle-outline" width={22} height={22} />
+              Создать тест
+            </Button>
+          )}
         </div>
 
         {filteredTests.length > 0 ? (

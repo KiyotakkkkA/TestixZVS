@@ -2,16 +2,26 @@
 
 namespace App\Repositories;
 
+use App\Filters\AuditLogsFilter;
 use App\Models\AuditLog;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class AuditLogRepository
 {
-    public function paginate(int $page, int $perPage): LengthAwarePaginator
+    public function paginate(AuditLogsFilter $filter): LengthAwarePaginator
     {
-        return AuditLog::query()
-            ->latest('created_at')
-            ->paginate(perPage: $perPage, page: $page);
+        $query = AuditLog::query();
+
+        $filter->apply($query);
+
+        if (! $filter->has('sortBy')) {
+            $query->latest('created_at');
+        }
+
+        return $query->paginate(
+            perPage: $filter->perPage(),
+            page: $filter->page(),
+        );
     }
 
     public function findByUuid(string $uuid): AuditLog

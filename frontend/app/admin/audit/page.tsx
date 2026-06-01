@@ -1,6 +1,13 @@
 "use client";
 
 import { Pagination } from "@/components/atoms";
+import {
+  AdminAuditListFilter,
+  type AuditEntityFilter,
+  type AuditEventFilter,
+  type AuditSortDirection,
+  type AuditSortOption,
+} from "@/components/organisms/filters";
 import { endpoints } from "@/services/endpoints";
 import { useApi } from "@/hooks/useApi";
 import type {
@@ -37,15 +44,37 @@ const formatDate = (value: string) => {
 export default function AdminAuditPage() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+  const [query, setQuery] = useState("");
+  const [eventType, setEventType] = useState<AuditEventFilter>("all");
+  const [entityType, setEntityType] = useState<AuditEntityFilter>("all");
+  const [sortBy, setSortBy] = useState<AuditSortOption>("createdAt");
+  const [sortDirection, setSortDirection] =
+    useState<AuditSortDirection>("desc");
 
   const url = useMemo(() => {
     const params = new URLSearchParams({
       page: String(page),
       perPage: String(perPage),
+      sortBy,
+      sortDirection,
     });
 
+    const normalizedQuery = query.trim();
+
+    if (normalizedQuery) {
+      params.set("search", normalizedQuery);
+    }
+
+    if (eventType !== "all") {
+      params.set("eventType", eventType);
+    }
+
+    if (entityType !== "all") {
+      params.set("entityType", entityType);
+    }
+
     return `${endpoints.admin.audit.list}?${params.toString()}`;
-  }, [page, perPage]);
+  }, [entityType, eventType, page, perPage, query, sortBy, sortDirection]);
 
   const { data, error, loading } = useApi<AuditLogListResponse>(url);
   const logs = data?.data ?? [];
@@ -56,6 +85,15 @@ export default function AdminAuditPage() {
     lastPage: 1,
     from: null,
     to: null,
+  };
+
+  const resetFilters = () => {
+    setQuery("");
+    setEventType("all");
+    setEntityType("all");
+    setSortBy("createdAt");
+    setSortDirection("desc");
+    setPage(1);
   };
 
   return (
@@ -73,6 +111,46 @@ export default function AdminAuditPage() {
           подробной трассировкой изменений.
         </p>
       </section>
+
+      <AdminAuditListFilter
+        query={query}
+        eventType={eventType}
+        entityType={entityType}
+        sortBy={sortBy}
+        sortDirection={sortDirection}
+        onQueryChange={(value) => {
+          setQuery(value);
+          setPage(1);
+        }}
+        onEventTypeChange={(value) => {
+          setEventType(value);
+          setPage(1);
+        }}
+        onEntityTypeChange={(value) => {
+          setEntityType(value);
+          setPage(1);
+        }}
+        onSortByChange={(value) => {
+          setSortBy(value);
+          setPage(1);
+        }}
+        onSortDirectionToggle={() => {
+          setSortDirection((currentDirection) =>
+            currentDirection === "asc" ? "desc" : "asc",
+          );
+          setPage(1);
+        }}
+      />
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Button
+          variant="danger"
+          onClick={resetFilters}
+          className="px-3 py-1.5"
+        >
+          Сбросить фильтры
+        </Button>
+      </div>
 
       <section className="overflow-hidden rounded-lg border border-main-700 bg-main-800/45">
         {loading ? (
