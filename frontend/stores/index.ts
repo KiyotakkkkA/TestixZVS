@@ -5,7 +5,6 @@ export type {
   AvailableTest,
   SortOption,
   SortDirection,
-  TestDifficulty,
 } from "./TestsStore";
 export { usersStore } from "./UsersStore";
 export type {

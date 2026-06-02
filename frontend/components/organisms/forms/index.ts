@@ -5,3 +5,4 @@ export * from "./PasswordResetForm";
 export * from "./EmailConfirmationForm";
 export * from "./AdminUsersMaxtrixForm";
 export * from "./AdminUsersAddingForm";
+export * from "./tests";

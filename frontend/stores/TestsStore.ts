@@ -1,22 +1,8 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { GET } from "@/services/api";
 import { endpoints } from "@/services/endpoints";
-
-export type AvailableTest = {
-  id: string;
-  authorId: string;
-  title: string;
-  description: string;
-  questionsCount: number;
-  duration: number;
-  rating: number;
-  passedCount: number;
-  createdAt: string;
-  icon: string;
-};
-
-export type SortOption = "title" | "duration" | "createdAt";
-export type SortDirection = "asc" | "desc";
+import type { AvailableTest, SortDirection, SortOption } from "@/models/Test";
+export type { AvailableTest, SortDirection, SortOption } from "@/models/Test";
 
 export type TestsPaginationMeta = {
   currentPage: number;

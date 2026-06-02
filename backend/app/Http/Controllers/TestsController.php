@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Filters\TestsFilter;
+use App\Models\Test;
+use App\Models\TestQuestion;
 use App\Services\TestsService;
 use Illuminate\Http\Request;
 
@@ -38,5 +40,63 @@ class TestsController extends Controller
         $result = $this->testsService->store($data, $request->user(), $request);
 
         return response()->json($result['data'], $result['status']);
+    }
+
+    public function show(string $test)
+    {
+        $result = $this->testsService->show($test);
+
+        return response()->json($result['data'], $result['status']);
+    }
+
+    public function storeQuestion(Request $request, Test $test)
+    {
+        $result = $this->testsService->storeQuestion(
+            $test,
+            $this->validateQuestion($request),
+        );
+
+        return response()->json($result['data'], $result['status']);
+    }
+
+    public function updateQuestion(Request $request, Test $test, TestQuestion $question)
+    {
+        $result = $this->testsService->updateQuestion(
+            $test,
+            $question,
+            $this->validateQuestion($request),
+        );
+
+        return response()->json($result['data'], $result['status']);
+    }
+
+    public function deleteQuestion(Test $test, TestQuestion $question)
+    {
+        $result = $this->testsService->deleteQuestion($test, $question);
+
+        return response()->json($result['data'], $result['status']);
+    }
+
+    private function validateQuestion(Request $request): array
+    {
+        return $request->validate([
+            'type' => 'required|string|in:simple,multiple,matching,text,sequential',
+            'text' => 'nullable|string',
+            'enabled' => 'required|boolean',
+            'imagePreviewUrl' => 'nullable|string',
+            'options' => 'array',
+            'options.*.id' => 'required_with:options|string',
+            'options.*.text' => 'nullable|string',
+            'options.*.isCorrect' => 'boolean',
+            'correctOptionId' => 'nullable|string',
+            'pairs' => 'array',
+            'pairs.*.id' => 'required_with:pairs|string',
+            'pairs.*.term' => 'nullable|string',
+            'pairs.*.definition' => 'nullable|string',
+            'correctAnswer' => 'nullable|string',
+            'blocks' => 'array',
+            'blocks.*.id' => 'required_with:blocks|string',
+            'blocks.*.text' => 'nullable|string',
+        ]);
     }
 }

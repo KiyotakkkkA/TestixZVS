@@ -28,4 +28,11 @@ class TestsRepository
     {
         return Test::create($data);
     }
+
+    public function findWithQuestions(string $id): Test
+    {
+        return Test::query()
+            ->with('questions')
+            ->findOrFail($id);
+    }
 }

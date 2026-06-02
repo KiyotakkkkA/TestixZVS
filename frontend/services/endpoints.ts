@@ -25,5 +25,13 @@ export const endpoints = {
   tests: {
     list: `${V1_BASE_URL}/tests`,
     create: `${V1_BASE_URL}/tests`,
+    detail: (uuid: string) => `${V1_BASE_URL}/tests/${uuid}`,
+    questions: {
+      create: (testUuid: string) => `${V1_BASE_URL}/tests/${testUuid}/questions`,
+      update: (testUuid: string, questionUuid: string) =>
+        `${V1_BASE_URL}/tests/${testUuid}/questions/${questionUuid}`,
+      delete: (testUuid: string, questionUuid: string) =>
+        `${V1_BASE_URL}/tests/${testUuid}/questions/${questionUuid}`,
+    },
   },
 };

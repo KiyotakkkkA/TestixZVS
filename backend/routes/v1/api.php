@@ -15,6 +15,16 @@ Route::middleware(['auth:sanctum', 'perm:tests.view'])
         Route::post('/', [TestsController::class, 'store'])
             ->middleware('perm:tests.edit')
             ->name('store');
+        Route::get('/{test}', [TestsController::class, 'show'])->name('show');
+        Route::post('/{test}/questions', [TestsController::class, 'storeQuestion'])
+            ->middleware('perm:tests.edit')
+            ->name('questions.store');
+        Route::put('/{test}/questions/{question}', [TestsController::class, 'updateQuestion'])
+            ->middleware('perm:tests.edit')
+            ->name('questions.update');
+        Route::delete('/{test}/questions/{question}', [TestsController::class, 'deleteQuestion'])
+            ->middleware('perm:tests.edit')
+            ->name('questions.delete');
     });
 
 Route::middleware(['auth:sanctum', 'perm:users.view'])

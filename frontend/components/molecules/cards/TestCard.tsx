@@ -16,6 +16,11 @@ const TestInfoPill = ({ icon, label }: { icon: string; label: string }) => (
 );
 
 export const TestCard = ({ test, canEdit = false }: TestCardProps) => {
+  const editHref =
+    test.questionsCount > 0
+      ? `/test/workbench/${test.id}?q=1`
+      : `/test/workbench/${test.id}`;
+
   return (
     <Card className="group flex h-full flex-col border-main-700/80 bg-main-800/55 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-main-500/80 hover:bg-main-800/80">
       <Card.Header className="flex items-start justify-between gap-3">
@@ -37,7 +42,7 @@ export const TestCard = ({ test, canEdit = false }: TestCardProps) => {
         <div className="mt-5 flex flex-wrap gap-2">
           <TestInfoPill
             icon="mdi:help-circle-outline"
-            label={`# ${test.questionsCount} вопросов #`}
+            label={`${test.questionsCount} вопросов `}
           />
           <TestInfoPill
             icon="mdi:clock-outline"
@@ -53,7 +58,7 @@ export const TestCard = ({ test, canEdit = false }: TestCardProps) => {
         </span>
         <div className="flex gap-2">
           {canEdit && (
-            <Link href={`/test/workbench/${test.id}`}>
+            <Link href={editHref}>
               <Button
                 variant="secondary"
                 className="px-3 py-1.5 text-sm font-semibold"
