@@ -36,7 +36,7 @@ export const QuestionBaseFields = <TQuestion extends TestQuestionBase>({
           Текст вопроса
         </span>
         <InputBig
-          value={question.text}
+          value={question.text ?? ""}
           placeholder="Введите формулировку вопроса..."
           onChange={(event) =>
             onChange({ ...question, text: event.target.value })

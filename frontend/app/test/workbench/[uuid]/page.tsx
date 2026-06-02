@@ -3,9 +3,8 @@
 import { TestQuestionEditorForm } from "@/components/organisms/forms";
 import { TestEditNavPanel } from "@/components/organisms/tests";
 import type { TestModel } from "@/models/Test";
-import { getTestQuestionsCount } from "@/models/Test";
 import { createEmptyQuestion, type TestQuestion } from "@/models/TestQuestion";
-import { DELETE, GET, POST, PUT } from "@/services/api";
+import { DELETE, GET, POST } from "@/services/api";
 import { endpoints } from "@/services/endpoints";
 import { Button, EmptyState, Modal } from "@kiyotakkkka/zvs-uikit-lib/ui";
 import { useToasts } from "@kiyotakkkka/zvs-uikit-lib/hooks";
@@ -14,10 +13,6 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 type PendingAction = null | (() => void | Promise<void>);
-
-type QuestionRequest = Omit<TestQuestion, "image"> & {
-  image: null;
-};
 
 const getValidQuestionNumber = (
   rawQuestionNumber: string | null,
@@ -36,10 +31,34 @@ const getValidQuestionNumber = (
   return questionNumber;
 };
 
-const toQuestionRequest = (question: TestQuestion): QuestionRequest => ({
+const toQuestionPayload = (question: TestQuestion) => ({
   ...question,
   image: null,
+  imagePreviewUrl: question.image ? null : question.imagePreviewUrl,
 });
+
+const toQuestionComparable = (question: TestQuestion) => ({
+  ...toQuestionPayload(question),
+  imageFileName: question.image?.name ?? null,
+  imageFileSize: question.image?.size ?? null,
+  imageFileModified: question.image?.lastModified ?? null,
+});
+
+const toQuestionFormData = (question: TestQuestion) => {
+  const formData = new FormData();
+
+  formData.append("question", JSON.stringify(toQuestionPayload(question)));
+
+  if (question.image) {
+    formData.append("image", question.image);
+  }
+
+  if (!question.image && !question.imagePreviewUrl) {
+    formData.append("removeImage", "1");
+  }
+
+  return formData;
+};
 
 const isQuestionDirty = (
   savedQuestion: TestQuestion | undefined,
@@ -50,8 +69,8 @@ const isQuestionDirty = (
   }
 
   return (
-    JSON.stringify(toQuestionRequest(savedQuestion)) !==
-    JSON.stringify(toQuestionRequest(draftQuestion))
+    JSON.stringify(toQuestionComparable(savedQuestion)) !==
+    JSON.stringify(toQuestionComparable(draftQuestion))
   );
 };
 
@@ -174,9 +193,9 @@ export default function TestWorkbenchPage() {
 
     setSaving(true);
 
-    const response = await PUT<TestQuestion>(
+    const response = await POST<TestQuestion>(
       endpoints.tests.questions.update(params.uuid, effectiveDraftQuestion.id),
-      toQuestionRequest(effectiveDraftQuestion),
+      toQuestionFormData(effectiveDraftQuestion),
     );
 
     setSaving(false);
@@ -200,7 +219,7 @@ export default function TestWorkbenchPage() {
   const handleCreateQuestion = async () => {
     const response = await POST<TestQuestion>(
       endpoints.tests.questions.create(params.uuid),
-      toQuestionRequest(createEmptyQuestion("simple")),
+      toQuestionFormData(createEmptyQuestion("simple")),
     );
 
     if (!response.ok) {
@@ -328,15 +347,9 @@ export default function TestWorkbenchPage() {
           <div className="rounded-lg border border-main-700 bg-main-800/55 p-5 shadow-sm sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div className="min-w-0">
-                <h1 className="mt-4 text-2xl font-extrabold leading-tight text-main-50 sm:text-3xl">
+                <h1 className="text-2xl font-extrabold leading-tight text-main-50 sm:text-3xl">
                   Редактор теста
                 </h1>
-                <p className="mt-2 text-sm text-main-300">
-                  Вопросов: {getTestQuestionsCount(test)}
-                </p>
-                <p className="mt-2 break-all text-xs text-main-400">
-                  UUID: {params.uuid}
-                </p>
               </div>
 
               <div className="flex flex-wrap gap-2">

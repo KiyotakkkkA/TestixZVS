@@ -30,16 +30,18 @@ async function request<T>({
   body,
 }: RequestOptions): Promise<ApiResponse<T>> {
   const storedToken = getStoredToken();
+  const isFormData =
+    typeof FormData !== "undefined" && body instanceof FormData;
 
   const res = await fetch(url, {
     method: method,
     headers: {
       Accept: "application/json",
-      "Content-Type": "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...(storedToken ? { Authorization: `Bearer ${storedToken.token}` } : {}),
       ...headers,
     },
-    body: body ? JSON.stringify(body) : undefined,
+    body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
   });
   return { ok: res.ok, data: await res.json() } as ApiResponse<T>;
 }

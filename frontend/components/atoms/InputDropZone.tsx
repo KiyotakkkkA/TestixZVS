@@ -1,7 +1,8 @@
 "use client";
 
+import { LARAVEL_ORIGIN } from "@/services/endpoints";
 import { Icon } from "@iconify/react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 type InputDropZoneProps = {
   file: File | null;
@@ -20,6 +21,14 @@ const getFirstImageFile = (files: FileList | null) => {
   return file;
 };
 
+const getPreviewSrc = (previewUrl: string) => {
+  if (previewUrl.startsWith("/storage/")) {
+    return `${LARAVEL_ORIGIN}${previewUrl}`;
+  }
+
+  return previewUrl;
+};
+
 export const InputDropZone = ({
   file,
   previewUrl,
@@ -29,20 +38,8 @@ export const InputDropZone = ({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  useEffect(() => {
-    return () => {
-      if (previewUrl?.startsWith("blob:")) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
-
   const handleFile = (nextFile: File | null) => {
-    if (previewUrl?.startsWith("blob:")) {
-      URL.revokeObjectURL(previewUrl);
-    }
-
-    onChange(nextFile, nextFile ? URL.createObjectURL(nextFile) : null);
+    onChange(nextFile, null);
   };
 
   return (
@@ -72,7 +69,7 @@ export const InputDropZone = ({
             <span className="h-28 overflow-hidden rounded-md border border-main-700/80">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={previewUrl}
+                src={getPreviewSrc(previewUrl)}
                 alt="Предпросмотр изображения вопроса"
                 className="h-full w-full object-cover"
               />
@@ -84,6 +81,18 @@ export const InputDropZone = ({
               <span className="mt-1 block text-sm leading-6 text-main-400">
                 Нажмите или перетащите новый файл, чтобы заменить картинку.
               </span>
+              </span>
+            </span>
+        ) : file ? (
+          <span className="flex w-full flex-col items-center text-center">
+            <span className="flex h-12 w-12 items-center justify-center rounded-md bg-main-700/65 text-main-100">
+              <Icon icon="mdi:image-check-outline" width={26} height={26} />
+            </span>
+            <span className="mt-3 max-w-full truncate text-sm font-semibold text-main-100">
+              {file.name}
+            </span>
+            <span className="mt-1 text-xs text-main-400">
+              Файл будет загружен в Laravel Storage после сохранения вопроса.
             </span>
           </span>
         ) : (

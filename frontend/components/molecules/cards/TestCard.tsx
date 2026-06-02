@@ -67,12 +67,14 @@ export const TestCard = ({ test, canEdit = false }: TestCardProps) => {
               </Button>
             </Link>
           )}
-          <Button
-            variant="primary"
-            className="px-3 py-1.5 text-sm font-semibold"
-          >
-            Начать
-          </Button>
+          <Link href={`/test/${test.id}`}>
+            <Button
+              variant="primary"
+              className="px-3 py-1.5 text-sm font-semibold"
+            >
+              Начать
+            </Button>
+          </Link>
         </div>
       </Card.Footer>
     </Card>

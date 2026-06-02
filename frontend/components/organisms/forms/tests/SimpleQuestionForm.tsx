@@ -64,7 +64,7 @@ export const SimpleQuestionForm = ({
             }
           />
           <InputSmall
-            value={option.text}
+            value={option.text ?? ""}
             placeholder={`Вариант ${index + 1}`}
             className="w-full"
             onChange={(event) =>

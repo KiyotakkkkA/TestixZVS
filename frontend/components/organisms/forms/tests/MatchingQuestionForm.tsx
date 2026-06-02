@@ -45,7 +45,7 @@ export const MatchingQuestionForm = ({
           className="grid gap-3 rounded-md border border-main-700/70 p-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-center"
         >
           <InputSmall
-            value={pair.term}
+            value={pair.term ?? ""}
             placeholder={`Термин ${index + 1}`}
             className="w-full"
             onChange={(event) =>
@@ -53,7 +53,7 @@ export const MatchingQuestionForm = ({
             }
           />
           <InputSmall
-            value={pair.definition}
+            value={pair.definition ?? ""}
             placeholder={`Определение ${index + 1}`}
             className="w-full"
             onChange={(event) =>

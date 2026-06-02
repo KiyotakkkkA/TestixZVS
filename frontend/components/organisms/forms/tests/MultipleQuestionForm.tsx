@@ -59,7 +59,7 @@ export const MultipleQuestionForm = ({
             onChange={(isCorrect) => updateOption(option.id, { isCorrect })}
           />
           <InputSmall
-            value={option.text}
+            value={option.text ?? ""}
             placeholder={`Вариант ${index + 1}`}
             className="w-full"
             onChange={(event) =>

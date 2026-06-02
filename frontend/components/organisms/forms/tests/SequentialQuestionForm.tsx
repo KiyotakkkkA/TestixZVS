@@ -86,7 +86,7 @@ const SortableSequentialBlock = ({
         {index + 1}
       </span>
       <InputSmall
-        value={block.text}
+        value={block.text ?? ""}
         placeholder={`Блок ${index + 1}`}
         className="w-full"
         onChange={(event) => onTextChange(block.id, event.target.value)}

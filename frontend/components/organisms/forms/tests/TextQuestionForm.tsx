@@ -21,7 +21,7 @@ export const TextQuestionForm = ({
         Заполните эталонный развёрнутый ответ.
       </p>
       <InputBig
-        value={question.correctAnswer}
+        value={question.correctAnswer ?? ""}
         placeholder="Введите правильный ответ..."
         onChange={(event) =>
           onChange({ ...question, correctAnswer: event.target.value })

@@ -22,9 +22,22 @@ Route::middleware(['auth:sanctum', 'perm:tests.view'])
         Route::put('/{test}/questions/{question}', [TestsController::class, 'updateQuestion'])
             ->middleware('perm:tests.edit')
             ->name('questions.update');
+        Route::post('/{test}/questions/{question}', [TestsController::class, 'updateQuestion'])
+            ->middleware('perm:tests.edit')
+            ->name('questions.update.multipart');
         Route::delete('/{test}/questions/{question}', [TestsController::class, 'deleteQuestion'])
             ->middleware('perm:tests.edit')
             ->name('questions.delete');
+        Route::get('/{test}/results/current', [TestsController::class, 'currentResult'])
+            ->name('results.current');
+        Route::get('/{test}/results/latest', [TestsController::class, 'latestResult'])
+            ->name('results.latest');
+        Route::post('/{test}/results/start', [TestsController::class, 'startResult'])
+            ->name('results.start');
+        Route::put('/{test}/results/{result}/answer', [TestsController::class, 'answerQuestion'])
+            ->name('results.answer');
+        Route::post('/{test}/results/{result}/complete', [TestsController::class, 'completeResult'])
+            ->name('results.complete');
     });
 
 Route::middleware(['auth:sanctum', 'perm:users.view'])

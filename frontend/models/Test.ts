@@ -25,6 +25,36 @@ export type AvailableTest = Omit<
 export type SortOption = "title" | "duration" | "createdAt";
 export type SortDirection = "asc" | "desc";
 
+export type TestAnswerValue =
+  | string
+  | string[]
+  | Record<string, string>
+  | null;
+
+export type TestResultAnswer = {
+  value: TestAnswerValue;
+  checked?: boolean;
+  updatedAt?: string;
+};
+
+export type TestResult = {
+  id: string;
+  testId: string;
+  status: "in_progress" | "completed";
+  answers: Record<string, TestResultAnswer>;
+  currentQuestionId: string | null;
+  answeredQuestionIds: string[];
+  unansweredQuestionIds: string[];
+  startedAt: string | null;
+  completedAt: string | null;
+  test: TestModel;
+};
+
+export type CurrentTestResultResponse = {
+  hasSession: boolean;
+  session: TestResult | null;
+};
+
 export const getTestQuestionsCount = (test: TestModel) => {
   return test.questions.length;
 };

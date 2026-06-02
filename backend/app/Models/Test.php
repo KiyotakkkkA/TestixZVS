@@ -17,4 +17,9 @@ class Test extends Model
     {
         return $this->hasMany(TestQuestion::class)->orderBy('position');
     }
+
+    public function results(): HasMany
+    {
+        return $this->hasMany(TestResult::class);
+    }
 }
